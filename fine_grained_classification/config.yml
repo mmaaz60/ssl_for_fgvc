@@ -1,0 +1,16 @@
+# Header, all configurations related to dataloader will be under this header
+dataloader:
+  # Name of the dataloader to be used
+  name: image_folder
+  # The root directory path in case of Image Folder dataloader
+  root_directory_path: /home/mm/PycharmProjects/SSL_for_FGVC/dataset/CUB_200_2011/CUB_200_2011/images
+  # Image resize width
+  resize_width: 448
+  # Image resize height
+  resize_height: 448
+  # Batch size for training and testing
+  batch_size: 64
+  # Either to shuffle the dataset for training or not
+  shuffle: True
+  # Number of parallel workers to load the dataset
+  num_workers: 8

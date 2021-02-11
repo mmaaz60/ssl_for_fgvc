@@ -14,7 +14,7 @@ class TorchVision(nn.Module):
         """
         super(TorchVision, self).__init__()  # Call the constructor of the parent class
         # Parse the configuration parameters
-        self.model_function = get_object_from_path(config.cfg["model"]["function_path"])  # Model type
+        self.model_function = get_object_from_path(config.cfg["model"]["model_function_path"])  # Model type
         self.pretrained = config.cfg["model"]["pretrained"]  # Either to load weights from pretrained model or not
         self.num_classes = config.cfg["model"]["classes_count"]  # Number of classes
         # Load the model

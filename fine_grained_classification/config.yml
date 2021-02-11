@@ -4,7 +4,7 @@ dataloader:
   name: cub_200_2011
   # Flag in order to decide if to download the dataset or not
   download: False
-  # The root directory path in case of Image Folder dataloader
+  # The root directory path of the dataset
   root_directory_path: /home/mm/PycharmProjects/SSL_for_FGVC/dataset/CUB_200_2011/
   # Image resize width
   resize_width: 448
@@ -21,9 +21,14 @@ dataloader:
 model:
   # Name/source of the model
   name: torchvision
-  # Complete function_path of the model (torchvision.models.resnet50, torchvision.models.alexnet, etc.)
-  function_path: torchvision.models.resnet18
+  # Complete model function_path (i.e. torchvision.models.resnet50, torchvision.models.alexnet, etc.)
+  model_function_path: torchvision.models.resnet18
   # Either to load weights from pretrained imagenet model
   pretrained: True
   # Number of classes
   classes_count: 200
+
+# All configurations related to training will be under this header
+train:
+  # Number of epochs
+  epochs: 10

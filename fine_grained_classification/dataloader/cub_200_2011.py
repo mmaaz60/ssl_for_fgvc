@@ -4,15 +4,16 @@ from torch.utils.data import DataLoader
 
 class Cub2002011:
     def __init__(self, config):
-        self.data_root_directory = config.cfg["dataloader", "root_directory_path"]
-        self.resize_width = config.cfg["dataloader", "resize_width"]
-        self.resize_height = config.cfg["dataloader", "resize_height"]
-        self.batch_size = config.cfg["dataloader", "batch_size"]
-        self.shuffle = config.cfg["dataloader", "shuffle"]
-        self.num_workers = config.cfg["dataloader", "num_workers"]
-        self.download = config.cfg["dataloader", "download"]
+        self.data_root_directory = config.cfg["dataloader"]["root_directory_path"]
+        self.resize_width = config.cfg["dataloader"]["resize_width"]
+        self.resize_height = config.cfg["dataloader"]["resize_height"]
+        self.batch_size = config.cfg["dataloader"]["batch_size"]
+        self.shuffle = config.cfg["dataloader"]["shuffle"]
+        self.num_workers = config.cfg["dataloader"]["num_workers"]
+        self.download = config.cfg["dataloader"]["download"]
         self.train_dataset = None
         self.test_dataset = None
+        self.load_dataset()
 
     def load_dataset(self):
         self.train_dataset = Dataset(root=self.data_root_directory, train=True,

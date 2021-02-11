@@ -16,3 +16,14 @@ dataloader:
   shuffle: True
   # Number of parallel workers to load the dataset
   num_workers: 8
+
+# All configurations related to model will be under this header
+model:
+  # Name/source of the model
+  name: torchvision
+  # Type of the model (resnet50, alexnet, etc.)
+  type: resnet50
+  # Either to load weights from pretrained imagenet model
+  pretrained: True
+  # Number of classes
+  classes_count: 200

@@ -7,8 +7,8 @@ class Dataloader:
     """
     def __init__(self, config):
         # Select the correct model
-        if config.get("dataloader", "name") == "image_folder":
-            from fine_grained_classification.dataloader.image_folder import ImageFolder as DataLoader
+        if config.cfg["dataloader", "name"] == "cub_200_2011":
+            from fine_grained_classification.dataloader.cub_200_2011 import Cub2002011 as DataLoader
         else:
             print(f"Please provide correct dataloader to use in configuration. "
                   f"Available options are ['image_folder']")

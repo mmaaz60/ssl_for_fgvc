@@ -1,11 +1,12 @@
 import torch.nn as nn
-import torchvision.models as models
+from fine_grained_classification.utils.utils import get_object_from_path
 
 
 class TorchVision(nn.Module):
     """
     This class inherits from nn.Module class
     """
+
     def __init__(self, config):
         """
         The function parse the config and initialize the layers of the corresponding model
@@ -13,27 +14,17 @@ class TorchVision(nn.Module):
         """
         super(TorchVision, self).__init__()  # Call the constructor of the parent class
         # Parse the configuration parameters
-        self.type = config.cfg["model"]["type"]  # Model type
+        self.model_function = get_object_from_path(config.cfg["model"]["function_path"])  # Model type
         self.pretrained = config.cfg["model"]["pretrained"]  # Either to load weights from pretrained model or not
         self.num_classes = config.cfg["model"]["classes_count"]  # Number of classes
-        # Select the model
-        self.model = self.select_model()
+        # Load the model
+        self.model = self.model_function(pretrained=self.pretrained)
         # Remove the last (classification) layer of the model
         modules = list(self.model.children())[:-1]
         self.features = nn.Sequential(*modules)
         # Add linear layer on top of feature embeddings
         self.linear = nn.Linear(self.model.fc.in_features, self.num_classes)
         self.softmax = nn.Softmax(dim=1)  # Apply softmax
-
-    def select_model(self):
-        """
-        The function selects the model as per the configuration parameters specified in the configuration file
-        :return: The selected model (nn.Module class object)
-        """
-        if self.type == "resnet50":
-            return models.resnet50(pretrained=self.pretrained, progress=True)
-        else:
-            raise RuntimeError(f"The requested model type is not support. The supported model types are ['resnet50']")
 
     def forward(self, x):
         """

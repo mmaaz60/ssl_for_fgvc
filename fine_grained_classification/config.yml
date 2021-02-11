@@ -21,8 +21,8 @@ dataloader:
 model:
   # Name/source of the model
   name: torchvision
-  # Type of the model (resnet50, alexnet, etc.)
-  type: resnet50
+  # Complete function_path of the model (torchvision.models.resnet50, torchvision.models.alexnet, etc.)
+  function_path: torchvision.models.resnet18
   # Either to load weights from pretrained imagenet model
   pretrained: True
   # Number of classes

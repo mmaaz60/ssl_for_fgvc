@@ -20,4 +20,4 @@ class Model:
         """
         This function returns the selected model
         """
-        return self.model.load_model()
+        return self.model

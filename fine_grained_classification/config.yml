@@ -1,9 +1,11 @@
 # Header, all configurations related to dataloader will be under this header
 dataloader:
   # Name of the dataloader to be used
-  name: image_folder
+  name: cub_200_2011
+  # Flag in order to decide if to download the dataset or not
+  download: False
   # The root directory path in case of Image Folder dataloader
-  root_directory_path: /home/mm/PycharmProjects/SSL_for_FGVC/dataset/CUB_200_2011/CUB_200_2011/images
+  root_directory_path: /home/mm/PycharmProjects/SSL_for_FGVC/dataset/CUB_200_2011/
   # Image resize width
   resize_width: 448
   # Image resize height

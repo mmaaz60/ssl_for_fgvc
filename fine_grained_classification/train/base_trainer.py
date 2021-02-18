@@ -1,5 +1,5 @@
 import torch
-from fine_grained_classification.test.base_tester import Tester
+from fine_grained_classification.test.base_tester import BaseTester
 
 
 class BaseTrainer:
@@ -13,7 +13,7 @@ class BaseTrainer:
         self.lr_scheduler = lr_scheduler
         self.device = device
         self.log_step = log_step
-        self.validator = Tester(val_dataloader, self.loss) if val_dataloader else None
+        self.validator = BaseTester(val_dataloader, self.loss) if val_dataloader else None
         self.metrics = {}
 
     def train_epoch(self, epoch):

@@ -10,6 +10,7 @@ class BaseTester:
     def test(self, model):
         metrics = {}
         model.eval()
+        model = model.to(self.device)
         with torch.no_grad():
             total_loss = 0
             total_correct_predictions = 0

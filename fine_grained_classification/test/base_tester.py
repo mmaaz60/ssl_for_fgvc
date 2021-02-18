@@ -4,7 +4,7 @@ import torch
 class BaseTester:
     def __init__(self, dataloader, loss_function, device="cuda"):
         self.dataloader = dataloader
-        self.loss_function = loss_function
+        self.loss = loss_function()
         self.device = device
 
     def test(self, model):
@@ -18,7 +18,7 @@ class BaseTester:
                 inputs = inputs.to(self.device)
                 labels = labels.to(self.device)
                 outputs = model(inputs)
-                loss = self.loss_function(outputs, labels)
+                loss = self.loss(outputs, labels)
                 total_loss += loss
                 _, preds = torch.max(outputs, 1)
                 total_correct_predictions += torch.sum(preds == labels.data)

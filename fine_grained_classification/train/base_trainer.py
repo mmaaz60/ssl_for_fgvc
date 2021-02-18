@@ -7,13 +7,13 @@ class BaseTrainer:
                  lr_scheduler=None, val_dataloader=None, device="cuda", log_step=50):
         self.dataloader = dataloader
         self.model = model
-        self.loss_function = loss_function
+        self.loss = loss_function()
         self.optimizer = optimizer
         self.epochs = epochs
         self.lr_scheduler = lr_scheduler
         self.device = device
         self.log_step = log_step
-        self.validator = Tester(val_dataloader, self.loss_function) if val_dataloader else None
+        self.validator = Tester(val_dataloader, self.loss) if val_dataloader else None
         self.metrics = {}
 
     def train_epoch(self, epoch):
@@ -26,7 +26,7 @@ class BaseTrainer:
             inputs = inputs.to(self.device)
             labels = labels.to(self.device)
             outputs = self.model(inputs)
-            loss = self.loss_function(outputs, labels)
+            loss = self.loss(outputs, labels)
             total_loss += loss
             _, preds = torch.max(outputs, 1)
             total_predictions += len(preds)

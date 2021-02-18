@@ -10,6 +10,7 @@ class Train:
         self.epochs = epochs
         self.device = device
         self.log_step = log_step
+        self.metrics = {}
 
     def train_epoch(self, epoch):
         total_loss = 0
@@ -31,8 +32,10 @@ class Train:
             self.optimizer.step()
             if (batch_idx % self.log_step == 0) and (batch_idx != 0):
                 print(f"Train Epoch: {epoch}, Loss: {total_loss/batch_idx}")
-        epoch_accuracy = float(total_correct_predictions) / float(total_predictions)
-        print(f"Epoch {epoch} accuracy: {epoch_accuracy}")
+        self.metrics[epoch] = {}
+        self.metrics[epoch]["loss"] = float(total_loss/batch_idx)
+        self.metrics[epoch]["accuracy"] = float(total_correct_predictions) / float(total_predictions)
+        print(f"Epoch {epoch} loss, accuracy: {self.metrics[epoch]['loss']}, {self.metrics[epoch]['accuracy']}")
 
     def train(self):
         for i in range(self.epochs):

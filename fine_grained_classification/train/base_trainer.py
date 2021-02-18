@@ -21,6 +21,7 @@ class BaseTrainer:
         total_predictions = 0
         total_correct_predictions = 0
         self.model.train()
+        self.model = self.model.to(self.device)
         for batch_idx, d in enumerate(self.dataloader):
             inputs, labels = d
             inputs = inputs.to(self.device)

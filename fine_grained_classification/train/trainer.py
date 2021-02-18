@@ -2,12 +2,14 @@ import torch
 
 
 class Trainer:
-    def __init__(self, dataloader, model, loss_function, optimizer, epochs, device="cuda", log_step=50):
+    def __init__(self, dataloader, model, loss_function, optimizer, epochs,
+                 lr_scheduler=None, device="cuda", log_step=50):
         self.dataloader = dataloader
         self.model = model
         self.loss_function = loss_function
         self.optimizer = optimizer
         self.epochs = epochs
+        self.lr_scheduler = lr_scheduler
         self.device = device
         self.log_step = log_step
         self.metrics = {}
@@ -40,3 +42,5 @@ class Trainer:
     def train(self):
         for i in range(self.epochs):
             self.train_epoch(i + 1)
+        if self.lr_scheduler:
+            self.lr_scheduler.step()

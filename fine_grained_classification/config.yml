@@ -19,6 +19,7 @@ model:
 
 # All configurations related to training will be under this header
 train:
+  name: base_trainer  # Name of the trainer to use
   epochs: 10  # Number of epochs
   loss_function_path: torch.nn.CrossEntropyLoss  # Loss function
   # Optimizer related configurations

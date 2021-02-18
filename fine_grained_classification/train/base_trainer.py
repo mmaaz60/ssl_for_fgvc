@@ -3,10 +3,10 @@ from fine_grained_classification.test.base_tester import Tester
 
 
 class BaseTrainer:
-    def __init__(self, dataloader, model, loss_function, optimizer, epochs,
+    def __init__(self, model, dataloader, loss_function, optimizer, epochs,
                  lr_scheduler=None, val_dataloader=None, device="cuda", log_step=50):
-        self.dataloader = dataloader
         self.model = model
+        self.dataloader = dataloader
         self.loss = loss_function()
         self.optimizer = optimizer
         self.epochs = epochs

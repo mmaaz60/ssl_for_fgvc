@@ -24,8 +24,8 @@ train:
   loss_function_path: torch.nn.CrossEntropyLoss  # Loss function
   # Optimizer related configurations
   optimizer_path: torch.optim.SGD  # Complete optimizer class path
-  optiizer_param:
-    lr: 0.001  # Learning rate
+  optimizer_param:
+    lr: 0.1  # Learning rate
     momentum: 0.9  # Momentum
     weight_decay: 0.0001  # Weight Decay
   # Learning rate scheduler configurations

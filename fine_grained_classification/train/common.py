@@ -29,9 +29,15 @@ class Trainer:
         loss_func = get_object_from_path(config["train"]["loss_function_path"])
         optimizer_func = get_object_from_path(config["train"]["optimizer_path"])
         optimizer_param = config["train"]["optimizer_param"]
-        optimizer = optimizer_func(optimizer_param)
+        params = []
+        for key, value in dict(model.named_parameters()).items():
+            if value.requires_grad:
+                params += [{'params': [value]}]
+        optimizer = optimizer_func(params=params, lr=optimizer_param["lr"], momentum=optimizer_param["momentum"])
+                                   # weight_decay=optimizer_param["weight_decay"])
         epochs = config["train"]["epochs"]
-        lr_scheduler = LRScheduler(optimizer, config["train"]["lr_scheduler"])
+        lr_scheduler = LRScheduler(optimizer, step_size=config["train"]["lr_scheduler"]["step_size"],
+                                   gamma=config["train"]["lr_scheduler"]["gamma"])
         # Create and return the trainer object
         return Trainer(model=model, dataloader=dataloader, loss_function=loss_func, optimizer=optimizer, epochs=epochs,
                        lr_scheduler=lr_scheduler, val_dataloader=val_dataloader)

@@ -10,9 +10,9 @@ class BaseTester:
     def test(self, model):
         metrics = {}
         model.eval()
-        model = model.to(self.device)
         with torch.no_grad():
             total_loss = 0
+            total_predictions = 0
             total_correct_predictions = 0
             for batch_idx, d in enumerate(self.dataloader):
                 inputs, labels = d
@@ -22,8 +22,9 @@ class BaseTester:
                 loss = self.loss(outputs, labels)
                 total_loss += loss
                 _, preds = torch.max(outputs, 1)
+                total_predictions += len(preds)
                 total_correct_predictions += torch.sum(preds == labels.data)
             metrics['loss'] = float(total_loss) / len(self.dataloader)
-            metrics['accuracy'] = float(total_correct_predictions) / len(self.dataloader) * outputs.shape[0]
-
+            metrics['accuracy'] = float(total_correct_predictions) / total_predictions
+            print(f"Validation loss: {metrics['loss']}, Validation accuracy: {metrics['accuracy']}")
         return metrics

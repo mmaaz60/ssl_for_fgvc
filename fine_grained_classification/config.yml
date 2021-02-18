@@ -1,34 +1,33 @@
 # Header, all configurations related to dataloader will be under this header
 dataloader:
-  # Name of the dataloader to be used
-  name: cub_200_2011
-  # Flag in order to decide if to download the dataset or not
-  download: False
-  # The root directory path of the dataset
-  root_directory_path: /home/mm/PycharmProjects/SSL_for_FGVC/dataset/CUB_200_2011/
-  # Image resize width
-  resize_width: 448
-  # Image resize height
-  resize_height: 448
-  # Batch size for training and testing
-  batch_size: 64
-  # Either to shuffle the dataset for training or not
-  shuffle: True
-  # Number of parallel workers to load the dataset
-  num_workers: 8
+  name: cub_200_2011  # Name of the dataloader to be used
+  download: False  # Flag in order to decide if to download the dataset or not
+  root_directory_path: /home/mm/PycharmProjects/SSL_for_FGVC/dataset/CUB_200_2011/  # The root directory path of the dataset
+  resize_width: 448  # Image resize width
+  resize_height: 448  # Image resize height
+  batch_size: 64  # Batch size for training and testing
+  shuffle: True  # Either to shuffle the dataset for training or not
+  num_workers: 8  # Number of parallel workers to load the dataset
 
 # All configurations related to model will be under this header
 model:
-  # Name/source of the model
-  name: torchvision
-  # Complete model function_path (i.e. torchvision.models.resnet50, torchvision.models.alexnet, etc.)
+  name: torchvision  # Name/source of the model
+  # Complete model class path (i.e. torchvision.models.resnet50, torchvision.models.alexnet, etc.)
   model_function_path: torchvision.models.resnet18
-  # Either to load weights from pretrained imagenet model
-  pretrained: True
-  # Number of classes
-  classes_count: 200
+  pretrained: True  # Either to load weights from pretrained imagenet model
+  classes_count: 200  # Number of classes
 
 # All configurations related to training will be under this header
 train:
-  # Number of epochs
-  epochs: 10
+  epochs: 10  # Number of epochs
+  loss_function_path: torch.nn.CrossEntropyLoss  # Loss function
+  # Optimizer related configurations
+  optimizer_path: torch.optim.SGD  # Complete optimizer class path
+  optiizer_param:
+    lr: 0.001  # Learning rate
+    momentum: 0.9  # Momentum
+    weight_decay: 0.0001  # Weight Decay
+  # Learning rate scheduler configurations
+  lr_scheduler:
+    step_size: 50  # Step size
+    gamma: 0.1  # Decay factor

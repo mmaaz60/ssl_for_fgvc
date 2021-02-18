@@ -1,8 +1,8 @@
 import torch
-from fine_grained_classification.test.tester import Tester
+from fine_grained_classification.test.base_tester import Tester
 
 
-class Trainer:
+class BaseTrainer:
     def __init__(self, dataloader, model, loss_function, optimizer, epochs,
                  lr_scheduler=None, val_dataloader=None, device="cuda", log_step=50):
         self.dataloader = dataloader

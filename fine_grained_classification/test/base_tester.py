@@ -1,7 +1,7 @@
 import torch
 
 
-class Tester:
+class BaseTester:
     def __init__(self, dataloader, loss_function, device="cuda"):
         self.dataloader = dataloader
         self.loss_function = loss_function

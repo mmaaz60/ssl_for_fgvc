@@ -1,7 +1,7 @@
 import torch
 
 
-class Train:
+class Trainer:
     def __init__(self, dataloader, model, loss_function, optimizer, epochs, device="cuda", log_step=50):
         self.dataloader = dataloader
         self.model = model

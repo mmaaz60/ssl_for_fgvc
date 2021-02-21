@@ -51,5 +51,5 @@ class BaseTrainer:
                 val_metrics = self.validator.test(self.model)
                 self.metrics[i+1]["val"] = {}
                 self.metrics[i+1]["val"] = val_metrics
-            # if self.lr_scheduler:
-            #     self.lr_scheduler.step()
+            if self.lr_scheduler:
+                self.lr_scheduler.step()

@@ -5,6 +5,8 @@ from torchvision.datasets.utils import download_url
 from torchvision import transforms
 from torch.utils.data import Dataset
 import tarfile
+from PIL import Image
+import torch
 
 
 class Cub2002011(Dataset):
@@ -14,7 +16,7 @@ class Cub2002011(Dataset):
     tgz_md5 = '97eceeb196236b17998738112f37df78'  # MD5 signature for the downloaded dataset TGZ file
 
     def __init__(self, root, train=True, download=True, loader=default_loader, resize_dims=None,
-                 transform=transforms.Compose([transforms.ToTensor()])):
+                 mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)):
         """
         Initialize the class variables, download the dataset (if prompted to do so), verify the data presence,
         and load the dataset metadata.
@@ -23,20 +25,49 @@ class Cub2002011(Dataset):
         :param download: Flag set to download the dataset
         :param loader: The data point loader function (By default a PyTorch default_loader(PIL loader) is used)
         :param resize_dims: Image resize dimensions
-        :param transform: The transforms to apply to image
         """
         self.root = os.path.expanduser(root)
         self.train = train
         self.loader = loader
         self.resize_dims = resize_dims
-        self.transform = transform
-
         if download:
             self._download()
 
         if not self._check_integrity():
             raise RuntimeError('Dataset not found or corrupted.' +
                                ' You can use download=True to download it')
+        if train:
+            self.transform = transforms.Compose(
+                [
+                    transforms.RandomHorizontalFlip(),
+                    transforms.ToTensor(),
+                    transforms.Normalize(mean=mean, std=std)
+                ]
+            )
+        else:
+            self.transform = transforms.Compose(
+                [
+                    transforms.ToTensor(),
+                    transforms.Normalize(mean=mean, std=std)
+                ]
+            )
+
+    @staticmethod
+    def scale_keep_ar_min_fixed(img, fixed_min):
+        ow, oh = img.size
+
+        if ow < oh:
+
+            nw = fixed_min
+
+            nh = nw * oh // ow
+
+        else:
+
+            nh = fixed_min
+
+            nw = nh * ow // oh
+        return img.resize((nw, nh), Image.BICUBIC)
 
     def _load_metadata(self):
         """

@@ -13,19 +13,19 @@ dataloader:
 model:
   name: torchvision  # Name/source of the model
   # Complete model class path (i.e. torchvision.models.resnet50, torchvision.models.alexnet, etc.)
-  model_function_path: torchvision.models.resnet18
+  model_function_path: torchvision.models.resnet50
   pretrained: True  # Either to load weights from pretrained imagenet model
   classes_count: 200  # Number of classes
 
 # All configurations related to training will be under this header
 train:
   name: base_trainer  # Name of the trainer to use
-  epochs: 10  # Number of epochs
+  epochs: 1000  # Number of epochs
   loss_function_path: torch.nn.CrossEntropyLoss  # Loss function
   # Optimizer related configurations
   optimizer_path: torch.optim.SGD  # Complete optimizer class path
   optimizer_param:
-    lr: 0.1  # Learning rate
+    lr: 0.001  # Learning rate
     momentum: 0.9  # Momentum
     weight_decay: 0.0001  # Weight Decay
   # Learning rate scheduler configurations

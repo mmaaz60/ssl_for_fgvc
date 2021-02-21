@@ -19,12 +19,8 @@ class TorchVision(nn.Module):
         self.num_classes = config.cfg["model"]["classes_count"]  # Number of classes
         # Load the model
         self.model = self.model_function(pretrained=self.pretrained)
-        # Remove the last (classification) layer of the model
-        modules = list(self.model.children())[:-1]
-        self.features = nn.Sequential(*modules)
-        # Add linear layer on top of feature embeddings
-        self.linear = nn.Linear(self.model.fc.in_features, self.num_classes)
-        self.softmax = nn.Softmax(dim=1)  # Apply softmax
+        self.model.fc = nn.Linear(in_features=self.model.fc.in_features, out_features=self.num_classes,
+                                  bias=(self.model.fc.bias is not None))
 
     def forward(self, x):
         """
@@ -32,8 +28,5 @@ class TorchVision(nn.Module):
         :param x: Batch of inputs (images)
         :return: The model output (class logits)
         """
-        out = self.features(x)
-        out = out.view(out.size(0), -1)
-        out = self.linear(out)
-        out = self.softmax(out)
+        out = self.model(x)
         return out

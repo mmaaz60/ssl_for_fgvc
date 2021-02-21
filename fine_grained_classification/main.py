@@ -19,6 +19,10 @@ if __name__ == "__main__":
     # Create the output and experiment directory
     if not os.path.exists(f"{output_directory}/{experiment_id}"):
         os.makedirs(f"{output_directory}/{experiment_id}")
+    else:
+        print(f"The directory {output_directory}/{experiment_id} already exits. Please delete the directory or change "
+              f"the experiment_id in the configuration file.")
+        sys.exit(1)
     # Configure the logger
     logging.basicConfig(level=logging.DEBUG,
                         format="%(asctime)s: %(name)-s: %(levelname)-s: %(message)s",

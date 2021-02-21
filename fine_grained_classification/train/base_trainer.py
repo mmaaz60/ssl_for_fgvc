@@ -35,7 +35,7 @@ class BaseTrainer:
             loss.backward()
             self.optimizer.step()
             if (batch_idx % self.log_step == 0) and (batch_idx != 0):
-                print(f"Train Epoch: {epoch}, Step, {batch_idx}, Loss: {total_loss/batch_idx}")
+                print(f"Train Epoch: {epoch}, Step, {batch_idx}/{len(self.dataloader)}, Loss: {total_loss/batch_idx}")
         self.metrics[epoch] = {}
         self.metrics[epoch]["train"] = {}
         self.metrics[epoch]["train"]["loss"] = float(total_loss/batch_idx)

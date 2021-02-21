@@ -1,7 +1,6 @@
 import sys
 import os
 import logging
-import torch
 
 # Add the root folder (Visitor Tracking Utils) as the path to modules.
 sys.path.append(f"{'/'.join(os.getcwd().split('/')[:-1])}")
@@ -55,10 +54,3 @@ if __name__ == "__main__":
                  f"for {config.cfg['train']['epochs'] - warm_up_epochs} epochs.")
     trainer = Trainer(config=config, model=model, dataloader=train_loader, val_dataloader=test_loader).get_trainer()
     trainer.train_and_validate(start_epoch=warm_up_epochs)
-    # Save the final model
-    model_to_save = {
-        "epoch": config.cfg['train']['epochs'],
-        "metrics": trainer.metrics,
-        'state_dict': trainer.model.state_dict(),
-    }
-    torch.save(model_to_save, f"{output_directory}/{experiment_id}/{model_checkpoints_directory_name}/final_model.pth")

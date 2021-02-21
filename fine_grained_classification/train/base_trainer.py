@@ -7,7 +7,7 @@ logger = logging.getLogger(f"train/base_trainer.py")
 
 class BaseTrainer:
     def __init__(self, model, dataloader, loss_function, optimizer, epochs,
-                 lr_scheduler=None, val_dataloader=None, device="cuda", log_step=10):
+                 lr_scheduler=None, val_dataloader=None, device="cuda", log_step=10, checkpoints_dir_path=None):
         self.model = model
         self.dataloader = dataloader
         self.loss = loss_function()
@@ -16,6 +16,7 @@ class BaseTrainer:
         self.lr_scheduler = lr_scheduler
         self.device = device
         self.log_step = log_step
+        self.checkpoints_dir_path = checkpoints_dir_path
         self.validator = BaseTester(val_dataloader, loss_function) if val_dataloader else None
         self.metrics = {}
 
@@ -57,3 +58,12 @@ class BaseTrainer:
                 self.metrics[i]["val"] = val_metrics
             if self.lr_scheduler:
                 self.lr_scheduler.step()
+            # Save the checkpoints
+            if self.checkpoints_dir_path:
+                model_to_save = {
+                    "epoch": i,
+                    "metrics": self.metrics[i],
+                    'state_dict': self.model.state_dict(),
+                }
+                torch.save(model_to_save,
+                           f"{self.checkpoints_dir_path}/epoch_{i}.pth")

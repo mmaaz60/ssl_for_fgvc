@@ -2,6 +2,7 @@
 general:
   output_directory: results
   experiment_id: test
+  model_checkpoints_directory_name: checkpoints
 
 # All configurations related to dataloader will be under this header
 dataloader:

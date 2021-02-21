@@ -1,6 +1,7 @@
 import sys
 import os
 import logging
+import torch
 
 # Add the root folder (Visitor Tracking Utils) as the path to modules.
 sys.path.append(f"{'/'.join(os.getcwd().split('/')[:-1])}")
@@ -16,9 +17,10 @@ if __name__ == "__main__":
     # Read the general configuration parameters
     output_directory = config.cfg["general"]["output_directory"]
     experiment_id = config.cfg["general"]["experiment_id"]
+    model_checkpoints_directory_name = config.cfg["general"]["model_checkpoints_directory_name"]
     # Create the output and experiment directory
-    if not os.path.exists(f"{output_directory}/{experiment_id}"):
-        os.makedirs(f"{output_directory}/{experiment_id}")
+    if not os.path.exists(f"{output_directory}/{experiment_id}/{model_checkpoints_directory_name}"):
+        os.makedirs(f"{output_directory}/{experiment_id}/{model_checkpoints_directory_name}")
     else:
         print(f"The directory {output_directory}/{experiment_id} already exits. Please delete the directory or change "
               f"the experiment_id in the configuration file.")
@@ -53,3 +55,10 @@ if __name__ == "__main__":
                  f"for {config.cfg['train']['epochs'] - warm_up_epochs} epochs.")
     trainer = Trainer(config=config, model=model, dataloader=train_loader, val_dataloader=test_loader).get_trainer()
     trainer.train_and_validate(start_epoch=warm_up_epochs)
+    # Save the final model
+    model_to_save = {
+        "epoch": config.cfg['train']['epochs'],
+        "metrics": trainer.metrics,
+        'state_dict': trainer.model.state_dict(),
+    }
+    torch.save(model_to_save, f"{output_directory}/{experiment_id}/{model_checkpoints_directory_name}/final_model.pth")

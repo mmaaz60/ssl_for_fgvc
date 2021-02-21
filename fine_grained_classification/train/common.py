@@ -38,6 +38,9 @@ class Trainer:
         optimizer_func = get_object_from_path(config["train"]["optimizer_path"])
         optimizer_param = config["train"]["optimizer_param"]
         epochs = config["train"]["epochs"]
+        output_directory = config["general"]["output_directory"]
+        experiment_id = config["general"]["experiment_id"]
+        model_checkpoints_directory_name = config["general"]["model_checkpoints_directory_name"]
         params = []
         for key, value in dict(model.named_parameters()).items():
             if value.requires_grad:
@@ -48,7 +51,9 @@ class Trainer:
                                    gamma=config["train"]["lr_scheduler"]["gamma"])
         # Create and return the trainer object
         return trainer_cls(model=model, dataloader=dataloader, loss_function=loss_func, optimizer=optimizer,
-                           epochs=epochs, lr_scheduler=lr_scheduler, val_dataloader=val_dataloader)
+                           epochs=epochs, lr_scheduler=lr_scheduler, val_dataloader=val_dataloader,
+                           checkpoints_dir_path=f"{output_directory}/{experiment_id}/"
+                                                f"{model_checkpoints_directory_name}")
 
     def get_trainer(self):
         """

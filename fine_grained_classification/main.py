@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Add the root folder (Visitor Tracking Utils) as the path to modules.
+sys.path.append(f"{'/'.join(os.getcwd().split('/')[:-1])}")
+
 from fine_grained_classification.config.config import Configuration as config
 from fine_grained_classification.dataloader.common import Dataloader
 from fine_grained_classification.model.common import Model

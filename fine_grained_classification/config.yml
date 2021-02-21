@@ -1,4 +1,9 @@
-# Header, all configurations related to dataloader will be under this header
+# All general configurations will be under this header
+general:
+  output_directory: results
+  experiment_id: test
+
+# All configurations related to dataloader will be under this header
 dataloader:
   name: cub_200_2011  # Name of the dataloader to be used
   download: False  # Flag in order to decide if to download the dataset or not

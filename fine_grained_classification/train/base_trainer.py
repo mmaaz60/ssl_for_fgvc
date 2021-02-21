@@ -1,5 +1,8 @@
 import torch
 from fine_grained_classification.test.base_tester import BaseTester
+import logging
+
+logger = logging.getLogger(f"train/base_trainer.py")
 
 
 class BaseTrainer:
@@ -35,13 +38,14 @@ class BaseTrainer:
             loss.backward()
             self.optimizer.step()
             if (batch_idx % self.log_step == 0) and (batch_idx != 0):
-                print(f"Train Epoch: {epoch}, Step, {batch_idx}/{len(self.dataloader)}, Loss: {total_loss/batch_idx}")
+                logger.info(
+                    f"Train Epoch: {epoch}, Step, {batch_idx}/{len(self.dataloader)}, Loss: {total_loss / batch_idx}")
         self.metrics[epoch] = {}
         self.metrics[epoch]["train"] = {}
-        self.metrics[epoch]["train"]["loss"] = float(total_loss/batch_idx)
+        self.metrics[epoch]["train"]["loss"] = float(total_loss / batch_idx)
         self.metrics[epoch]["train"]["accuracy"] = float(total_correct_predictions) / float(total_predictions)
-        print(f"Epoch {epoch} loss: {self.metrics[epoch]['train']['loss']}, accuracy:, "
-              f"{self.metrics[epoch]['train']['accuracy']}")
+        logger.info(f"Epoch {epoch} loss: {self.metrics[epoch]['train']['loss']}, accuracy:, "
+                    f"{self.metrics[epoch]['train']['accuracy']}")
 
     def train_and_validate(self, start_epoch, end_epoch=None):
         self.model = self.model.to(self.device)

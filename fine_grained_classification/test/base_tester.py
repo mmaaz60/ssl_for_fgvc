@@ -1,4 +1,8 @@
 import torch
+import logging
+
+
+logger = logging.getLogger(f"test/base_tester.py")
 
 
 class BaseTester:
@@ -26,5 +30,5 @@ class BaseTester:
                 total_correct_predictions += torch.sum(preds == labels.data)
             metrics['loss'] = float(total_loss) / len(self.dataloader)
             metrics['accuracy'] = float(total_correct_predictions) / total_predictions
-            print(f"Validation loss: {metrics['loss']}, Validation accuracy: {metrics['accuracy']}")
+            logger.info(f"Validation loss: {metrics['loss']}, Validation accuracy: {metrics['accuracy']}")
         return metrics

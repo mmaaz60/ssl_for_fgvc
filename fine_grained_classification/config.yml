@@ -3,8 +3,8 @@ dataloader:
   name: cub_200_2011  # Name of the dataloader to be used
   download: False  # Flag in order to decide if to download the dataset or not
   root_directory_path: /home/mm/PycharmProjects/SSL_for_FGVC/dataset/CUB_200_2011/  # The root directory path of the dataset
-  resize_width: 448  # Image resize width
-  resize_height: 448  # Image resize height
+  resize_width: 112  # Image resize width
+  resize_height: 112  # Image resize height
   batch_size: 64  # Batch size for training and testing
   shuffle: True  # Either to shuffle the dataset for training or not
   num_workers: 8  # Number of parallel workers to load the dataset
@@ -20,8 +20,10 @@ model:
 # All configurations related to training will be under this header
 train:
   name: base_trainer  # Name of the trainer to use
-  epochs: 1000  # Number of epochs
-  loss_function_path: torch.nn.CrossEntropyLoss  # Loss function
+  epochs: 100  # Number of epochs
+  warm_up_epochs: 1  # Number of warm up epochs
+  warm_up_loss_function_path: torch.nn.CrossEntropyLoss  # Standard cross entropy loss
+  loss_function_path: fine_grained_classification.loss.gb_loss.GBLoss  # Loss function
   # Optimizer related configurations
   optimizer_path: torch.optim.SGD  # Complete optimizer class path
   optimizer_param:

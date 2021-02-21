@@ -43,13 +43,13 @@ class BaseTrainer:
         print(f"Epoch {epoch} loss: {self.metrics[epoch]['train']['loss']}, accuracy:, "
               f"{self.metrics[epoch]['train']['accuracy']}")
 
-    def train_and_validate(self):
+    def train_and_validate(self, start_epoch, end_epoch=None):
         self.model = self.model.to(self.device)
-        for i in range(self.epochs):
-            self.train_epoch(i + 1)
+        for i in range(start_epoch, end_epoch + 1 if end_epoch else self.epochs + 1):
+            self.train_epoch(i)
             if self.validator:
                 val_metrics = self.validator.test(self.model)
-                self.metrics[i+1]["val"] = {}
-                self.metrics[i+1]["val"] = val_metrics
+                self.metrics[i]["val"] = {}
+                self.metrics[i]["val"] = val_metrics
             if self.lr_scheduler:
                 self.lr_scheduler.step()

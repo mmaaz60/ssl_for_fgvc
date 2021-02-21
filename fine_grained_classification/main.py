@@ -16,6 +16,11 @@ if __name__ == "__main__":
     train_loader, test_loader = dataloader.get_loader()
     # Create the model
     model = Model(config=config).get_model()
-    # Create the trainer
+    # Create the trainer and run training
+    warm_up_epochs = config.cfg["train"]["warm_up_epochs"]
+    if warm_up_epochs > 0:
+        trainer = Trainer(config=config, model=model, dataloader=train_loader, val_dataloader=test_loader,
+                          warm_up=True).get_trainer()
+        trainer.train_and_validate(start_epoch=1, end_epoch=warm_up_epochs)
     trainer = Trainer(config=config, model=model, dataloader=train_loader, val_dataloader=test_loader).get_trainer()
-    trainer.train_and_validate()
+    trainer.train_and_validate(start_epoch=warm_up_epochs)

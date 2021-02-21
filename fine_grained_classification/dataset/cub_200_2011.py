@@ -52,23 +52,6 @@ class Cub2002011(Dataset):
                 ]
             )
 
-    @staticmethod
-    def scale_keep_ar_min_fixed(img, fixed_min):
-        ow, oh = img.size
-
-        if ow < oh:
-
-            nw = fixed_min
-
-            nh = nw * oh // ow
-
-        else:
-
-            nh = fixed_min
-
-            nw = nh * ow // oh
-        return img.resize((nw, nh), Image.BICUBIC)
-
     def _load_metadata(self):
         """
         Load the metadata (image list, class list and train/test split) of the CUB_200_2011 dataset

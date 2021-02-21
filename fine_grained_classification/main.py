@@ -19,17 +19,3 @@ if __name__ == "__main__":
     # Create the trainer
     trainer = Trainer(config=config, model=model, dataloader=train_loader, val_dataloader=test_loader).get_trainer()
     trainer.train_and_validate()
-
-    # iterations = 0
-    # with torch.no_grad():
-    #     for train_sample, test_sample in zip(train_loader, test_loader):
-    #         images, label = train_sample
-    #         images = images.to("cuda")
-    #         label = label.to("cuda")
-    #         start = time.time()
-    #         logits = model(images)
-    #         print(f"Batch Inference Time: {(time.time() - start) * 1000} ms")
-    #         iterations += 1
-    #         if iterations == 10:
-    #             break
-    # print("done")

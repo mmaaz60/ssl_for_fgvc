@@ -33,8 +33,8 @@ class Trainer:
         for key, value in dict(model.named_parameters()).items():
             if value.requires_grad:
                 params += [{'params': [value]}]
-        optimizer = optimizer_func(params=params, lr=optimizer_param["lr"], momentum=optimizer_param["momentum"])
-                                   # weight_decay=optimizer_param["weight_decay"])
+        optimizer = optimizer_func(params=params, lr=optimizer_param["lr"], momentum=optimizer_param["momentum"],
+                                   weight_decay=optimizer_param["weight_decay"])
         epochs = config["train"]["epochs"]
         lr_scheduler = LRScheduler(optimizer, step_size=config["train"]["lr_scheduler"]["step_size"],
                                    gamma=config["train"]["lr_scheduler"]["gamma"])

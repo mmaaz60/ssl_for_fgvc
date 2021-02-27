@@ -1,4 +1,4 @@
-from fine_grained_classification.dataset.cub_200_2011 import Cub2002011 as Dataset
+from dataset.cub_200_2011 import Cub2002011 as Dataset
 from torch.utils.data import DataLoader
 
 

@@ -6,7 +6,7 @@ import logging
 sys.path.append(f"{'/'.join(os.getcwd().split('/')[:-1])}")
 
 from fine_grained_classification.config.config import Configuration as config
-from fine_grained_classification.dataloader.common import Dataloader
+from dataloader.common import Dataloader
 from fine_grained_classification.model.common import Model
 from fine_grained_classification.train.common import Trainer
 

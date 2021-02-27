@@ -5,8 +5,6 @@ from torchvision.datasets.utils import download_url
 from torchvision import transforms
 from torch.utils.data import Dataset
 import tarfile
-from PIL import Image
-import torch
 
 
 class Cub2002011(Dataset):

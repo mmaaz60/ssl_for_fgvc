@@ -1,6 +1,7 @@
 import sys
 import os
 import logging
+import shutil
 
 # Add the root folder (Visitor Tracking Utils) as the path to modules.
 sys.path.append(f"{'/'.join(os.getcwd().split('/')[:-1])}")
@@ -11,8 +12,10 @@ from fine_grained_classification.model.common import Model
 from fine_grained_classification.train.common import Trainer
 
 if __name__ == "__main__":
+    # Config path
+    config_path = "./config.yml"
     # Load the configuration file
-    config.load_config("./config.yml")
+    config.load_config(config_path)
     # Read the general configuration parameters
     output_directory = config.cfg["general"]["output_directory"]
     experiment_id = config.cfg["general"]["experiment_id"]
@@ -24,6 +27,8 @@ if __name__ == "__main__":
         print(f"The directory {output_directory}/{experiment_id} already exits. Please delete the directory or change "
               f"the experiment_id in the configuration file.")
         sys.exit(1)
+    # Copy the configuration file to experiment directory
+    shutil.copyfile(config_path, f"{output_directory}/{experiment_id}/{config_path.split('/')[-1]}")
     # Configure the logger
     logging.basicConfig(level=logging.DEBUG,
                         format="%(asctime)s: %(name)-s: %(levelname)-s: %(message)s",

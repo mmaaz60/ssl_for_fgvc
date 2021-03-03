@@ -1,7 +1,7 @@
 # All general configurations will be under this header
 general:
   output_directory: results  # The output directory to save the training progress and results
-  experiment_id: test  # The experiment id
+  experiment_id: exp_3  # The experiment id
   # The name of the model checkpoints directory to save the intermediate model checkpoints
   model_checkpoints_directory_name: checkpoints
 
@@ -35,8 +35,8 @@ dataloader:
       t_2:
         path: torchvision.transforms.Normalize
         param:
-          mean: [ 0.485, 0.456, 0.406 ]
-          std: [ 0.229, 0.224, 0.225 ]
+          mean: [0.485, 0.456, 0.406]
+          std: [0.229, 0.224, 0.225]
 
 # All configurations related to model will be under this header
 model:

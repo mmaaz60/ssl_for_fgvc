@@ -1,0 +1,18 @@
+version: '3.7'
+
+services:
+  ssl_for_fgvc:
+    image: mmaaz60/ssl_for_fgvc:v1
+    volumes:
+      - ./data:/workspace/data
+      - ./fine_grained_classification/config.yml:/workspace/fine_grained_classification/config.yml
+      - ./fine_grained_classification/results:/workspace/fine_grained_classification/results
+    container_name: ssl_fgvc
+    command: /bin/bash -c "cd fine_grained_classification && python main.py"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [ gpu ]
+    shm_size: '32gb'
+    restart: on-failure

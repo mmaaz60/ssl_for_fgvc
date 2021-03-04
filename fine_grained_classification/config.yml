@@ -1,15 +1,15 @@
 # All general configurations will be under this header
 general:
   output_directory: results  # The output directory to save the training progress and results
-  experiment_id: exp_3  # The experiment id
+  experiment_id: test  # The experiment id
   # The name of the model checkpoints directory to save the intermediate model checkpoints
   model_checkpoints_directory_name: checkpoints
 
 # All configurations related to dataloader will be under this header
 dataloader:
   name: cub_200_2011  # Name of the dataloader to be used
-  download: False  # Flag in order to decide if to download the dataset or not
-  root_directory_path: /home/mm/PycharmProjects/SSL_for_FGVC/data/CUB_200_2011/  # The root directory path of the dataset
+  download: True  # Flag in order to decide if to download the dataset or not
+  root_directory_path: ./data/CUB_200_2011  # The root directory path of the dataset
   resize_width: 448  # Image resize width
   resize_height: 448  # Image resize height
   batch_size: 64  # Batch size for training and testing

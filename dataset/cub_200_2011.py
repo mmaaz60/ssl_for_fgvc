@@ -2,7 +2,6 @@ import os
 import pandas as pd
 from torchvision.datasets.folder import default_loader
 from torchvision.datasets.utils import download_url
-from torchvision import transforms
 from torch.utils.data import Dataset
 import tarfile
 
@@ -13,8 +12,7 @@ class Cub2002011(Dataset):
     filename = 'CUB_200_2011.tgz'  # Dataset TGZ file name
     tgz_md5 = '97eceeb196236b17998738112f37df78'  # MD5 signature for the downloaded dataset TGZ file
 
-    def __init__(self, root, train=True, download=True, loader=default_loader, resize_dims=None,
-                 mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)):
+    def __init__(self, root, train=True, download=True, loader=default_loader, resize_dims=None, transform=None):
         """
         Initialize the class variables, download the dataset (if prompted to do so), verify the data presence,
         and load the dataset metadata.
@@ -34,21 +32,7 @@ class Cub2002011(Dataset):
         if not self._check_integrity():
             raise RuntimeError('Dataset not found or corrupted.' +
                                ' You can use download=True to download it')
-        if train:
-            self.transform = transforms.Compose(
-                [
-                    transforms.RandomHorizontalFlip(),
-                    transforms.ToTensor(),
-                    transforms.Normalize(mean=mean, std=std)
-                ]
-            )
-        else:
-            self.transform = transforms.Compose(
-                [
-                    transforms.ToTensor(),
-                    transforms.Normalize(mean=mean, std=std)
-                ]
-            )
+        self.transform = transform
 
     def _load_metadata(self):
         """

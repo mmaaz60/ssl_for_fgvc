@@ -1,16 +1,15 @@
 import os
 import pandas as pd
 from torchvision.datasets.folder import default_loader
-from torchvision.datasets.utils import download_url
+from fine_grained_classification.utils.utils import download_file_from_google_drive
 from torch.utils.data import Dataset
 import tarfile
 
 
 class Cub2002011(Dataset):
     base_folder = 'CUB_200_2011/images'  # Base dataset path
-    url = 'http://www.vision.caltech.edu/visipedia-data/CUB-200-2011/CUB_200_2011.tgz'  # Dataset download URL
+    google_drive_id = '1ZzCyTEYBOGDlHzcKCJqKzHX4SlJFUVEz'  # Google drive ID to download the dataset
     filename = 'CUB_200_2011.tgz'  # Dataset TGZ file name
-    tgz_md5 = '97eceeb196236b17998738112f37df78'  # MD5 signature for the downloaded dataset TGZ file
 
     def __init__(self, root, train=True, download=True, loader=default_loader, resize_dims=None, transform=None):
         """
@@ -77,8 +76,10 @@ class Cub2002011(Dataset):
         if self._check_integrity():
             print("Files already downloaded and verified")
             return
+        if not os.path.exists(self.root):
+            os.makedirs(self.root)
         # Download the data if not downloaded already
-        download_url(self.url, self.root, self.filename, self.tgz_md5)
+        download_file_from_google_drive(self.google_drive_id, os.path.join(self.root, self.filename))
         # Extract the downloaded dataset
         with tarfile.open(os.path.join(self.root, self.filename), "r:gz") as tar:
             tar.extractall(path=self.root)

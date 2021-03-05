@@ -1,0 +1,78 @@
+# All configurations related to dataloader will be under this header
+dataloader:
+  name: cub_200_2011  # Name of the dataloader to be used
+  download: False  # Flag in order to decide if to download the dataset or not
+  root_directory_path: ../data/CUB_200_2011  # The root directory path of the dataset
+  resize_width: 448  # Image resize width
+  resize_height: 448  # Image resize height
+  batch_size: 64  # Batch size for training and testing
+  shuffle: True  # Either to shuffle the dataset for training or not
+  num_workers: 8  # Number of parallel workers to load the dataset
+  # The train and test data transforms
+  transforms:
+    # Train transforms used during training
+    train:
+      t_1:
+        path: torchvision.transforms.RandomHorizontalFlip
+      t_2:
+        path: torchvision.transforms.ToTensor
+      t_3:
+        path: torchvision.transforms.Normalize
+        param:
+          mean: [0.485, 0.456, 0.406]
+          std: [0.229, 0.224, 0.225]
+    # Test transforms used during testing
+    test:
+      t_1:
+        path: torchvision.transforms.ToTensor
+      t_2:
+        path: torchvision.transforms.Normalize
+        param:
+          mean: [0.485, 0.456, 0.406]
+          std: [0.229, 0.224, 0.225]
+
+general:
+  output_directory: results  # The output directory to save the training progress and results
+  experiment_id: train  # The experiment id
+  # The name of the model checkpoints directory to save the intermediate model checkpoints
+  model_checkpoints_directory_name: checkpoints
+
+ssl_train:
+  name: ssl_trainer  # Name of the trainer to use
+  rotaion: True #Set for including rotation augmentation
+  epochs: 100  # Number of epochs
+  warm_up_epochs: 10  # Number of warm up epochs
+  warm_up_loss_function_path: torch.nn.CrossEntropyLoss  # Standard cross entropy loss
+  rot_loss_function_path: torch.nn.CrossEntropyLoss  # Loss function for rotation head
+  class_loss_function_path: fine_grained_classification.loss.gb_loss.GBLoss  # Loss function for fgc
+  # Optimizer related configurations
+  optimizer_path: torch.optim.SGD  # Complete optimizer class path
+  optimizer_param:
+    lr: 0.001  # Learning rate
+    momentum: 0.9  # Momentum
+    weight_decay: 0.0001  # Weight Decay
+  # Learning rate scheduler configurations
+  lr_scheduler:
+    step_size: 50  # Step size
+    gamma: 0.1  # Decay factor
+
+fgc_model:
+  name: torchvision  # Name/source of the model
+  # Complete model class path (i.e. torchvision.models.resnet50, torchvision.models.alexnet, etc.)
+  model_function_path: torchvision.models.resnet50 #Will be changed to a custom model from FGVC dir
+  pretrained: True  # Either to load weights from pretrained imagenet model
+  classes_count: 200  # Number of classes
+
+SSL_model:
+  # SSL_model for a classification task with rotation head attached
+  # Complete model class path (i.e. torchvision.models.resnet50, torchvision.models.alexnet, etc.)
+  model_function_path: torchvision.models.resnet50
+  pretrained: True  # Either to load weights from pretrained imagenet model
+  feature_embedding: 128
+  num_classes_classification: 10 # Number of classes for the classification head
+  num_classes_rotation: 4 # Number of classes for rotation head
+
+pipeline:
+    name: classification # indicates to choose basic classifier, selects basic_classification_model (future work)
+    #name: fine_grained_classification # indicates to choose fine grained classifier for the pipeline, selects fgc_model
+    rotation: True # Set true for SSL training

@@ -5,7 +5,7 @@ dataloader:
   root_directory_path: ../data/CUB_200_2011  # The root directory path of the dataset
   resize_width: 448  # Image resize width
   resize_height: 448  # Image resize height
-  batch_size: 64  # Batch size for training and testing
+  batch_size: 16  # Batch size for training and testing
   shuffle: True  # Either to shuffle the dataset for training or not
   num_workers: 8  # Number of parallel workers to load the dataset
   # The train and test data transforms
@@ -69,8 +69,13 @@ SSL_model:
   model_function_path: torchvision.models.resnet50
   pretrained: True  # Either to load weights from pretrained imagenet model
   feature_embedding: 128
-  num_classes_classification: 10 # Number of classes for the classification head
+  num_classes_classification: 200 # Number of classes for the classification head
   num_classes_rotation: 4 # Number of classes for rotation head
+
+diversification_block:
+  patch_size_diversification: 10
+  alpha: 0.1
+
 
 pipeline:
     name: classification # indicates to choose basic classifier, selects basic_classification_model (future work)

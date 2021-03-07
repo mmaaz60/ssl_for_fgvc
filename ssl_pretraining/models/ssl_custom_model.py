@@ -1,6 +1,6 @@
 import torch.nn as nn
 from fine_grained_classification.utils.utils import get_object_from_path
-from cam_diversification_block.diversification_block import get_CAM, diverse_block
+#from cam_diversification_block.diversification_block import get_CAM, diverse_block
 
 
 class SSLCustomModel(nn.Module):
@@ -39,6 +39,9 @@ class SSLCustomModel(nn.Module):
         # class_specific_maps = get_CAM(x, self.model, self.num_classes_classification)
         # gap_all_classes, activation_all_classes = diverse_block(self.model, class_specific_maps, self.patch_size, self.alpha)
         # features = self.model(activation_all_classes)
+        # y_classification = self.classification_head(gap_all_classes) ( identity)
+        # y_rotation = self.rotation_head(features)
+        # return y_classification, y_rotation
 
         # Model without diverse block
         features = self.model(x)

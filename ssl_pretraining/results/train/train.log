@@ -1,1 +1,2 @@
-03-05 23:08: root: INFO: Starting warp-up training loop using CrossEntropyLoss for 10 epochs.
+03-07 15:08: root: INFO: Starting warp-up training loop using CrossEntropyLoss for 10 epochs.
+03-07 15:08: train/ssl_rot_trainer.py: INFO: Train Epoch: 1, Step, 10/375, Loss: 4.869650363922119

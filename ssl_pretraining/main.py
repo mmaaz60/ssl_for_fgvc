@@ -62,7 +62,7 @@ def main():
                              warm_up=False).get_trainer()
         trainer.train_and_validate(start_epoch=1, end_epoch=warm_up_epochs)
     logging.info(f"Staring fgc training loop "
-                 f"using {config.cfg['ssl_train']['fgc_loss_function_path'].split('.')[-1]} with rotation using"
+                 f"using {config.cfg['ssl_train']['class_loss_function_path'].split('.')[-1]} with rotation using"
                  f"{config.cfg['ssl_train']['rot_loss_function_path'].split('.')[-1]} "
                  f"for {config.cfg['ssl_train']['epochs'] - warm_up_epochs} epochs.")
     trainer = SSLtrainer(config=config, model=model, dataloader=train_loader, val_dataloader=test_loader).get_trainer()

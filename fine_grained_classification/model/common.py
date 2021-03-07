@@ -9,6 +9,8 @@ class Model:
         # Select the correct model
         if config.cfg["model"]["name"] == "torchvision":
             from fine_grained_classification.model.torchvision import TorchVision as Model
+        elif config.cfg["model"]["name"] == "fgvc_resnet":
+            from fine_grained_classification.model.fgvc_resnet import FGVCResnet as Model
         else:
             print(f"Please provide correct model to use in configuration. "
                   f"Available options are ['torchvision']")

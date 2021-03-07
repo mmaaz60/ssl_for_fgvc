@@ -2,3 +2,6 @@ torch~=1.7.1
 torchvision~=0.8.2
 pyyaml~=5.4.1
 pandas~=1.2.2
+pillow~=8.1.2
+scipy~=1.6.1
+requests~=2.25.1

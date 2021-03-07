@@ -3,7 +3,7 @@ import torch
 import torchvision
 import torch.nn as nn
 import torch.nn.functional as F
-from gradcam import GradCAM, GradCAMpp
+from gradcam import GradCAM
 from scipy.stats import bernoulli
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -113,29 +113,3 @@ def diverse_block(model, class_specific_maps, kernel_size, alpha):
         gap_all_classes = torch.stack(gap_activation, dim=1)
 
     return (gap_all_classes, activation_all_classes)
-
-
-
-
-
-class RetBlock(nn.Module):
-    def __init__(self):
-        super(RetBlock, self).__init__()
-        self.model = torchvision.models.resnet18(pretrained=True)
-        self.model.fc = nn.Linear(in_features=self.model.fc.in_features, out_features=128,
-                                  bias=(self.model.fc.bias is not None))
-        self.classification_head = nn.Linear(128, 10)
-        self.rotation_head = nn.Linear(128, 10)
-
-    def forward(self, x):
-        class_specific_maps = get_CAM(x, self.model, 10)
-        gap_all_classes, activation_all_classes = diverse_block(self.model, class_specific_maps, 20, 0.1)
-        features = self.model.fc(activation_all_classes)
-
-        class_outputs = self.classification_head(features)
-        rot_outputs = self.rotation_head(features)
-
-        return class_outputs, rot_outputs
-
-criterion = nn.CrossEntropyLoss()
-

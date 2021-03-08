@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from torchvision.datasets.folder import default_loader
-from fine_grained_classification.utils.utils import download_file_from_google_drive
+from utils.utils import download_file_from_google_drive
 from torch.utils.data import Dataset
 import tarfile
 

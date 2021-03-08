@@ -2,18 +2,14 @@ import sys
 import os
 import logging
 import shutil
-
-# Add the root folder (Visitor Tracking Utils) as the path to modules.
-sys.path.append(f"{'/'.join(os.getcwd().split('/')[:-1])}")
-
-from fine_grained_classification.config.config import Configuration as config
+from config.config import Configuration as config
 from dataloader.common import Dataloader
 from fine_grained_classification.model.common import Model
-from fine_grained_classification.train.common import Trainer
+from train.common import Trainer
 
 if __name__ == "__main__":
     # Config path
-    config_path = "./config.yml"
+    config_path = "config.yml"
     # Load the configuration file
     config.load_config(config_path)
     # Read the general configuration parameters

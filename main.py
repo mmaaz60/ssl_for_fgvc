@@ -2,10 +2,6 @@ import sys
 import os
 import logging
 import shutil
-
-# Add the root folder (Visitor Tracking Utils) as the path to modules.
-sys.path.append(f"{'/'.join(os.getcwd().split('/')[:-1])}")
-
 from config.config import Configuration as config
 from dataloader.common import Dataloader
 from fine_grained_classification.model.common import Model

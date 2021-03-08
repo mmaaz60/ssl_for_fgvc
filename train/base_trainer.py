@@ -1,5 +1,5 @@
 import torch
-from test import BaseTester
+from test.base_tester import BaseTester
 import logging
 
 logger = logging.getLogger(f"train/base_trainer.py")

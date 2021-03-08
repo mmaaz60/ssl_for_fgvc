@@ -8,7 +8,7 @@ class Model:
     def __init__(self, config):
         # Select the correct model
         if config.cfg["model"]["name"] == "torchvision":
-            from fine_grained_classification.model.torchvision import TorchVision as Model
+            from model.torchvision import TorchVision as Model
         else:
             print(f"Please provide correct model to use in configuration. "
                   f"Available options are ['torchvision']")

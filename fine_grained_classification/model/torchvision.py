@@ -1,5 +1,5 @@
 import torch.nn as nn
-from fine_grained_classification.utils.utils import get_object_from_path
+from utils.utils import get_object_from_path
 
 
 class TorchVision(nn.Module):

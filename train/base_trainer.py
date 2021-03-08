@@ -1,5 +1,5 @@
 import torch
-from fine_grained_classification.test.base_tester import BaseTester
+from test import BaseTester
 import logging
 
 logger = logging.getLogger(f"train/base_trainer.py")

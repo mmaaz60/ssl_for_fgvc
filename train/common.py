@@ -1,5 +1,5 @@
 import sys
-from fine_grained_classification.utils.utils import get_object_from_path
+from utils.utils import get_object_from_path
 from torch.optim.lr_scheduler import StepLR as LRScheduler
 import logging
 
@@ -17,7 +17,7 @@ class Trainer:
         self.trainer = None
         # Select the correct model
         if config.cfg["train"]["name"] == "base_trainer":
-            from fine_grained_classification.train.base_trainer import BaseTrainer as Trainer
+            from train import BaseTrainer as Trainer
         else:
             logger.info(f"Please provide correct trainer to use in configuration. "
                         f"Available options are ['base_trainer']")

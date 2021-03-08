@@ -10,7 +10,7 @@ bash install_docker_dependencies.sh
 ```bazaar
 docker login --username=USERNAME
 ```
-3. Update the configuration [config.yml](fine_grained_classification/config.yml).
+3. Update the configuration [config.yml](config.yml).
 4. Update the [docker-compose.yml](docker-compose.yml) if needed.
 5. Run the following command,
 ```bazaar

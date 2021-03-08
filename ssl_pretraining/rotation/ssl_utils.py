@@ -1,6 +1,5 @@
-import torch
 import torch.nn as nn
-from ssl_pretraining.rotation import rotation_utils as rot_utils
+from utils import rotation_utils as rot_utils
 
 
 def preprocess_input_data(images, labels, rotation=True):

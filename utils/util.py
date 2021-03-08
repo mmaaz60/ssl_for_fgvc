@@ -1,5 +1,6 @@
 from importlib import import_module
 import requests
+from utils import rotation_utils as rot_utils
 
 
 def get_object_from_path(path):
@@ -41,3 +42,15 @@ def save_response_content(response, destination):
         for chunk in response.iter_content(CHUNK_SIZE):
             if chunk:  # filter out keep-alive new chunks
                 f.write(chunk)
+
+
+def preprocess_input_data(images, labels, rotation=True):
+    """Preprocess a mini-batch of images."""
+    if rotation:
+        # Create the 4 rotated version of the images; this step increases
+        # the batch size by a multiple of 4.
+        batch_size_in = images.size(0)
+        images = rot_utils.create_4rotations_images(images)
+        labels_rotation = rot_utils.create_rotations_labels(batch_size_in, images.device)
+        labels = labels.repeat(4)
+    return images, labels, labels_rotation

@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from utils.util import get_object_from_path
-from model.fgvc_resnet import CAM
 
 
 class FGVCSSLRotation(nn.Module):

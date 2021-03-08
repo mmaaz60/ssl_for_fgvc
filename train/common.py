@@ -83,8 +83,8 @@ class Trainer:
                 params += [{'params': [value]}]
         optimizer = optimizer_func(params=params, lr=optimizer_param["lr"], momentum=optimizer_param["momentum"],
                                    weight_decay=optimizer_param["weight_decay"])
-        lr_scheduler = LRScheduler(optimizer, step_size=config["ssl_train"]["lr_scheduler"]["step_size"],
-                                   gamma=config["ssl_train"]["lr_scheduler"]["gamma"])
+        lr_scheduler = LRScheduler(optimizer, step_size=config["train"]["lr_scheduler"]["step_size"],
+                                   gamma=config["train"]["lr_scheduler"]["gamma"])
         # Create and return the trainer object
         return Trainer(model=model, dataloader=dataloader, class_loss_function=class_loss_func,
                        rot_loss_function=rot_loss_func, optimizer=optimizer, epochs=epochs,

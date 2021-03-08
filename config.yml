@@ -40,15 +40,17 @@ dataloader:
 
 # All configurations related to model will be under this header
 model:
-  name: torchvision  # Name/source of the model
+  name: fgvc_ssl_rotation  # Name/source of the model
   # Complete model class path (i.e. torchvision.models.resnet50, torchvision.models.alexnet, etc.)
   model_function_path: torchvision.models.resnet18
   pretrained: True  # Either to load weights from pretrained imagenet model
   classes_count: 200  # Number of classes
+  rotation_classes_count: 4  # Number of rotation classes
+  rotation_feature_embedding: 128  # Rotation feature embedding
 
 # All configurations related to training will be under this header
 train:
-  name: base_trainer  # Name of the trainer to use
+  name: ssl_rot_trainer  # Name of the trainer to use
   epochs: 100  # Number of epochs
   warm_up_epochs: 10  # Number of warm up epochs
   warm_up_loss_function_path: torch.nn.CrossEntropyLoss  # Standard cross entropy loss

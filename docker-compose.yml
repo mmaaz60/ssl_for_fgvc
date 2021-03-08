@@ -5,10 +5,10 @@ services:
     image: mmaaz60/ssl_for_fgvc:v1
     volumes:
       - ./data:/workspace/data
-      - ./fine_grained_classification/config.yml:/workspace/fine_grained_classification/config.yml
-      - ./fine_grained_classification/results:/workspace/fine_grained_classification/results
+      - ./config.yml:/workspace/config.yml
+      - ./results:/workspace/results
     container_name: ssl_fgvc
-    command: /bin/bash -c "cd fine_grained_classification && python main.py"
+    command: /bin/bash -c "python main.py"
     deploy:
       resources:
         reservations:

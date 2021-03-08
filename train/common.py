@@ -17,7 +17,7 @@ class Trainer:
         self.trainer = None
         # Select the correct model
         if config.cfg["train"]["name"] == "base_trainer":
-            from train import BaseTrainer as Trainer
+            from train.base_trainer import BaseTrainer as Trainer
         else:
             logger.info(f"Please provide correct trainer to use in configuration. "
                         f"Available options are ['base_trainer']")

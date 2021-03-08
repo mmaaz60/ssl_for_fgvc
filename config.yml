@@ -1,20 +1,20 @@
 # All general configurations will be under this header
 general:
   output_directory: results  # The output directory to save the training progress and results
-  experiment_id: test_docker  # The experiment id
+  experiment_id: test_cpu # The experiment id
   # The name of the model checkpoints directory to save the intermediate model checkpoints
   model_checkpoints_directory_name: checkpoints
 
 # All configurations related to dataloader will be under this header
 dataloader:
   name: cub_200_2011  # Name of the dataloader to be used
-  download: False  # Flag in order to decide if to download the dataset or not
-  root_directory_path: ../data/CUB_200_2011  # The root directory path of the dataset
-  resize_width: 448  # Image resize width
-  resize_height: 448  # Image resize height
-  batch_size: 64  # Batch size for training and testing
+  download: True  # Flag in order to decide if to download the dataset or not
+  root_directory_path: ./data/CUB_200_2011  # The root directory path of the dataset
+  resize_width: 112  # Image resize width
+  resize_height: 112  # Image resize height
+  batch_size: 8  # Batch size for training and testing
   shuffle: True  # Either to shuffle the dataset for training or not
-  num_workers: 8  # Number of parallel workers to load the dataset
+  num_workers: 2  # Number of parallel workers to load the dataset
   # The train and test data transforms
   transforms:
     # Train transforms used during training
@@ -40,19 +40,22 @@ dataloader:
 
 # All configurations related to model will be under this header
 model:
-  name: torchvision  # Name/source of the model
+  name: fgvc_ssl_rotation  # Name/source of the model
   # Complete model class path (i.e. torchvision.models.resnet50, torchvision.models.alexnet, etc.)
   model_function_path: torchvision.models.resnet18
   pretrained: True  # Either to load weights from pretrained imagenet model
   classes_count: 200  # Number of classes
+  rotation_classes_count: 4  # Number of rotation classes
+  rotation_feature_embedding: 128  # Rotation feature embedding
 
 # All configurations related to training will be under this header
 train:
-  name: base_trainer  # Name of the trainer to use
+  name: ssl_rot_trainer  # Name of the trainer to use
   epochs: 100  # Number of epochs
   warm_up_epochs: 10  # Number of warm up epochs
   warm_up_loss_function_path: torch.nn.CrossEntropyLoss  # Standard cross entropy loss
-  loss_function_path: fine_grained_classification.loss.gb_loss.GBLoss  # Loss function
+  loss_function_path: loss.gb_loss.GBLoss  # Loss function
+  rotation_loss_function_path: torch.nn.CrossEntropyLoss  # Standard cross entropy loss for rotation prediction
   # Optimizer related configurations
   optimizer_path: torch.optim.SGD  # Complete optimizer class path
   optimizer_param:

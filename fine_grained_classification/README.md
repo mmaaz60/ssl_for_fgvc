@@ -1,1 +1,0 @@
-# Fine Grained Classification

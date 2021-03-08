@@ -4,7 +4,7 @@ import logging
 import shutil
 from config.config import Configuration as config
 from dataloader.common import Dataloader
-from fine_grained_classification.model.common import Model
+from model.common import Model
 from train.common import Trainer
 
 if __name__ == "__main__":

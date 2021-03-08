@@ -1,7 +1,7 @@
 from dataset.cub_200_2011 import Cub2002011 as Dataset
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from utils.utils import get_object_from_path
+from utils.util import get_object_from_path
 
 
 class Cub2002011:

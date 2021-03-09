@@ -1,7 +1,6 @@
 import torch.nn as nn
 from utils.util import get_object_from_path
 from model.fgvc_resnet import CAM
-from model.fgvc_resnet import FGVCResnet
 
 
 class FGVCSSLRotation(nn.Module):
@@ -26,8 +25,6 @@ class FGVCSSLRotation(nn.Module):
         self.adaptive_pooling = nn.AdaptiveAvgPool2d(3)
         self.flatten = nn.Flatten()
         self.rotation_head = nn.Linear(self.num_classes_classification * 3 * 3, self.num_classes_rot)
-        self.kernel_size = config.cfg["diversification_block"]["patch_size"]
-        self.alpha = config.cfg["diversification_block"]["alpha"]
 
     def forward(self, x):
         """
@@ -36,7 +33,6 @@ class FGVCSSLRotation(nn.Module):
         :return:
         """
         out = self.cam(x)
-        out = FGVCResnet.diversification_block(out, self.kernel_size, self.alpha)
         y_classification = out.mean([2, 3])
         out = self.adaptive_pooling(out)
         out = self.flatten(out)

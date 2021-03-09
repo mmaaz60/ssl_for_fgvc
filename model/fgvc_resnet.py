@@ -1,81 +1,84 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from scipy.stats import bernoulli
 from utils.util import get_object_from_path
 
 
-class FGVCSSLRotation(nn.Module):
-    """
-    This class inherits from nn.Module class
-    """
-
+class FGVCResnet(nn.Module):
     def __init__(self, config):
-        """
-        The function parse the config and initialize the layers of the corresponding model
-        :param config: YML configuration file to parse the parameters from
-        """
-        super(FGVCSSLRotation, self).__init__()  # Call the constructor of the parent class
+        super(FGVCResnet, self).__init__()
         # Parse the configuration parameters
         self.model_function = get_object_from_path(config.cfg["model"]["model_function_path"])  # Model type
         self.pretrained = config.cfg["model"]["pretrained"]  # Either to load weights from pretrained model or not
-        self.num_classes_classification = config.cfg["model"]["classes_count"]   # No. of classes for classification
-        self.num_classes_rot = config.cfg["model"]["rotation_classes_count"]  # No. of classes for rotation head
-        self.feature_embedding = config.cfg["model"]["rotation_feature_embedding"]  # Rotation feature embedding
-        # Load the model
-        self.cam = CAM(self.model_function, self.num_classes_classification, self.pretrained)
-        self.adaptive_pooling = nn.AdaptiveAvgPool2d(3)
-        self.flatten = nn.Flatten()
-        self.rotation_head = nn.Linear(self.num_classes_classification * 3 * 3, self.num_classes_rot)
-        self.kernel_size = config.cfg["diversification_block"]["patch_size"]
-        self.alpha = config.cfg["diversification_block"]["alpha"]
+        self.num_classes = config.cfg["model"]["classes_count"]  # Number of classes
+        self.cam = CAM(self.model_function, self.num_classes, self.pretrained)
 
     @staticmethod
-    def __diversification_block(activation, kernel_size, alpha):
-        activation = activation.detach().clone()
-        p_peak = torch.max(torch.max(activation, 3).values, 2).values
-        rc = torch.bernoulli(p_peak)  # Bernoulli prob for P peak: 0 or 1 randomly for c classes
-        b, c, m, n = activation.shape
+    def __diversification_block(cams, kernel_size, alpha):
+        num_classes = len(cams)
+        activation_all_classes = []
+        for i in range(num_classes):
+            activation = cams[i]
+            rc = activation.max().item()
+            p_peak = bernoulli.rvs(rc, size=1)  # Bernoulli prob for P peak: 0 or 1 randomly for c classes
+            b, c, m, n = activation.shape
+            bc = torch.zeros(m, n)  # Initializing Final suppression mask
 
-        # Peak Suppression
-        pc = torch.zeros_like(activation)  # Mask for peaks for each class
-        pc[activation == torch.unsqueeze(torch.unsqueeze(p_peak, 2), 3)] = 1
-        bc_dash = torch.mul(torch.unsqueeze(torch.unsqueeze(rc, 2), 3), pc)  # Peak suppression mask
+            # Peak Suppression
+            max_ind = ((activation == activation.max()).nonzero(as_tuple=False))
+            pc = bc
+            pc[max_ind[:, 0], max_ind[:, 1]] = 1
+            bc_dash = p_peak * pc  # Peak suppression mask
 
-        # Patch suppression
-        # patching image to G*G patches
-        kernel_size = kernel_size  # G
-        stride = kernel_size  # G*G patch
-        patches = activation.unfold(2, kernel_size, stride).unfold(3, kernel_size, stride)
-        l, k = patches.shape[2], patches.shape[3]
+            # Patch suppression
+            # patching image to G*G patches
+            kernel_size = kernel_size  # G
+            stride = kernel_size  # G*G patch
+            patches = activation.unfold(2, kernel_size, stride).unfold(3, kernel_size, stride)
+            # num_patches = patches.shape[2] * patches.shape[3]
+            l, m = patches.shape[2], patches.shape[3]
 
-        max_patch = torch.max(torch.max(patches, 5).values, 4).values
-        p_patch = torch.bernoulli(max_patch)
-        bc_dd = torch.zeros_like(patches)  # Mask for peaks for each class
-        bc_dd[p_patch == 1] = 1
-        bc_dd = (bc_dd.reshape(b, c, l, k, kernel_size * kernel_size)).permute(0, 1, 4, 2, 3)
-        bc_dd = bc_dd.reshape(b, c, kernel_size * kernel_size, -1)
-        bc_dd_batch = torch.zeros_like(activation)
-        for i in range(b):
-            bc_dd_batch[i] = F.fold(bc_dd[i], (m, n), kernel_size=kernel_size, stride=stride).squeeze(1)
-        bc_dd_batch[activation == torch.unsqueeze(torch.unsqueeze(p_peak, 2), 3)] = 0
-        bc = bc_dash + bc_dd_batch
+            # Patching mask bc''(Bc_dd) to G*G patches (Bc_patch)
+            # p_patch by probability of patch wise maximums
+            max_vals = torch.max(patches[0][0], 3)
+            max_vals = torch.max(max_vals.values, 2)
+            p_patch = max_vals.values.cpu().apply_(lambda x: (bernoulli.rvs(x, size=1)))
+            p_patch_ind = torch.nonzero(torch.tensor(p_patch) == 1, as_tuple=False)
+            bc_dd = bc  # Bc double dash allocating size with zeros
+            bc_patch = bc_dd.unsqueeze(0).unsqueeze(0).unfold(2, kernel_size, stride).unfold(3, kernel_size, stride)
+            # bc_patch[0][0][P_patch_ind[:, 0]][P_patch_ind[:, 1]]=1 # Implementation of bc'' without for loop
+            bc_patch[0][0] = 0
+            for i in range(len(p_patch_ind)):
+                bc_patch[0][0][p_patch_ind[i][0]][p_patch_ind[i][1]] = 1
 
-        # Activation Suppression Factor
-        suppress_ind = ((bc == 1).nonzero(as_tuple=False))
-        activation[suppress_ind[:, 0], suppress_ind[:, 1]] *= alpha
+            # bc_patch folding back Bc''(Bc_dd)
+            bc_patch = (bc_patch.reshape(1, 1, l, m, kernel_size * kernel_size)).permute(0, 1, 4, 2, 3).squeeze(
+                0).squeeze(
+                0)
+            bc_patch = bc_patch.view(kernel_size * kernel_size, -1)
+            bc_dd = F.fold(bc_patch.unsqueeze(0), (m, n), kernel_size=kernel_size, stride=stride)
+            bc_dd = bc_dd.squeeze(0).squeeze(0)
 
-        return activation
+            # bc'' not supressing peak(peak=0)
+            bc_dd[max_ind[:, 0], max_ind[:, 1]] = 0
+
+            # Final Supression Mask Bc
+            bc = bc_dash + bc_dd
+
+            # Activation Supression Factor
+            supress_ind = ((bc == 1).nonzero(as_tuple=False))
+            activation[0][supress_ind[:, 0], supress_ind[:, 1]] *= alpha
+            activation_all_classes = torch.stack(activation.unsqueeze(1), dim=0)
+
+        return activation_all_classes
 
     def forward(self, x):
-        """
-        The function implements the forward pass of the network/model
-        :param x: Batch of inputs (images)
-        :return:
-        """
         out = self.cam(x)
-        out = self.__diversification_block(out, self.kernel_size, self.alpha)
-        y_classification = out.mean([2, 3])
-        return mean
+        # out = self.__diversification_block(out[0], 20, 0.1)
+        out = out.mean([2, 3])
+
+        return out
 
 
 class CAM(nn.Module):
@@ -91,10 +94,6 @@ class CAM(nn.Module):
         feature_map = feature_map.view(b, c, h * w).transpose(1, 2)
         cam = torch.bmm(feature_map, torch.repeat_interleave(self.network.fc_weight, b, dim=0)).transpose(1, 2)
         cam = torch.reshape(cam, [b, self.num_classes, h, w])
-        min_val = torch.min(cam)
-        cam -= min_val
-        max_val = torch.max(cam)
-        cam /= max_val
         return cam
 
 

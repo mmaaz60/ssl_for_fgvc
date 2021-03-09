@@ -54,7 +54,7 @@ train:
   epochs: 100  # Number of epochs
   warm_up_epochs: 10  # Number of warm up epochs
   warm_up_loss_function_path: torch.nn.CrossEntropyLoss  # Standard cross entropy loss
-  loss_function_path: loss.gb_loss.GBLoss  # Loss function
+  class_loss_function_path: loss.gb_loss.GBLoss  # Loss function
   rotation_loss_function_path: torch.nn.CrossEntropyLoss  # Standard cross entropy loss for rotation prediction
   # Optimizer related configurations
   optimizer_path: torch.optim.SGD  # Complete optimizer class path

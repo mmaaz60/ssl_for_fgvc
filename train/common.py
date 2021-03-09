@@ -36,7 +36,7 @@ class Trainer:
         if warm_up:
             loss_func = get_object_from_path(config["train"]["warm_up_loss_function_path"])
         else:
-            loss_func = get_object_from_path(config["train"]["loss_function_path"])
+            loss_func = get_object_from_path(config["train"]["class_loss_function_path"])
         optimizer_func = get_object_from_path(config["train"]["optimizer_path"])
         optimizer_param = config["train"]["optimizer_param"]
         epochs = config["train"]["epochs"]

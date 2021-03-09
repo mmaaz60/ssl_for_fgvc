@@ -11,8 +11,8 @@ class FGVCResnet(nn.Module):
         self.model_function = get_object_from_path(config.cfg["model"]["model_function_path"])  # Model type
         self.pretrained = config.cfg["model"]["pretrained"]  # Either to load weights from pretrained model or not
         self.num_classes = config.cfg["model"]["classes_count"]  # Number of classes
-        self.kernel_size = config.cfg["diversification_block"]["patch_size"]
-        self.alpha = config.cfg["diversification_block"]["alpha"]
+        self.kernel_size = config.cfg["diversification_block"]["patch_size"]  # Patch size to be suppressed
+        self.alpha = config.cfg["diversification_block"]["alpha"]  # Suppression factor
         self.cam = CAM(self.model_function, self.num_classes, self.pretrained)
         self.diversification_block = DiversificationBlock(self.kernel_size, self.alpha)
 

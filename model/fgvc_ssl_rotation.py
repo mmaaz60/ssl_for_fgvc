@@ -21,8 +21,8 @@ class FGVCSSLRotation(nn.Module):
         self.num_classes_classification = config.cfg["model"]["classes_count"]   # No. of classes for classification
         self.num_classes_rot = config.cfg["model"]["rotation_classes_count"]  # No. of classes for rotation head
         self.feature_embedding = config.cfg["model"]["rotation_feature_embedding"]  # Rotation feature embedding
-        self.kernel_size = config.cfg["diversification_block"]["patch_size"]
-        self.alpha = config.cfg["diversification_block"]["alpha"]
+        self.kernel_size = config.cfg["diversification_block"]["patch_size"]  # Patch size to be suppressed
+        self.alpha = config.cfg["diversification_block"]["alpha"]  # Suppression factor]
         # Load the model
         self.cam = CAM(self.model_function, self.num_classes_classification, self.pretrained)
         self.adaptive_pooling = nn.AdaptiveAvgPool2d(3)

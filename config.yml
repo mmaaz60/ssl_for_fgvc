@@ -50,8 +50,8 @@ model:
 
 # Configuration related to the diversification block will be under this head
 diversification_block:
-  patch_size: 3
-  alpha: 0.1
+  patch_size: 3  # Patch size to be suppressed
+  alpha: 0.1  # Suppression factor]
 
 # All configurations related to training will be under this header
 train:

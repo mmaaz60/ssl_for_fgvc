@@ -45,9 +45,11 @@ class Cub2002011:
         resize_width = self.config.cfg["dataloader"]["resize_width"]  # Image resize width
         resize_height = self.config.cfg["dataloader"]["resize_height"]  # Image resize height
         download = self.config.cfg["dataloader"]["download"]  # Either to download the dataset or not
+        train_data_fraction = self.config.cfg["dataloader"]["train_data_fraction"]  # Fraction of dataset for training
         # Load the train dataset
         self.train_dataset = Dataset(root=data_root_directory, train=True, resize_dims=(resize_width, resize_height),
-                                     transform=self.train_transform, download=download)
+                                     transform=self.train_transform, download=download,
+                                     train_data_fraction=train_data_fraction)
         # Load the test dataset
         self.test_dataset = Dataset(root=data_root_directory, train=False, resize_dims=(resize_width, resize_height),
                                     transform=self.test_transform, download=download)

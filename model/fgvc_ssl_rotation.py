@@ -29,14 +29,15 @@ class FGVCSSLRotation(nn.Module):
         self.rotation_head = nn.Linear(self.num_classes_classification * 3 * 3, self.num_classes_rot)
         self.diversification_block = DiversificationBlock(self.kernel_size, self.alpha)
 
-    def forward(self, x):
+    def forward(self, x, db_flag=False):
         """
         The function implements the forward pass of the network/model
         :param x: Batch of inputs (images)
         :return:
         """
         out = self.cam(x)
-        out = self.diversification_block(out)
+        if db_flag:
+            out = self.diversification_block(out)
         y_classification = out.mean([2, 3])
         out = self.adaptive_pooling(out)
         out = self.flatten(out)

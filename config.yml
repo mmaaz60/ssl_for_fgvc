@@ -50,7 +50,8 @@ model:
 # Configuration related to the diversification block will be under this head
 diversification_block:
   patch_size: 3  # Patch size to be suppressed
-  alpha: 0.1  # Suppression factor]
+  alpha: 0.1  # Suppression factor
+  use_during_test: False  # Whether to use diversification block during test or not
 
 # All configurations related to training will be under this header
 train:

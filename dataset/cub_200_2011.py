@@ -11,10 +11,10 @@ class Cub2002011(Dataset):
     google_drive_id = '1ZzCyTEYBOGDlHzcKCJqKzHX4SlJFUVEz'  # Google drive ID to download the dataset
     filename = 'CUB_200_2011.tgz'  # Dataset TGZ file name
 
-    def __init__(self, root, train=True, download=True, loader=default_loader, resize_dims=None, transform=None):
+    def __init__(self, root, train=True, download=True, loader=default_loader, resize_dims=None, transform=None,
+                 train_data_fraction=1):
         """
         Initialize the class variables, download the dataset (if prompted to do so), verify the data presence,
-        and load the dataset metadata.
         :param root: Dataset root path
         :param train: Train dataloader flag (True: Train Dataloader, False: Test Dataloader)
         :param download: Flag set to download the dataset
@@ -25,6 +25,7 @@ class Cub2002011(Dataset):
         self.train = train
         self.loader = loader
         self.resize_dims = resize_dims
+        self.train_data_fraction = train_data_fraction
         if download:
             self._download()
 
@@ -32,6 +33,9 @@ class Cub2002011(Dataset):
             raise RuntimeError('Dataset not found or corrupted.' +
                                ' You can use download=True to download it')
         self.transform = transform
+
+    def __sample_data(self, group):
+        return pd.DataFrame(group.sample(n=int(len(group)*self.train_data_fraction)))
 
     def _load_metadata(self):
         """
@@ -46,9 +50,9 @@ class Cub2002011(Dataset):
 
         data = images.merge(image_class_labels, on='img_id')
         self.data = data.merge(train_test_split, on='img_id')
-
         if self.train:
             self.data = self.data[self.data.is_training_img == 1]
+            self.data = self.data.groupby('target').apply(self.__sample_data)
         else:
             self.data = self.data[self.data.is_training_img == 0]
 

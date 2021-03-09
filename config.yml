@@ -1,7 +1,7 @@
 # All general configurations will be under this header
 general:
   output_directory: results  # The output directory to save the training progress and results
-  experiment_id: test_cpu # The experiment id
+  experiment_id: test # The experiment id
   # The name of the model checkpoints directory to save the intermediate model checkpoints
   model_checkpoints_directory_name: checkpoints
 
@@ -12,7 +12,7 @@ dataloader:
   root_directory_path: ./data/CUB_200_2011  # The root directory path of the dataset
   resize_width: 448  # Image resize width
   resize_height: 448  # Image resize height
-  batch_size: 16  # Batch size for training and testing
+  batch_size: 8  # Batch size for training and testing
   shuffle: True  # Either to shuffle the dataset for training or not
   num_workers: 8  # Number of parallel workers to load the dataset
   # The train and test data transforms

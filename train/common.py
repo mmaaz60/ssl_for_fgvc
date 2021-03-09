@@ -71,6 +71,7 @@ class Trainer:
         else:
             class_loss_func = get_object_from_path(config["train"]["class_loss_function_path"])
             rot_loss_func = get_object_from_path(config["train"]["rotation_loss_function_path"])
+        rotation_loss_weight = config.cfg["train"]["rotation_loss_weight"]
         optimizer_func = get_object_from_path(config["train"]["optimizer_path"])
         optimizer_param = config["train"]["optimizer_param"]
         epochs = config["train"]["epochs"]
@@ -87,10 +88,9 @@ class Trainer:
                                    gamma=config["train"]["lr_scheduler"]["gamma"])
         # Create and return the trainer object
         return Trainer(model=model, dataloader=dataloader, class_loss_function=class_loss_func,
-                       rot_loss_function=rot_loss_func, optimizer=optimizer, epochs=epochs,
-                       lr_scheduler=lr_scheduler, val_dataloader=val_dataloader,
-                       checkpoints_dir_path=f"{output_directory}/{experiment_id}/"
-                                            f"{model_checkpoints_directory_name}")
+                       rot_loss_function=rot_loss_func, rotation_loss_weight=rotation_loss_weight,
+                       optimizer=optimizer, epochs=epochs, lr_scheduler=lr_scheduler, val_dataloader=val_dataloader,
+                       checkpoints_dir_path=f"{output_directory}/{experiment_id}{model_checkpoints_directory_name}")
 
     def get_trainer(self):
         """

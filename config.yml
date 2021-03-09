@@ -60,6 +60,7 @@ train:
   warm_up_loss_function_path: torch.nn.CrossEntropyLoss  # Standard cross entropy loss
   class_loss_function_path: loss.gb_loss.GBLoss  # Loss function
   rotation_loss_function_path: torch.nn.CrossEntropyLoss  # Standard cross entropy loss for rotation prediction
+  rotation_loss_weight: 0.5
   # Optimizer related configurations
   optimizer_path: torch.optim.SGD  # Complete optimizer class path
   optimizer_param:

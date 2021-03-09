@@ -48,6 +48,11 @@ model:
   rotation_classes_count: 4  # Number of rotation classes
   rotation_feature_embedding: 128  # Rotation feature embedding
 
+# Configuration related to the diversification block will be under this head
+diversification_block:
+  patch_size: 3
+  alpha: 0.1
+
 # All configurations related to training will be under this header
 train:
   name: ssl_rot_trainer  # Name of the trainer to use

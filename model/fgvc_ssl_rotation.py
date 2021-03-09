@@ -29,9 +29,10 @@ class FGVCSSLRotation(nn.Module):
         self.rotation_head = nn.Linear(self.num_classes_classification * 3 * 3, self.num_classes_rot)
         self.diversification_block = DiversificationBlock(self.kernel_size, self.alpha)
 
-    def forward(self, x, db_flag=False):
+    def forward(self, x, db_flag=True):
         """
         The function implements the forward pass of the network/model
+        :param db_flag:
         :param x: Batch of inputs (images)
         :return:
         """

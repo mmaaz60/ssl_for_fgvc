@@ -23,8 +23,8 @@ class BaseTester:
                 inputs, labels = d
                 inputs = inputs.to(self.device)
                 labels = labels.to(self.device)
-                if self.include_db_block:
-                    outputs = model(inputs, diversification_block=True)
+                if not self.include_db_block:
+                    outputs = model(inputs, db_flag=False)
                 else:
                     outputs = model(inputs)
                 loss = self.loss(outputs, labels)

@@ -33,8 +33,8 @@ class SSLROTTester:
                 labels = labels.to(self.device)
                 augmented_inputs, augmented_labels, rot_labels = preprocess_input_data(
                     inputs, labels, rotation=True)
-                if self.include_db_block:
-                    class_outputs, rot_outputs = model(augmented_inputs, diversification_block=True)
+                if not self.include_db_block:
+                    class_outputs, rot_outputs = model(augmented_inputs, db_flag=False)
                 else:
                     class_outputs, rot_outputs = model(augmented_inputs)
 

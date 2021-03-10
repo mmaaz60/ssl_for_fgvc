@@ -13,8 +13,10 @@ class FGVCResnet(nn.Module):
         self.num_classes = config.cfg["model"]["classes_count"]  # Number of classes
         self.kernel_size = config.cfg["diversification_block"]["patch_size"]  # Patch size to be suppressed
         self.alpha = config.cfg["diversification_block"]["alpha"]  # Suppression factor
+        self.p_peak = config.cfg["diversification_block"]["p_peak"]
+        self.p_patch = config.cfg["diversification_block"]["p_patch"]
         self.cam = CAM(self.model_function, self.num_classes, self.pretrained)
-        self.diversification_block = DiversificationBlock(self.kernel_size, self.alpha)
+        self.diversification_block = DiversificationBlock(self.kernel_size, self.alpha, self.p_peak, self.p_patch)
 
     def forward(self, x, db_flag=True):
         out = self.cam(x)

@@ -54,8 +54,8 @@ model:
 
 # Configuration related to the diversification block will be under this head
 diversification_block:
-  p_peak: 0.5
-  p_patch: 0.5
+  p_peak: 0.5  # Probability for peak selection
+  p_patch: 0.5  # Probability for patch selection
   patch_size: 3  # Patch size to be suppressed
   alpha: 0.1  # Suppression factor
   use_during_test: False  # Whether to use diversification block during test or not

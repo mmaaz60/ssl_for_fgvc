@@ -22,8 +22,8 @@ class FGVCSSLRotation(nn.Module):
         self.num_classes_rot = config.cfg["model"]["rotation_classes_count"]  # No. of classes for rotation head
         self.kernel_size = config.cfg["diversification_block"]["patch_size"]  # Patch size to be suppressed
         self.alpha = config.cfg["diversification_block"]["alpha"]  # Suppression factor]
-        self.p_peak = config.cfg["diversification_block"]["p_peak"]
-        self.p_patch = config.cfg["diversification_block"]["p_patch"]
+        self.p_peak = config.cfg["diversification_block"]["p_peak"]  # Probability for peak selection
+        self.p_patch = config.cfg["diversification_block"]["p_patch"]  # Probability for peak selection
         # Load the model
         self.cam = CAM(self.model_function, self.num_classes_classification, self.pretrained)
         self.adaptive_pooling = nn.AdaptiveAvgPool2d(3)

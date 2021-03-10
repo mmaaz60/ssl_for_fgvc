@@ -6,7 +6,7 @@ from config.config import Configuration as config
 from dataloader.common import Dataloader
 from model.common import Model
 from train.common import Trainer
-import torch
+# import torch
 
 if __name__ == "__main__":
     # Config path
@@ -45,9 +45,9 @@ if __name__ == "__main__":
     # Create the model
     model = Model(config=config).get_model()
     # Load checkpoints
-    checkpoints_path = "/home/mm/fgvc/experiments/exp_1/epoch_100.pth"
-    checkpoint = torch.load(checkpoints_path)
-    model.load_state_dict(checkpoint['state_dict'])
+    # checkpoints_path = "/home/mm/fgvc/experiments/exp_1/epoch_100.pth"
+    # checkpoint = torch.load(checkpoints_path)
+    # model.load_state_dict(checkpoint['state_dict'])
     # Create the trainer and run training
     warm_up_epochs = config.cfg["train"]["warm_up_epochs"]
     if warm_up_epochs > 0:

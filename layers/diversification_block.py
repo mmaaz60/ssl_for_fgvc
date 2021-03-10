@@ -31,7 +31,7 @@ class DiversificationBlock(nn.Module):
                                                        device=self.device), torch.tensor(self.p_patch)))
         bc_dd = torch.zeros_like(patches)  # Mask for peaks for each class
         bc_dd[p_patch == 1] = 1
-        bc_dd = (bc_dd.reshape(b, c, l, k, kernel_size * gkernel_size)).permute(0, 1, 4, 2, 3)
+        bc_dd = (bc_dd.reshape(b, c, l, k, kernel_size * kernel_size)).permute(0, 1, 4, 2, 3)
         bc_dd = bc_dd.reshape(b, c, kernel_size * kernel_size, -1)
         bc_dd_batch = torch.zeros_like(activation)
         for i in range(b):

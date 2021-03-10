@@ -7,20 +7,22 @@ logger = logging.getLogger(f"train/ssl_rot_trainer.py")
 
 
 class SSLROTTrainer:
-    def __init__(self, model, dataloader, class_loss_function, rot_loss_function, optimizer, epochs,
-                 lr_scheduler=None, val_dataloader=None, device="cuda", log_step=10, checkpoints_dir_path=None):
+    def __init__(self, model, dataloader, class_loss_function, rot_loss_function, rotation_loss_weight, optimizer,
+                 epochs, lr_scheduler=None, val_dataloader=None, device="cuda", log_step=10, checkpoints_dir_path=None,
+                 diversification_test_flag=False):
         self.model = model
         self.dataloader = dataloader
         self.class_loss = class_loss_function()
         self.rot_loss = rot_loss_function()
+        self.rotation_loss_weight = rotation_loss_weight
         self.optimizer = optimizer
         self.epochs = epochs
         self.lr_scheduler = lr_scheduler
         self.device = device
         self.log_step = log_step
         self.checkpoints_dir_path = checkpoints_dir_path
-        self.validator = SSLROTTester(val_dataloader, class_loss_function, rot_loss_function, model) \
-            if val_dataloader else None
+        self.validator = SSLROTTester(val_dataloader, class_loss_function, rot_loss_function, model,
+                                      diversification_block_flag=diversification_test_flag) if val_dataloader else None
         self.metrics = {}
 
     def train_epoch(self, epoch):
@@ -43,7 +45,7 @@ class SSLROTTrainer:
             # computing total loss from loss for classification head and rotation head
             classification_loss = self.class_loss(class_outputs, augmented_labels)
             rot_loss = self.rot_loss(rot_outputs, rot_labels)
-            loss = classification_loss + rot_loss
+            loss = (1 - self.rotation_loss_weight) * classification_loss + self.rotation_loss_weight * rot_loss
             total_loss += loss
 
             # Metrics for classification head - head1

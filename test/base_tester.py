@@ -6,10 +6,11 @@ logger = logging.getLogger(f"test/base_tester.py")
 
 
 class BaseTester:
-    def __init__(self, dataloader, loss_function, device="cuda"):
+    def __init__(self, dataloader, loss_function, device="cuda", diversification_block_flag=False):
         self.dataloader = dataloader
         self.loss = loss_function()
         self.device = device
+        self.include_db_block = diversification_block_flag
 
     def test(self, model):
         metrics = {}
@@ -22,7 +23,10 @@ class BaseTester:
                 inputs, labels = d
                 inputs = inputs.to(self.device)
                 labels = labels.to(self.device)
-                outputs = model(inputs)
+                if not self.include_db_block:
+                    outputs = model(inputs, db_flag=False)
+                else:
+                    outputs = model(inputs)
                 loss = self.loss(outputs, labels)
                 total_loss += loss
                 _, preds = torch.max(outputs, 1)

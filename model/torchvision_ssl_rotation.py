@@ -18,7 +18,6 @@ class TorchvisionSSLRotation(nn.Module):
         self.pretrained = config.cfg["model"]["pretrained"]  # Either to load weights from pretrained model or not
         self.num_classes_classification = config.cfg["model"]["classes_count"]  # No. of classes for classification
         self.num_classes_rot = config.cfg["model"]["rotation_classes_count"]  # No. of classes for rotation head
-        self.feature_embedding = config.cfg["model"]["rotation_feature_embedding"]  # Rotation feature embedding
         # Load the model
         self.model = self.model_function(pretrained=self.pretrained)
         net_list = list(self.model.children())

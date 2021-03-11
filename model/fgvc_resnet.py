@@ -40,10 +40,6 @@ class CAM(nn.Module):
         feature_map = feature_map.view(b, c, h * w).transpose(1, 2)
         cam = torch.bmm(feature_map, torch.repeat_interleave(self.network.fc_weight, b, dim=0)).transpose(1, 2)
         cam = torch.reshape(cam, [b, self.num_classes, h, w])
-        min_val, min_args = torch.min(cam, dim=2, keepdim=True)
-        cam -= min_val
-        max_val, max_args = torch.max(cam, dim=2, keepdim=True)
-        cam /= max_val
 
         return cam
 

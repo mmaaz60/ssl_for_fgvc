@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 from layers.diversification_block import DiversificationBlock
 from utils.util import get_object_from_path
@@ -28,25 +27,8 @@ class FGVCResnet(nn.Module):
 
 
 class CAM(nn.Module):
-    def __init__(self, model_function, num_classes, pretrained):
-        super(CAM, self).__init__()
-        self.num_classes = num_classes
-        self.network = ResNet(model_function, self.num_classes, pretrained)
-
-    def forward(self, x):
-        feature_map, _ = self.network(x)
-        # Generate class activation map
-        b, c, h, w = feature_map.size()
-        feature_map = feature_map.view(b, c, h * w).transpose(1, 2)
-        cam = torch.bmm(feature_map, torch.repeat_interleave(self.network.fc_weight, b, dim=0)).transpose(1, 2)
-        cam = torch.reshape(cam, [b, self.num_classes, h, w])
-
-        return cam
-
-
-class ResNet(nn.Module):
     def __init__(self, model_function, num_classes, pretrained=True):
-        super(ResNet, self).__init__()
+        super(CAM, self).__init__()
         net = model_function(pretrained=pretrained)
         net.fc = nn.Linear(in_features=net.fc.in_features, out_features=num_classes, bias=(net.fc.bias is not None))
         net_list = list(net.children())
@@ -54,10 +36,9 @@ class ResNet(nn.Module):
         self.feature_extractor = nn.Sequential(*net_list[:-2])
         self.fc_layer = net_list[-1]
         self.fc_weight = nn.Parameter(self.fc_layer.weight.t().unsqueeze(0))
-        self.conv = nn.Conv2d(in_channels=2048, out_channels=2048, kernel_size=3, padding=True)
+        self.conv = nn.Conv2d(in_channels=2048, out_channels=num_classes, kernel_size=1)
 
     def forward(self, x):
         feature_map = self.feature_extractor(x)
         conv_out = self.conv(feature_map)
-        output = self.fc_layer(conv_out.mean([2, 3]))
-        return conv_out, output
+        return conv_out

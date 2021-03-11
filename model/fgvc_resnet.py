@@ -54,8 +54,10 @@ class ResNet(nn.Module):
         self.feature_extractor = nn.Sequential(*net_list[:-2])
         self.fc_layer = net_list[-1]
         self.fc_weight = nn.Parameter(self.fc_layer.weight.t().unsqueeze(0))
+        self.conv = nn.Conv2d(in_channels=2048, out_channels=2048, kernel_size=1)
 
     def forward(self, x):
         feature_map = self.feature_extractor(x)
+        conv_out = self.conv(feature_map)
         output = self.fc_layer(feature_map.mean([2, 3]))
-        return feature_map, output
+        return conv_out, output

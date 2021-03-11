@@ -9,13 +9,13 @@ general:
 dataloader:
   name: cub_200_2011  # Name of the dataloader to be used
   # Fraction of training data to be used for current training, it may by 0.1 or 0.2 for semi-supervised fine tuning
-  train_data_fraction: 1
-  test_data_fraction: 1  # Fraction of test data to be used during current training
+  train_data_fraction: 0.1
+  test_data_fraction: 0.1  # Fraction of test data to be used during current training
   download: True  # Flag in order to decide if to download the dataset or not
   root_directory_path: ./data/CUB_200_2011  # The root directory path of the dataset
-  resize_width: 112  # Image resize width
-  resize_height: 112  # Image resize height
-  batch_size: 8  # Batch size for training and testing
+  resize_width: 448  # Image resize width
+  resize_height: 448  # Image resize height
+  batch_size: 32  # Batch size for training and testing
   shuffle: True  # Either to shuffle the dataset for training or not
   num_workers: 8  # Number of parallel workers to load the dataset
   # The train and test data transforms
@@ -25,8 +25,10 @@ dataloader:
       t_1:
         path: torchvision.transforms.RandomHorizontalFlip
       t_2:
-        path: torchvision.transforms.ToTensor
+        path: torchvision.transforms.RandomVerticalFlip
       t_3:
+        path: torchvision.transforms.ToTensor
+      t_4:
         path: torchvision.transforms.Normalize
         param:
           mean: [0.485, 0.456, 0.406]
@@ -52,6 +54,8 @@ model:
 
 # Configuration related to the diversification block will be under this head
 diversification_block:
+  p_peak: 0.5  # Probability for peak selection
+  p_patch: 0.5  # Probability for patch selection
   patch_size: 3  # Patch size to be suppressed
   alpha: 0.1  # Suppression factor
   use_during_test: False  # Whether to use diversification block during test or not
@@ -75,3 +79,4 @@ train:
   lr_scheduler:
     step_size: 50  # Step size
     gamma: 0.1  # Decay factor
+

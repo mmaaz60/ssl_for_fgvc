@@ -30,12 +30,9 @@ class CAM(nn.Module):
     def __init__(self, model_function, num_classes, pretrained=True):
         super(CAM, self).__init__()
         net = model_function(pretrained=pretrained)
-        net.fc = nn.Linear(in_features=net.fc.in_features, out_features=num_classes, bias=(net.fc.bias is not None))
         net_list = list(net.children())
 
         self.feature_extractor = nn.Sequential(*net_list[:-2])
-        self.fc_layer = net_list[-1]
-        self.fc_weight = nn.Parameter(self.fc_layer.weight.t().unsqueeze(0))
         self.conv = nn.Conv2d(in_channels=2048, out_channels=num_classes, kernel_size=1)
 
     def forward(self, x):

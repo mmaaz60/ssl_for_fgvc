@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   ssl_for_fgvc:
-    image: mmaaz60/ssl_for_fgvc:v1
+    image: mmaaz60/ssl_for_fgvc:v1.08
     volumes:
       - ./data:/workspace/data
       - ./config.yml:/workspace/config.yml

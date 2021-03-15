@@ -28,7 +28,7 @@ class FGVCSSLRotation(nn.Module):
         self.cam = CAM(self.model_function, self.num_classes_classification, self.pretrained)
         self.adaptive_pooling = nn.AdaptiveAvgPool2d(3)
         self.flatten = nn.Flatten()
-        self.rotation_head = nn.Linear(self.num_classes_classification * 14 * 14, self.num_classes_rot)
+        self.rotation_head = nn.Linear(self.num_classes_classification * 3 * 3, self.num_classes_rot)
         self.diversification_block = DiversificationBlock(self.kernel_size, self.alpha, self.p_peak, self.p_patch)
 
     def forward(self, x, db_flag=True):
@@ -42,7 +42,7 @@ class FGVCSSLRotation(nn.Module):
         if db_flag:
             out = self.diversification_block(out)
         y_classification = out.mean([2, 3])
-        # out = self.adaptive_pooling(out)
+        out = self.adaptive_pooling(out)
         out = self.flatten(out)
         y_rotation = self.rotation_head(out)
         return y_classification, y_rotation

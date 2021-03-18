@@ -7,7 +7,7 @@ logger = logging.getLogger(f"train/base_trainer.py")
 
 class BaseTrainer:
     def __init__(self, model, dataloader, loss_function, optimizer, epochs,
-                 lr_scheduler=None, val_dataloader=None, device="cuda", log_step=10, checkpoints_dir_path=None,
+                 lr_scheduler=None, val_dataloader=None, device="cuda", log_step=50, checkpoints_dir_path=None,
                  diversification_test_flag=False):
         self.model = model
         self.dataloader = dataloader
@@ -18,8 +18,7 @@ class BaseTrainer:
         self.device = device
         self.log_step = log_step
         self.checkpoints_dir_path = checkpoints_dir_path
-        self.validator = BaseTester(val_dataloader, loss_function,
-                                    diversification_block_flag=diversification_test_flag) if val_dataloader else None
+        self.validator = BaseTester(val_dataloader, loss_function) if val_dataloader else None
         self.metrics = {}
 
     def train_epoch(self, epoch):

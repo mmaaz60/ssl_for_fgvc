@@ -16,9 +16,9 @@ class FGVCResnet(nn.Module):
         self.cam = CAM(self.model_function, self.num_classes, self.pretrained)
         self.diversification_block = DiversificationBlock(self.kernel_size, self.alpha)
 
-    def forward(self, x, db_flag=True):
+    def forward(self, x, train=True):
         out = self.cam(x)
-        if db_flag:
+        if train:
             out = self.diversification_block(out)
         out = out.mean([2, 3])
 

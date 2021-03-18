@@ -1,6 +1,7 @@
 from importlib import import_module
 import requests
 from utils import rotation_utils as rot_utils
+import torch
 
 
 def get_object_from_path(path):
@@ -54,3 +55,13 @@ def preprocess_input_data(images, labels, rotation=True):
         labels_rotation = rot_utils.create_rotations_labels(batch_size_in, images.device)
         labels = labels.repeat(4)
     return images, labels, labels_rotation
+
+
+def load_vissl_weights(model, checkpoints_path):
+    checkpoint = torch.load(checkpoints_path)
+    updated_checkpoints_dict = {}
+    for key in checkpoint:
+        updated_checkpoints_dict[f"model.{key}"] = checkpoint[key]
+    model.load_state_dict(checkpoint, strict=False)
+
+    return model

@@ -15,7 +15,7 @@ dataloader:
   root_directory_path: ./data/CUB_200_2011  # The root directory path of the dataset
   resize_width: 448  # Image resize width
   resize_height: 448  # Image resize height
-  batch_size: 32  # Batch size for training and testing
+  batch_size: 8  # Batch size for training and testing
   shuffle: True  # Either to shuffle the dataset for training or not
   num_workers: 8  # Number of parallel workers to load the dataset
   # The train and test data transforms
@@ -45,12 +45,14 @@ dataloader:
 
 # All configurations related to model will be under this header
 model:
-  name: fgvc_resnet  # Name/source of the model
+  name: torchvision  # Name/source of the model
   # Complete model class path (i.e. torchvision.models.resnet50, torchvision.models.alexnet, etc.)
   model_function_path: torchvision.models.resnet50
   pretrained: True  # Either to load weights from pretrained imagenet model
   classes_count: 200  # Number of classes
   rotation_classes_count: 4  # Number of rotation classes
+  # Path to load pre-trained weights from
+  checkpoints_path: /home/mm/Desktop/MBZUAI/Semester_1/ML701/Project/Post_MidTerm/Contrastive_Learning/Pretrained_Weights/converted_vissl_pirl_imagenet.torch
 
 # Configuration related to the diversification block will be under this head
 diversification_block:

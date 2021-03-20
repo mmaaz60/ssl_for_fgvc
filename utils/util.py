@@ -62,6 +62,6 @@ def load_vissl_weights(model, checkpoints_path):
     updated_checkpoints_dict = {}
     for key in checkpoint:
         updated_checkpoints_dict[f"model.{key}"] = checkpoint[key]
-    model.load_state_dict(checkpoint, strict=False)
+    model.load_state_dict(updated_checkpoints_dict, strict=False)
 
     return model

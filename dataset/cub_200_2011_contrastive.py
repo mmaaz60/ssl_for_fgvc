@@ -34,7 +34,9 @@ class Cub2002011Contrastive(Dataset):
             raise RuntimeError('Dataset not found or corrupted.' +
                                ' You can use download=True to download it')
         self.transform = transform
-        self.contrastive_transforms = contrastive_transforms
+        self.contrastive_transform = None
+        if contrastive_transforms is not None:
+            self.contrastive_transform = contrastive_transforms()
 
     def __sample_data_train(self, group):
         return pd.DataFrame(group.sample(n=int(len(group)*self.train_data_fraction)))
@@ -119,8 +121,8 @@ class Cub2002011Contrastive(Dataset):
         if self.transform is not None:
             o = self.transform(img)
         if self.train:
-            if self.contrastive_transforms is not None:
-                t_1, t_2 = self.contrastive_transforms(img)
+            if self.contrastive_transform is not None:
+                t_1, t_2 = self.contrastive_transform(img)
                 # Return the original image tensor, transformed image tensors, and target/label corresponding to
                 # original image
             return o, t_1, t_2, target

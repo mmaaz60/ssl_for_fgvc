@@ -27,7 +27,7 @@ class TorchvisionSSLBarlowTwins(nn.Module):
                                              out_features=self.num_classes_classification,
                                              bias=(self.model.fc.bias is not None))
         # Barlow twins
-        projector = "8192-8192-8192"
+        projector = "1024-512-128"
         sizes = [2048] + list(map(int, projector.split('-')))
         layers = []
         for i in range(len(sizes) - 2):
@@ -36,6 +36,7 @@ class TorchvisionSSLBarlowTwins(nn.Module):
             layers.append(nn.ReLU(inplace=True))
         layers.append(nn.Linear(sizes[-2], sizes[-1], bias=False))
         self.projector = nn.Sequential(*layers)
+        self.flatten = nn.Flatten()
         # normalization layer for the representations z1 and z2
         self.bn = nn.BatchNorm1d(sizes[-1], affine=False)
         self.scale_loss = 1 / 32
@@ -56,16 +57,17 @@ class TorchvisionSSLBarlowTwins(nn.Module):
         features = self.flatten(features)
         y_classification = self.classification_head(features)
         # Barlow twins
-        bt_loss = None
         if train:
-            z_1 = self.projector(self.feature_extractor(t_1))
-            z_2 = self.projector(self.feature_extractor(t_2))
+            z_1 = self.projector(self.flatten(self.feature_extractor(t_1)))
+            z_2 = self.projector(self.flatten(self.feature_extractor(t_2)))
             c = self.bn(z_1).T @ self.bn(z_2)
             on_diag = torch.diagonal(c).add_(-1).pow_(2).sum().mul(self.scale_loss)
             off_diag = off_diagonal(c).pow_(2).sum().mul(self.scale_loss)
             bt_loss = on_diag + self.lambd * off_diag
 
-        return y_classification, bt_loss
+            return y_classification, bt_loss
+        else:
+            return y_classification
 
 
 def off_diagonal(x):

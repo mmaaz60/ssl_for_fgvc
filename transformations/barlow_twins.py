@@ -1,5 +1,5 @@
 import random
-from PIL import ImageOps, ImageFilter
+from PIL import Image, ImageOps, ImageFilter
 import torchvision.transforms as transforms
 
 

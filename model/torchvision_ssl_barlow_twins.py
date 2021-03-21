@@ -18,7 +18,6 @@ class TorchvisionSSLBarlowTwins(nn.Module):
         self.model_function = get_object_from_path(config.cfg["model"]["model_function_path"])  # Model type
         self.pretrained = config.cfg["model"]["pretrained"]  # Either to load weights from pretrained model or not
         self.num_classes_classification = config.cfg["model"]["classes_count"]  # No. of classes for classification
-        self.num_classes_rot = config.cfg["model"]["rotation_classes_count"]  # No. of classes for rotation head
         # Load the model and initialize layers related to original classification task
         self.model = self.model_function(pretrained=self.pretrained)
         net_list = list(self.model.children())
@@ -42,11 +41,11 @@ class TorchvisionSSLBarlowTwins(nn.Module):
         self.scale_loss = 1 / 32
         self.lambd = 3.9e-3
 
-    def forward(self, x, t1, t2, train=True):
+    def forward(self, x, t_1=None, t_2=None, train=True):
         """
         The function implements the forward pass of the network/model
-        :param t2:
-        :param t1:
+        :param t_2:
+        :param t_1:
         :param train:
         :param x: Batch of inputs (images)
         :return:
@@ -59,8 +58,8 @@ class TorchvisionSSLBarlowTwins(nn.Module):
         # Barlow twins
         bt_loss = None
         if train:
-            z_1 = self.projector(self.feature_extractor(t1))
-            z_2 = self.projector(self.feature_extractor(t2))
+            z_1 = self.projector(self.feature_extractor(t_1))
+            z_2 = self.projector(self.feature_extractor(t_2))
             c = self.bn(z_1).T @ self.bn(z_2)
             on_diag = torch.diagonal(c).add_(-1).pow_(2).sum().mul(self.scale_loss)
             off_diag = off_diagonal(c).pow_(2).sum().mul(self.scale_loss)

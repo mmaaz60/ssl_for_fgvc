@@ -43,7 +43,6 @@ class Trainer:
         output_directory = config["general"]["output_directory"]
         experiment_id = config["general"]["experiment_id"]
         model_checkpoints_directory_name = config["general"]["model_checkpoints_directory_name"]
-        diversification_test_flag = config["diversification_block"]["use_during_test"]
         params = []
         for key, value in dict(model.named_parameters()).items():
             if value.requires_grad:
@@ -56,8 +55,7 @@ class Trainer:
         return Trainer(model=model, dataloader=dataloader, loss_function=loss_func, optimizer=optimizer,
                        epochs=epochs, lr_scheduler=lr_scheduler, val_dataloader=val_dataloader,
                        checkpoints_dir_path=f"{output_directory}/{experiment_id}/"
-                                            f"{model_checkpoints_directory_name}",
-                       diversification_test_flag=diversification_test_flag)
+                                            f"{model_checkpoints_directory_name}")
 
     @staticmethod
     def __get_ssl_rot_trainer(config, model, dataloader, val_dataloader=None, warm_up=False):
@@ -80,7 +78,6 @@ class Trainer:
         output_directory = config["general"]["output_directory"]
         experiment_id = config["general"]["experiment_id"]
         model_checkpoints_directory_name = config["general"]["model_checkpoints_directory_name"]
-        diversification_test_flag = config["diversification_block"]["use_during_test"]
         params = []
         for key, value in dict(model.named_parameters()).items():
             if value.requires_grad:
@@ -93,8 +90,7 @@ class Trainer:
         return Trainer(model=model, dataloader=dataloader, class_loss_function=class_loss_func,
                        rot_loss_function=rot_loss_func, rotation_loss_weight=rotation_loss_weight,
                        optimizer=optimizer, epochs=epochs, lr_scheduler=lr_scheduler, val_dataloader=val_dataloader,
-                       checkpoints_dir_path=f"{output_directory}/{experiment_id}/{model_checkpoints_directory_name}",
-                       diversification_test_flag=diversification_test_flag)
+                       checkpoints_dir_path=f"{output_directory}/{experiment_id}/{model_checkpoints_directory_name}")
 
     def get_trainer(self):
         """

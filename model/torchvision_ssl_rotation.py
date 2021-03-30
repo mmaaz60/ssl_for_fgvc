@@ -27,9 +27,10 @@ class TorchvisionSSLRotation(nn.Module):
         self.rotation_head = nn.Linear(in_features=self.model.fc.in_features, out_features=self.num_classes_rot,
                                        bias=(self.model.fc.bias is not None))
 
-    def forward(self, x):
+    def forward(self, x, train=True):
         """
         The function implements the forward pass of the network/model
+        :param train:
         :param x: Batch of inputs (images)
         :return:
         """

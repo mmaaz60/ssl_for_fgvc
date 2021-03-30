@@ -13,8 +13,8 @@ dataloader:
   test_data_fraction: 1  # Fraction of test data to be used during current training
   download: True  # Flag in order to decide if to download the dataset or not
   root_directory_path: ./data/CUB_200_2011  # The root directory path of the dataset
-  resize_width: 600  # Image resize width
-  resize_height: 600  # Image resize height
+  resize_width: 200  # Image resize width
+  resize_height: 200  # Image resize height
   batch_size: 8  # Batch size for training and testing
   shuffle: True  # Either to shuffle the dataset for training or not
   num_workers: 4  # Number of parallel workers to load the dataset
@@ -25,7 +25,7 @@ dataloader:
       t_1:
         path: torchvision.transforms.RandomCrop
         param:
-          size: 448
+          size: 112
       t_2:
         path: torchvision.transforms.RandomHorizontalFlip
       t_3:
@@ -40,7 +40,7 @@ dataloader:
       t_1:
         path: torchvision.transforms.RandomCrop
         param:
-          size: 448
+          size: 112
       t_2:
         path: torchvision.transforms.ToTensor
       t_3:

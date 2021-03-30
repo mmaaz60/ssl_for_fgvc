@@ -1,7 +1,7 @@
 import torch
 from test.ssl_rot_tester import SSLROTTester
 import logging
-from utils.util import preprocess_input_data
+from utils.util import preprocess_input_data_rotation
 
 logger = logging.getLogger(f"train/ssl_rot_trainer.py")
 
@@ -38,7 +38,7 @@ class SSLROTTrainer:
             inputs, labels = d
             inputs = inputs.to(self.device)
             labels = labels.to(self.device)
-            augmented_inputs, augmented_labels, rot_labels = preprocess_input_data(
+            augmented_inputs, augmented_labels, rot_labels = preprocess_input_data_rotation(
                 inputs, labels, rotation=True)
             class_outputs, rot_outputs = self.model(augmented_inputs)
 

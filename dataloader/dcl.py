@@ -7,36 +7,32 @@ import torch
 
 def collate_train(batch):
     imgs = []
-    label = []
-    label_swap = []
-    law_swap = []
-    img_name = []
+    target = []
+    target_jigsaw = []
+    patch_labels = []
     for sample in batch:
         imgs.append(sample[0])
         imgs.append(sample[1])
-        label.append(sample[2])
-        label.append(sample[2])
+        target.append(sample[2])
+        target.append(sample[2])
         if sample[3] == -1:
-            label_swap.append(1)
-            label_swap.append(0)
+            target_jigsaw.append(1)
+            target_jigsaw.append(0)
         else:
-            label_swap.append(sample[2])
-            label_swap.append(sample[3])
-        law_swap.append(sample[4])
-        law_swap.append(sample[5])
-        img_name.append(sample[-1])
-    return torch.stack(imgs, 0), label, label_swap, law_swap, img_name
+            target_jigsaw.append(sample[2])
+            target_jigsaw.append(sample[3])
+        patch_labels.append(sample[4])
+        patch_labels.append(sample[5])
+    return torch.stack(imgs, 0), target, target_jigsaw, patch_labels
 
 
 def collate_test(batch):
     imgs = []
-    label = []
-    img_name = []
+    target = []
     for sample in batch:
         imgs.append(sample[0])
-        label.append(sample[1])
-        img_name.append(sample[-1])
-    return torch.stack(imgs, 0), label, img_name
+        target.append(sample[1])
+    return torch.stack(imgs, 0), target
 
 
 class DCL:

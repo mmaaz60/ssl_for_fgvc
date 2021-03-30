@@ -29,10 +29,13 @@ class TorchVisionSSLDCL(nn.Module):
         classifier = self.avg_pool(feat)
         classifier = self.flatten(classifier)
         cls_classifier = self.cls_classifier(classifier)
-        adv_classifier = self.adv_classifier(classifier)
-        jigsaw_mask = self.conv_mask(feat)
-        jigsaw_mask = self.avg_pool_1(jigsaw_mask)
-        jigsaw_mask = self.relu(jigsaw_mask)
-        jigsaw_mask = self.flatten(jigsaw_mask)
+        if train:
+            adv_classifier = self.adv_classifier(classifier)
+            jigsaw_mask = self.conv_mask(feat)
+            jigsaw_mask = self.avg_pool_1(jigsaw_mask)
+            jigsaw_mask = self.relu(jigsaw_mask)
+            jigsaw_mask = self.flatten(jigsaw_mask)
 
-        return [cls_classifier, adv_classifier, jigsaw_mask]
+            return [cls_classifier, adv_classifier, jigsaw_mask]
+        else:
+            return cls_classifier

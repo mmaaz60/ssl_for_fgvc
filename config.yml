@@ -7,75 +7,53 @@ general:
 
 # All configurations related to dataloader will be under this header
 dataloader:
-  name: cub_200_2011  # Name of the dataloader to be used
+  name: dcl  # Name of the dataloader to be used
   # Fraction of training data to be used for current training, it may by 0.1 or 0.2 for semi-supervised fine tuning
   train_data_fraction: 0.1
   test_data_fraction: 0.1  # Fraction of test data to be used during current training
   download: True  # Flag in order to decide if to download the dataset or not
   root_directory_path: ./data/CUB_200_2011  # The root directory path of the dataset
-  resize_width: 200  # Image resize width
-  resize_height: 200  # Image resize height
   batch_size: 8  # Batch size for training and testing
   shuffle: True  # Either to shuffle the dataset for training or not
   num_workers: 2  # Number of parallel workers to load the dataset
   # The train and test data transforms
   transforms:
-    # Train transforms used during training
-    train:
+    # Common transforms for dcl
+    common:
       t_1:
-        path: torchvision.transforms.RandomCrop
-        param:
-          size: 112
-      t_2:
-        path: torchvision.transforms.RandomHorizontalFlip
-      t_3:
-        path: torchvision.transforms.ToTensor
-      t_4:
-        path: torchvision.transforms.Normalize
-        param:
-          mean: [0.485, 0.456, 0.406]
-          std: [0.229, 0.224, 0.225]
-    # Test transforms used during testing
-    test:
+        path: transforms.dcl.CommonTransforms
+    # Jigsaw transform for dcl
+    jigsaw:
       t_1:
-        path: torchvision.transforms.RandomCrop
-        param:
-          size: 112
-      t_2:
-        path: torchvision.transforms.ToTensor
-      t_3:
-        path: torchvision.transforms.Normalize
-        param:
-          mean: [0.485, 0.456, 0.406]
-          std: [0.229, 0.224, 0.225]
+        path: transforms.dcl.JigsawTransform
+    # Final transformations for dcl training
+    final_train:
+      t_1:
+        path: transforms.dcl.FinalTransformTrain
+    # Final transformations for dcl testing
+    final_test:
+      t_1:
+        path: transforms.dcl.FinalTransformTest
 
 # All configurations related to model will be under this header
 model:
-  name: torchvision  # Name/source of the model
+  name: dcl  # Name/source of the model
   # Complete model class path (i.e. torchvision.models.resnet50, torchvision.models.alexnet, etc.)
   model_function_path: torchvision.models.resnet50
   pretrained: True  # Either to load weights from pretrained imagenet model
   classes_count: 200  # Number of classes
-  rotation_classes_count: 4  # Number of rotation classes
   # Path to load pre-trained weights from
   checkpoints_path:
 
-# Configuration related to the diversification block will be under this head
-diversification_block:
-  p_peak: 0.5  # Probability for peak selection
-  p_patch: 0.5  # Probability for patch selection
-  patch_size: 3  # Patch size to be suppressed
-  alpha: 0.1  # Suppression factor
-
 # All configurations related to training will be under this header
 train:
-  name: base_trainer  # Name of the trainer to use
+  name: dcl_trainer  # Name of the trainer to use
   epochs: 100  # Number of epochs
   warm_up_epochs: 10  # Number of warm up epochs
   warm_up_loss_function_path: torch.nn.CrossEntropyLoss  # Standard cross entropy loss
-  class_loss_function_path: loss.gb_loss.GBLoss  # Loss function
-  rotation_loss_function_path: torch.nn.CrossEntropyLoss  # Standard cross entropy loss for rotation prediction
-  rotation_loss_weight: 0.2
+  class_loss_function_path: torch.nn.CrossEntropyLoss  # Class Loss function
+  adv_loss_function_path: torch.nn.CrossEntropyLoss  # Adversarial Loss function
+  jigsaw_loss_function_path: torch.nn.L1Loss  # Jigsaw patch loss
   # Optimizer related configurations
   optimizer_path: torch.optim.SGD  # Complete optimizer class path
   optimizer_param:
@@ -86,4 +64,3 @@ train:
   lr_scheduler:
     step_size: 50  # Step size
     gamma: 0.1  # Decay factor
-

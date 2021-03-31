@@ -109,6 +109,8 @@ class Trainer:
             cls_loss_func = get_object_from_path(config["train"]["class_loss_function_path"])
             adv_loss_func = get_object_from_path(config["train"]["adv_loss_function_path"])
         jigsaw_loss_func = get_object_from_path(config["train"]["jigsaw_loss_function_path"])
+        use_adv = config["train"]["use_adv"]
+        use_jigsaw = config["train"]["use_jigsaw"]
         optimizer_func = get_object_from_path(config["train"]["optimizer_path"])
         optimizer_param = config["train"]["optimizer_param"]
         epochs = config["train"]["epochs"]
@@ -125,9 +127,10 @@ class Trainer:
                                    gamma=config["train"]["lr_scheduler"]["gamma"])
         # Create and return the trainer object
         return Trainer(model=model, dataloader=dataloader, cls_loss_function=cls_loss_func,
-                       adv_loss_function=adv_loss_func, jigsaw_loss_function=jigsaw_loss_func,
-                       optimizer=optimizer, epochs=epochs, lr_scheduler=lr_scheduler, test_dataloader=val_dataloader,
-                       checkpoints_dir_path=f"{output_directory}/{experiment_id}/{model_checkpoints_directory_name}")
+                       adv_loss_function=adv_loss_func, jigsaw_loss_function=jigsaw_loss_func, use_adv=use_adv,
+                       use_jigsaw=use_jigsaw, optimizer=optimizer, epochs=epochs, lr_scheduler=lr_scheduler,
+                       test_dataloader=val_dataloader, checkpoints_dir_path=f"{output_directory}/{experiment_id}/"
+                                                                            f"{model_checkpoints_directory_name}")
 
     def get_trainer(self):
         """

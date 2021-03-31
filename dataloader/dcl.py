@@ -116,9 +116,9 @@ class DCL:
         num_workers = self.config.cfg["dataloader"]["num_workers"]  # Number of workers to load the dataset
         # Create the train dataloader
         train_dataloader = DataLoader(dataset=self.train_dataset, batch_size=batch_size, collate_fn=collate_train,
-                                      shuffle=shuffle, num_workers=num_workers)
+                                      shuffle=shuffle, num_workers=num_workers, pin_memory=True)
         # Create the test dataloader
         test_dataloader = DataLoader(dataset=self.test_dataset, batch_size=batch_size, collate_fn=collate_test,
-                                     shuffle=shuffle, num_workers=num_workers)
+                                     num_workers=num_workers, pin_memory=True)
         # Return train and test dataloader
         return train_dataloader, test_dataloader

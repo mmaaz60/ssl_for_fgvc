@@ -97,11 +97,10 @@ class FinalTransformTrain:
 
 
 class FinalTransformTest:
-    def __init__(self, resize_dims=(512, 512), crop_dims=(512, 512),
+    def __init__(self, crop_dims=(512, 512),
                  mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)):
         self.transform = transforms.Compose([
-            transforms.Resize(resize_dims),
-            transforms.CenterCrop(crop_dims),
+            transforms.Resize(crop_dims),
             transforms.ToTensor(),
             transforms.Normalize(mean, std)
         ])

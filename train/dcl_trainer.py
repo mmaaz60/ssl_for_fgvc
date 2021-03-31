@@ -1,6 +1,8 @@
 import torch
 from test.base_tester import BaseTester
 import logging
+from torch.autograd import Variable
+import numpy as np
 
 logger = logging.getLogger(f"train/base_trainer.py")
 
@@ -30,8 +32,9 @@ class DCLTrainer:
         for batch_idx, d in enumerate(self.dataloader):
             inputs, labels, labels_jigsaw, patch_labels = d
             inputs = inputs.to(self.device)
-            labels, labels_jigsaw = labels.to(self.device), labels_jigsaw.to(self.device)
-            patch_labels = patch_labels.to(self.device)
+            labels = Variable(torch.from_numpy(np.array(labels))).to(self.device)
+            labels_jigsaw = Variable(torch.from_numpy(np.array(labels_jigsaw))).to(self.device)
+            patch_labels = Variable(torch.from_numpy(np.array(patch_labels))).to(self.device)
             cls_outputs, adv_outputs, jigsaw_mask_outputs = self.model(inputs)
             cls_loss = self.cls_loss(cls_outputs, labels)
             adv_loss = self.adv_loss(adv_outputs, labels_jigsaw)

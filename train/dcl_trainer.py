@@ -4,7 +4,7 @@ import logging
 from torch.autograd import Variable
 import numpy as np
 
-logger = logging.getLogger(f"train/base_trainer.py")
+logger = logging.getLogger(f"train/dcl_trainer.py")
 
 
 class DCLTrainer:

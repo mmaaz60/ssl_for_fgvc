@@ -1,5 +1,7 @@
 import torch
 import logging
+from torch.autograd import Variable
+import numpy as np
 
 
 logger = logging.getLogger(f"test/base_tester.py")
@@ -21,7 +23,7 @@ class BaseTester:
             for batch_idx, d in enumerate(self.dataloader):
                 inputs, labels = d
                 inputs = inputs.to(self.device)
-                labels = labels.to(self.device)
+                labels = Variable(torch.from_numpy(np.array(labels))).to(self.device)
                 outputs = model(inputs, train=False)
                 loss = self.loss(outputs, labels)
                 total_loss += loss

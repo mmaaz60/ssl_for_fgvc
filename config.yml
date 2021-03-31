@@ -65,6 +65,8 @@ train:
   adv_loss_function_path: torch.nn.CrossEntropyLoss  # Adversarial Loss function
   jigsaw_loss_function_path: torch.nn.L1Loss  # Jigsaw patch loss
   rotation_loss_function_path: torch.nn.CrossEntropyLoss  # Only valid for rotation trainer
+  use_adv: True # Decides if adversarial of dcl must be used
+  use_jigsaw: True # Decides if reconstruction of dcl must be usedgit
   rotation_loss_weight: 0.2  # Only valid for rotation trainer
   # Optimizer related configurations
   optimizer_path: torch.optim.SGD  # Complete optimizer class path

@@ -1,5 +1,5 @@
 import torch
-from test.base_tester import BaseTester
+from test.dcl_tester import DCLTester
 import logging
 from torch.autograd import Variable
 import numpy as np
@@ -24,7 +24,7 @@ class DCLTrainer:
         self.device = device
         self.log_step = log_step
         self.checkpoints_dir_path = checkpoints_dir_path
-        self.validator = BaseTester(test_dataloader, cls_loss_function) if test_dataloader else None
+        self.validator = DCLTester(test_dataloader, cls_loss_function) if test_dataloader else None
         self.metrics = {}
 
     def train_epoch(self, epoch):

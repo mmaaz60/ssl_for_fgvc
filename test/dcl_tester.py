@@ -1,11 +1,12 @@
 import torch
 import logging
+from torch.autograd import Variable
+import numpy as np
+
+logger = logging.getLogger(f"test/ssl_dcl_tester.py")
 
 
-logger = logging.getLogger(f"test/base_tester.py")
-
-
-class BaseTester:
+class DCLTester:
     def __init__(self, dataloader, loss_function, device="cuda"):
         self.dataloader = dataloader
         self.loss = loss_function()
@@ -21,8 +22,9 @@ class BaseTester:
             for batch_idx, d in enumerate(self.dataloader):
                 inputs, labels = d
                 inputs = inputs.to(self.device)
-                labels = labels.to(self.device)
-                outputs = model(inputs, train=False)
+                labels = Variable(torch.from_numpy(np.array(labels))).to(self.device)
+                cls_outputs, adv_outputs = model(inputs, train=False)
+                outputs = cls_outputs + adv_outputs[:, 0:200] + adv_outputs[:, 200:2 * 200]
                 loss = self.loss(outputs, labels)
                 total_loss += loss
                 _, preds = torch.max(outputs, 1)

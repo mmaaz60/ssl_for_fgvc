@@ -42,13 +42,11 @@ class DCLTrainer:
             cls_loss = self.cls_loss(cls_outputs, labels)
             adv_loss = self.adv_loss(adv_outputs, labels_jigsaw)
             jigsaw_loss = self.jigsaw_loss(jigsaw_mask_outputs, patch_labels)
-            if use_adv:
-                if use_jigsaw:
-                    loss = cls_loss + adv_loss + jigsaw_loss
-                else:
-                    loss = cls_loss + adv_loss
-            else:
-                loss = cls_loss
+            loss = cls_loss
+            if self.use_adv:
+                loss += adv_loss
+            if self.use_jigsaw:
+                loss += jigsaw_loss
             total_loss += loss
             _, preds = torch.max(cls_outputs, 1)
             total_predictions += len(preds)

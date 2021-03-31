@@ -22,7 +22,7 @@ class TorchVisionSSLDCL(nn.Module):
                                    padding=0, bias=True)
         self.avg_pool_1 = nn.AvgPool2d(2, stride=2)
         self.flatten = nn.Flatten()
-        self.relu = nn.ReLU()
+        self.tan_h = nn.Tanh()
 
     def forward(self, x, train=True):
         feat = self.feature_extractor(x)
@@ -33,7 +33,7 @@ class TorchVisionSSLDCL(nn.Module):
             adv_classifier = self.adv_classifier(classifier)
             jigsaw_mask = self.conv_mask(feat)
             jigsaw_mask = self.avg_pool_1(jigsaw_mask)
-            jigsaw_mask = self.relu(jigsaw_mask)
+            jigsaw_mask = self.tan_h(jigsaw_mask)
             jigsaw_mask = self.flatten(jigsaw_mask)
 
             return [cls_classifier, adv_classifier, jigsaw_mask]

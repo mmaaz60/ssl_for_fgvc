@@ -119,8 +119,18 @@ class Trainer:
         for key, value in dict(model.named_parameters()).items():
             if value.requires_grad:
                 params += [{'params': [value]}]
-        optimizer = optimizer_func(params=params, lr=optimizer_param["lr"], momentum=optimizer_param["momentum"],
-                                   weight_decay=optimizer_param["weight_decay"])
+        base_lr = optimizer_param["lr"]
+        momentum = optimizer_param["momentum"]
+        ignored_params1 = list(map(id, model.cls_classifier.parameters()))
+        ignored_params2 = list(map(id, model.adv_classifier.parameters()))
+        ignored_params3 = list(map(id, model.conv_mask.parameters()))
+        ignored_params = ignored_params1 + ignored_params2 + ignored_params3
+        base_params = filter(lambda p: id(p) not in ignored_params, model.parameters())
+        optimizer = optimizer_func([{'params': base_params},
+                                    {'params': model.cls_classifier.parameters(), 'lr': 10 * base_lr},
+                                    {'params': model.adv_classifier.parameters(), 'lr': 10 * base_lr},
+                                    {'params': model.conv_mask.parameters(), 'lr': 10 * base_lr},
+                                    ], lr=base_lr, momentum=momentum)
         lr_scheduler = LRScheduler(optimizer, step_size=config["train"]["lr_scheduler"]["step_size"],
                                    gamma=config["train"]["lr_scheduler"]["gamma"])
         # Create and return the trainer object

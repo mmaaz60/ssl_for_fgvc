@@ -8,13 +8,16 @@ logger = logging.getLogger(f"train/dcl_trainer.py")
 
 
 class DCLTrainer:
-    def __init__(self, model, dataloader, cls_loss_function, adv_loss_function, jigsaw_loss_function, optimizer, epochs,
-                 lr_scheduler=None, test_dataloader=None, device="cuda", log_step=50, checkpoints_dir_path=None):
+    def __init__(self, model, dataloader, cls_loss_function, adv_loss_function, jigsaw_loss_function, use_adv,
+                 use_jigsaw, optimizer, epochs, lr_scheduler=None, test_dataloader=None, device="cuda", log_step=50,
+                 checkpoints_dir_path=None):
         self.model = model
         self.dataloader = dataloader
         self.cls_loss = cls_loss_function()
         self.adv_loss = adv_loss_function()
         self.jigsaw_loss = jigsaw_loss_function()
+        self.use_adv = use_adv
+        self.use_jigsaw = use_jigsaw
         self.optimizer = optimizer
         self.epochs = epochs
         self.lr_scheduler = lr_scheduler
@@ -39,7 +42,13 @@ class DCLTrainer:
             cls_loss = self.cls_loss(cls_outputs, labels)
             adv_loss = self.adv_loss(adv_outputs, labels_jigsaw)
             jigsaw_loss = self.jigsaw_loss(jigsaw_mask_outputs, patch_labels)
-            loss = cls_loss + adv_loss + jigsaw_loss
+            if use_adv:
+                if use_jigsaw:
+                    loss = cls_loss + adv_loss + jigsaw_loss
+                else:
+                    loss = cls_loss + adv_loss
+            else:
+                loss = cls_loss
             total_loss += loss
             _, preds = torch.max(cls_outputs, 1)
             total_predictions += len(preds)

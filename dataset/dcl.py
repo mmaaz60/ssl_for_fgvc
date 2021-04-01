@@ -40,8 +40,8 @@ class DCL(Cub2002011):
                                      for i in range(original_patch_range)]
             img_jigsaw = self.jigsaw_transform(img) if self.jigsaw_transform is not None else img
             img_jigsaw_list = get_image_crops(img_jigsaw, self.crop_patch_size)
-            original_stats = [sum(ImageStat.Stat(im)._getmean()) for im in img_original_list]
-            jigsaw_stats = [sum(ImageStat.Stat(im)._getmean()) for im in img_jigsaw_list]
+            original_stats = [sum(ImageStat.Stat(im).mean) for im in img_original_list]
+            jigsaw_stats = [sum(ImageStat.Stat(im).mean) for im in img_jigsaw_list]
             jigsaw_patch_labels = []
             for jigsaw_stat in jigsaw_stats:
                 distance = [abs(jigsaw_stat - original_stat) for original_stat in original_stats]

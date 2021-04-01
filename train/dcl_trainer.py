@@ -37,7 +37,7 @@ class DCLTrainer:
             inputs = inputs.to(self.device)
             labels = Variable(torch.from_numpy(np.array(labels))).to(self.device)
             labels_jigsaw = Variable(torch.from_numpy(np.array(labels_jigsaw))).to(self.device)
-            patch_labels = Variable(torch.from_numpy(np.array(patch_labels))).to(self.device)
+            patch_labels = Variable(torch.from_numpy(np.array(patch_labels))).float().to(self.device)
             cls_outputs, adv_outputs, jigsaw_mask_outputs = self.model(inputs)
             cls_loss = self.cls_loss(cls_outputs, labels)
             adv_loss = self.adv_loss(adv_outputs, labels_jigsaw)
@@ -68,7 +68,7 @@ class DCLTrainer:
         self.model = self.model.to(self.device)
         for i in range(start_epoch, end_epoch + 1 if end_epoch else self.epochs + 1):
             self.train_epoch(i)
-            if self.validator:
+            if self.validator and i % 5 == 0:  # Validate/Test after every 5 epochs
                 val_metrics = self.validator.test(self.model)
                 self.metrics[i]["val"] = {}
                 self.metrics[i]["val"] = val_metrics

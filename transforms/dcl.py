@@ -62,11 +62,11 @@ class RandomSwap(object):
 
 
 class CommonTransforms:
-    def __init__(self, resize_dims=(512, 512)):
+    def __init__(self, resize_dims=(512, 512), crop_dims=(448, 448)):
         self.transform = transforms.Compose([
             transforms.Resize(resize_dims),
             transforms.RandomRotation(degrees=15),
-            transforms.RandomCrop(resize_dims),
+            transforms.RandomCrop(crop_dims),
             transforms.RandomHorizontalFlip()
         ])
 

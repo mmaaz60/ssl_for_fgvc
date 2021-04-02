@@ -123,6 +123,7 @@ class Trainer:
                 params += [{'params': [value]}]
         base_lr = optimizer_param["lr"]
         momentum = optimizer_param["momentum"]
+        weight_decay = optimizer_param["weight_decay"]
         ignored_params1 = list(map(id, model.cls_classifier.parameters()))
         ignored_params2 = list(map(id, model.adv_classifier.parameters()))
         ignored_params3 = list(map(id, model.conv_mask.parameters()))
@@ -132,7 +133,7 @@ class Trainer:
                                     {'params': model.cls_classifier.parameters(), 'lr': 10 * base_lr},
                                     {'params': model.adv_classifier.parameters(), 'lr': 10 * base_lr},
                                     {'params': model.conv_mask.parameters(), 'lr': 10 * base_lr},
-                                    ], lr=base_lr, momentum=momentum)
+                                    ], lr=base_lr, momentum=momentum, weight_decay=weight_decay)
         lr_scheduler = LRScheduler(optimizer, step_size=config["train"]["lr_scheduler"]["step_size"],
                                    gamma=config["train"]["lr_scheduler"]["gamma"])
         # Create and return the trainer object

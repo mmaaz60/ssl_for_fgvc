@@ -23,8 +23,8 @@ class DCLTester:
                 inputs, labels = d
                 inputs = inputs.to(self.device)
                 labels = Variable(torch.from_numpy(np.array(labels))).long().to(self.device)
-                cls_outputs, adv_outputs = model(inputs, train=False)
-                outputs = cls_outputs + adv_outputs[:, 0:200] + adv_outputs[:, 200:2 * 200]
+                cls_outputs = model(inputs, train=False)
+                outputs = cls_outputs
                 loss = self.loss(outputs, labels)
                 total_loss += loss
                 _, preds = torch.max(outputs, 1)

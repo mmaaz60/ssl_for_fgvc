@@ -1,7 +1,6 @@
 import random
 from PIL import Image
 from utils.util import get_image_crops
-import torchvision.transforms as transforms
 
 
 def swap(img, crop):
@@ -59,52 +58,3 @@ class RandomSwap(object):
 
     def __repr__(self):
         return self.__class__.__name__ + '(size={0})'.format(self.size)
-
-
-class CommonTransforms:
-    def __init__(self, resize_dims=(512, 512), crop_dims=(448, 448)):
-        self.transform = transforms.Compose([
-            transforms.Resize(resize_dims),
-            transforms.RandomRotation(degrees=15),
-            transforms.RandomCrop(crop_dims),
-            transforms.RandomHorizontalFlip()
-        ])
-
-    def __call__(self, x):
-        return self.transform(x)
-
-
-class JigsawTransform:
-    def __init__(self, jigsaw_patch_size=(7, 7)):
-        self.transform = transforms.Compose([
-            RandomSwap(jigsaw_patch_size)
-        ])
-
-    def __call__(self, x):
-        return self.transform(x)
-
-
-class FinalTransformTrain:
-    def __init__(self, crop_dims=(448, 448), mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)):
-        self.transform = transforms.Compose([
-            transforms.Resize(crop_dims),
-            transforms.ToTensor(),
-            transforms.Normalize(mean, std)
-        ])
-
-    def __call__(self, x):
-        return self.transform(x)
-
-
-class FinalTransformTest:
-    def __init__(self, resize_dims=(512, 512), crop_dims=(448, 448),
-                 mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)):
-        self.transform = transforms.Compose([
-            transforms.Resize(resize_dims),
-            transforms.CenterCrop(crop_dims),
-            transforms.ToTensor(),
-            transforms.Normalize(mean, std)
-        ])
-
-    def __call__(self, x):
-        return self.transform(x)

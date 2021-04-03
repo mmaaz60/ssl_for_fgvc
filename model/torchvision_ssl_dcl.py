@@ -29,8 +29,8 @@ class TorchVisionSSLDCL(nn.Module):
         classifier = self.avg_pool(feat)
         classifier = self.flatten(classifier)
         cls_classifier = self.cls_classifier(classifier)
-        adv_classifier = self.adv_classifier(classifier)
         if train:
+            adv_classifier = self.adv_classifier(classifier)
             jigsaw_mask = self.conv_mask(feat)
             jigsaw_mask = self.avg_pool_1(jigsaw_mask)
             jigsaw_mask = self.tan_h(jigsaw_mask)
@@ -38,4 +38,4 @@ class TorchVisionSSLDCL(nn.Module):
 
             return [cls_classifier, adv_classifier, jigsaw_mask]
         else:
-            return [cls_classifier, adv_classifier]
+            return cls_classifier

@@ -9,13 +9,13 @@ general:
 dataloader:
   name: dcl  # Name of the dataloader to be used
   # Fraction of training data to be used for current training, it may by 0.1 or 0.2 for semi-supervised fine tuning
-  train_data_fraction: 0.05
-  test_data_fraction: 0.05  # Fraction of test data to be used during current training
+  train_data_fraction: 1
+  test_data_fraction: 1  # Fraction of test data to be used during current training
   download: True  # Flag in order to decide if to download the dataset or not
   root_directory_path: ./data/CUB_200_2011  # The root directory path of the dataset
   resize_width: 600  # Image resize width
   resize_height: 600  # Image resize height
-  batch_size: 2  # Batch size for training and testing
+  batch_size: 8  # Batch size for training and testing
   shuffle: True  # Either to shuffle the dataset for training or not
   num_workers: 16  # Number of parallel workers to load the dataset
   # The train and test data transforms

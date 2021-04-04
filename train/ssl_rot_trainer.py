@@ -1,14 +1,14 @@
 import torch
 from test.ssl_rot_tester import SSLROTTester
 import logging
-from utils.util import preprocess_input_data
+from utils.util import preprocess_input_data_rotation
 
 logger = logging.getLogger(f"train/ssl_rot_trainer.py")
 
 
 class SSLROTTrainer:
     def __init__(self, model, dataloader, class_loss_function, rot_loss_function, rotation_loss_weight, optimizer,
-                 epochs, lr_scheduler=None, val_dataloader=None, device="cuda", log_step=10, checkpoints_dir_path=None,
+                 epochs, lr_scheduler=None, val_dataloader=None, device="cuda", log_step=50, checkpoints_dir_path=None,
                  diversification_test_flag=False):
         self.model = model
         self.dataloader = dataloader
@@ -21,8 +21,8 @@ class SSLROTTrainer:
         self.device = device
         self.log_step = log_step
         self.checkpoints_dir_path = checkpoints_dir_path
-        self.validator = SSLROTTester(val_dataloader, class_loss_function, rot_loss_function, model,
-                                      diversification_block_flag=diversification_test_flag) if val_dataloader else None
+        self.validator = SSLROTTester(val_dataloader, class_loss_function, rot_loss_function, model) \
+            if val_dataloader else None
         self.metrics = {}
 
     def train_epoch(self, epoch):
@@ -38,7 +38,7 @@ class SSLROTTrainer:
             inputs, labels = d
             inputs = inputs.to(self.device)
             labels = labels.to(self.device)
-            augmented_inputs, augmented_labels, rot_labels = preprocess_input_data(
+            augmented_inputs, augmented_labels, rot_labels = preprocess_input_data_rotation(
                 inputs, labels, rotation=True)
             class_outputs, rot_outputs = self.model(augmented_inputs)
 

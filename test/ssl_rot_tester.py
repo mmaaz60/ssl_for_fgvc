@@ -1,19 +1,17 @@
 import torch
 import logging
-from utils.util import preprocess_input_data
+from utils.util import preprocess_input_data_rotation
 
 logger = logging.getLogger(f"test/ssl_rot_tester.py")
 
 
 class SSLROTTester:
-    def __init__(self, dataloader, class_loss_function, rot_loss_function, model, device="cuda",
-                 diversification_block_flag=False):
+    def __init__(self, dataloader, class_loss_function, rot_loss_function, model, device="cuda"):
         self.dataloader = dataloader
         self.class_loss = class_loss_function()
         self.rot_loss = rot_loss_function()
         self.device = device
         self.model = model
-        self.include_db_block = diversification_block_flag
 
     def test(self, model):
         metrics = {}
@@ -31,12 +29,9 @@ class SSLROTTester:
                 inputs, labels = d
                 inputs = inputs.to(self.device)
                 labels = labels.to(self.device)
-                augmented_inputs, augmented_labels, rot_labels = preprocess_input_data(
+                augmented_inputs, augmented_labels, rot_labels = preprocess_input_data_rotation(
                     inputs, labels, rotation=True)
-                if not self.include_db_block:
-                    class_outputs, rot_outputs = model(augmented_inputs, db_flag=False)
-                else:
-                    class_outputs, rot_outputs = model(augmented_inputs)
+                class_outputs, rot_outputs = model(augmented_inputs, train=False)
 
                 # computing total loss from loss for classification head and rotation head
                 classification_loss = self.class_loss(class_outputs, augmented_labels)

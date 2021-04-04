@@ -6,6 +6,7 @@ from config.config import Configuration as config
 from dataloader.common import Dataloader
 from model.common import Model
 from train.common import Trainer
+from utils.util import load_vissl_weights
 
 if __name__ == "__main__":
     # Config path
@@ -43,6 +44,12 @@ if __name__ == "__main__":
     train_loader, test_loader = dataloader.get_loader()
     # Create the model
     model = Model(config=config).get_model()
+    # Load pre-trained weights if required
+    try:
+        checkpoints_path = config.cfg["model"]["checkpoints_path"]
+        model = load_vissl_weights(model, checkpoints_path)
+    except Exception as e:
+        pass
     # Create the trainer and run training
     warm_up_epochs = config.cfg["train"]["warm_up_epochs"]
     if warm_up_epochs > 0:

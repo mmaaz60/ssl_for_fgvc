@@ -4,7 +4,7 @@ import torch.nn.functional as F
 
 
 class DiversificationBlock(nn.Module):
-    def __init__(self, kernel_size=3, alpha=0.1, p_peak=0.5, p_patch=0.5, device="cuda"):
+    def __init__(self, kernel_size, alpha, p_peak=0.5, p_patch=0.5, device="cuda"):
         super(DiversificationBlock, self).__init__()
         self.kernel_size = kernel_size
         self.alpha = alpha

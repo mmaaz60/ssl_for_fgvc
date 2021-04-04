@@ -54,7 +54,7 @@ class RandomSwap(object):
         self.ran = swap_range
 
     def __call__(self, img):
-        return swap(img, self.size)
+        return swap(img, self.size, self.ran)
 
     def __repr__(self):
         return self.__class__.__name__ + '(size={0})'.format(self.size)

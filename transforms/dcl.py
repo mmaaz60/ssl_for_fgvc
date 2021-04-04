@@ -3,7 +3,7 @@ from PIL import Image
 from utils.util import get_image_crops
 
 
-def swap(img, crop):
+def swap(img, crop, ran):
     width_cut, hight_cut = img.size
     img = img.crop((10, 10, width_cut - 10, hight_cut - 10))
     images = get_image_crops(img, crop)
@@ -12,7 +12,6 @@ def swap(img, crop):
     count_x = 0
     count_y = 0
     k = 1
-    ran = 2
     for i in range(crop[1] * crop[0]):
         tmp_x.append(images[i])
         count_x += 1
@@ -50,11 +49,12 @@ def swap(img, crop):
 
 
 class RandomSwap(object):
-    def __init__(self, size):
+    def __init__(self, size, swap_range):
         self.size = size
+        self.ran = swap_range
 
     def __call__(self, img):
-        return swap(img, self.size)
+        return swap(img, self.size, self.ran)
 
     def __repr__(self):
         return self.__class__.__name__ + '(size={0})'.format(self.size)

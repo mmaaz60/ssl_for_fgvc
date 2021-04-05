@@ -38,7 +38,8 @@ class DCL(Cub2002011):
             original_patch_range = self.crop_patch_size[0] * self.crop_patch_size[1]
             original_patch_labels = [(i - (original_patch_range // 2)) / original_patch_range
                                      for i in range(original_patch_range)]
-            img_jigsaw = self.jigsaw_transform(img) if self.jigsaw_transform is not None else img
+            original_patch_labels_cls = list(range(1, original_patch_range + 1))
+            img_jigsaw, jigsaw_ind = self.jigsaw_transform(img) if self.jigsaw_transform is not None else img
             img_jigsaw_list = get_image_crops(img_jigsaw, self.crop_patch_size)
             original_stats = [sum(ImageStat.Stat(im).mean) for im in img_original_list]
             jigsaw_stats = [sum(ImageStat.Stat(im).mean) for im in img_jigsaw_list]
@@ -50,7 +51,7 @@ class DCL(Cub2002011):
             img_jigsaw = self.final_transform(img_jigsaw) if self.final_transform is not None else img_jigsaw
             target_jigsaw = target + self.num_classes
             img_original = self.final_transform(img_original) if self.final_transform is not None else img_original
-            return img_original, img_jigsaw, target, target_jigsaw, original_patch_labels, jigsaw_patch_labels
+            return img_original, img_jigsaw, target, target_jigsaw, original_patch_labels_cls, jigsaw_ind
         else:
             # Apply the transforms if the transformations are specified
             if self.final_transform is not None:

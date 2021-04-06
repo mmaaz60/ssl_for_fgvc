@@ -7,7 +7,8 @@ from PIL import ImageStat
 
 class DCL(Cub2002011):
     def __init__(self, root, train=True, download=True, crop_patch_size=(7, 7), num_classes=200, common_transform=None,
-                 jigsaw_transform=None, final_transform=None, train_data_fraction=1, test_data_fraction=1):
+                 jigsaw_transform=None, final_transform=None, train_data_fraction=1, test_data_fraction=1,
+                 class_type=None):
         """
         Initialize the class variables, download the dataset (if prompted to do so), verify the data presence,
         :param root: Dataset root path
@@ -21,6 +22,7 @@ class DCL(Cub2002011):
         self.common_transform = common_transform
         self.jigsaw_transform = jigsaw_transform
         self.final_transform = final_transform
+        self.class_type = class_type
 
     def __getitem__(self, idx):
         """
@@ -48,10 +50,17 @@ class DCL(Cub2002011):
                 distance = [abs(jigsaw_stat - original_stat) for original_stat in original_stats]
                 index = distance.index(min(distance))
                 jigsaw_patch_labels.append(original_patch_labels[index])
+            # Creating labels from tracked jigsaw_ind
+            jigsaw_patch_labels_ind = []
+            for i in range(original_patch_range):
+                jigsaw_patch_labels_ind.append(original_patch_labels[jigsaw_ind[i]-1])
             img_jigsaw = self.final_transform(img_jigsaw) if self.final_transform is not None else img_jigsaw
             target_jigsaw = target + self.num_classes
             img_original = self.final_transform(img_original) if self.final_transform is not None else img_original
-            return img_original, img_jigsaw, target, target_jigsaw, original_patch_labels_cls, jigsaw_ind
+            if self.class_type == "class":
+                return img_original, img_jigsaw, target, target_jigsaw, original_patch_labels_cls, jigsaw_ind
+            else:
+                return img_original, img_jigsaw, target, target_jigsaw, original_patch_labels, jigsaw_patch_labels_ind
         else:
             # Apply the transforms if the transformations are specified
             if self.final_transform is not None:

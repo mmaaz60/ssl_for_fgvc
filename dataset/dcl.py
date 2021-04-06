@@ -40,7 +40,8 @@ class DCL(Cub2002011):
             original_patch_range = self.crop_patch_size[0] * self.crop_patch_size[1]
             original_patch_labels = [(i - (original_patch_range // 2)) / original_patch_range
                                      for i in range(original_patch_range)]
-            original_patch_labels_cls = list(range(1, original_patch_range + 1))
+            # Creating patch labels in class form
+            original_patch_labels_cls = list(range(0, original_patch_range))
             img_jigsaw, jigsaw_ind = self.jigsaw_transform(img) if self.jigsaw_transform is not None else img
             img_jigsaw_list = get_image_crops(img_jigsaw, self.crop_patch_size)
             original_stats = [sum(ImageStat.Stat(im).mean) for im in img_original_list]
@@ -53,7 +54,7 @@ class DCL(Cub2002011):
             # Creating labels from tracked jigsaw_ind
             jigsaw_patch_labels_ind = []
             for i in range(original_patch_range):
-                jigsaw_patch_labels_ind.append(original_patch_labels[jigsaw_ind[i]-1])
+                jigsaw_patch_labels_ind.append(original_patch_labels[jigsaw_ind[i]])
             img_jigsaw = self.final_transform(img_jigsaw) if self.final_transform is not None else img_jigsaw
             target_jigsaw = target + self.num_classes
             img_original = self.final_transform(img_original) if self.final_transform is not None else img_original

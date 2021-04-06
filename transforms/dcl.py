@@ -7,7 +7,7 @@ def swap(img, crop, ran):
     width_cut, hight_cut = img.size
     img = img.crop((10, 10, width_cut - 10, hight_cut - 10))
     images = get_image_crops(img, crop)
-    tracker = list(range(1, 50))
+    tracker = list(range(0, crop[1] * crop[0]))
     tmp_x = []
     tmp_y = []
     tmp_x_ind = []
@@ -43,7 +43,7 @@ def swap(img, crop, ran):
             tmp2, tmp2_ind = zip(*combined2)
             tmp_y[count_y - ran:count_y] = tmp2
             tmp_y_ind[count_y - ran:count_y] = tmp2_ind
-    jigsaw_ind = [item for sublist in tmp_y_ind for item in sublist]
+    jigsaw_ind = [item for smallist in tmp_y_ind for item in smallist]
     random_im = []
     for line in tmp_y:
         random_im.extend(line)

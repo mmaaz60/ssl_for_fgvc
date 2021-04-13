@@ -9,7 +9,7 @@ logger = logging.getLogger(f"train/dcl_trainer.py")
 
 class DCLTrainer:
     def __init__(self, model, dataloader, cls_loss_function, adv_loss_function, jigsaw_loss_function, use_adv,
-                 use_jigsaw, optimizer, epochs, lr_scheduler=None, test_dataloader=None, device="cuda", log_step=50,
+                 use_jigsaw, class_type, optimizer, epochs, lr_scheduler=None, test_dataloader=None, device="cuda", log_step=50,
                  checkpoints_dir_path=None):
         self.model = model
         self.dataloader = dataloader
@@ -18,6 +18,7 @@ class DCLTrainer:
         self.jigsaw_loss = jigsaw_loss_function()
         self.use_adv = use_adv
         self.use_jigsaw = use_jigsaw
+        self.class_type = class_type
         self.optimizer = optimizer
         self.epochs = epochs
         self.lr_scheduler = lr_scheduler
@@ -41,7 +42,11 @@ class DCLTrainer:
             cls_outputs, adv_outputs, jigsaw_mask_outputs = self.model(inputs)
             cls_loss = self.cls_loss(cls_outputs, labels)
             adv_loss = self.adv_loss(adv_outputs, labels_jigsaw)
-            jigsaw_loss = self.jigsaw_loss(jigsaw_mask_outputs, patch_labels)
+            if self.class_type == "reg":
+                jigsaw_loss = self.jigsaw_loss(jigsaw_mask_outputs, patch_labels)
+            else:
+                # if classification type learning in jigsaw reconstruct, then labels use MultiLabelMarginLoss
+                jigsaw_loss = self.jigsaw_loss(jigsaw_mask_outputs, patch_labels.long())
             loss = cls_loss
             if self.use_adv:
                 loss += adv_loss

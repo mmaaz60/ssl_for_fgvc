@@ -97,7 +97,7 @@ train:
   warm_up_loss_function_path: torch.nn.CrossEntropyLoss  # Standard cross entropy loss
   class_loss_function_path: torch.nn.CrossEntropyLoss  # Class Loss function
   adv_loss_function_path: torch.nn.CrossEntropyLoss  # Adversarial Loss function
-  jigsaw_loss_function_path: torch.nn.L1Loss  # Jigsaw patch loss
+  jigsaw_loss_function_path: torch.nn.MultiLabelMarginLoss #torch.nn.BCELoss #torch.nn.L1Loss #torch.nn.MSELoss
   rotation_loss_function_path: torch.nn.CrossEntropyLoss  # Only valid for rotation trainer
   use_adv: True # Decides if adversarial of dcl must be used
   use_jigsaw: True # Decides if reconstruction of dcl must be usedgit

@@ -23,11 +23,14 @@ class TorchVisionSSLDCL(nn.Module):
                                         bias=(net.fc.bias is not None))
         self.conv_mask = nn.Conv2d(in_channels=net.fc.in_features, out_channels=1, kernel_size=1, stride=1,
                                    padding=0, bias=True)
+        self.conv_mask_cls = nn.Conv2d(in_channels=net.fc.in_features, out_channels=self.jigsaw_class, kernel_size=1, stride=1,
+                                   padding=0, bias=True)
         self.avg_pool_1 = nn.AvgPool2d(2, stride=2)
-        self.jigsaw_cls_classifier = nn.Linear(in_features=14*14, out_features=self.jigsaw_class, bias=True)
+        self.jigsaw_cls_classifier = nn.Linear(in_features=49*7*7, out_features=self.jigsaw_class, bias=True)
         self.flatten = nn.Flatten()
         self.tan_h = nn.Tanh()
         self.relu = nn.ReLU()
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, x, train=True):
         feat = self.feature_extractor(x)
@@ -36,14 +39,18 @@ class TorchVisionSSLDCL(nn.Module):
         cls_classifier = self.cls_classifier(classifier)
         if train:
             adv_classifier = self.adv_classifier(classifier)
-            jigsaw_mask = self.conv_mask(feat)
             if self.class_type == "reg":
+                jigsaw_mask = self.conv_mask(feat)
                 jigsaw_mask = self.avg_pool_1(jigsaw_mask)
                 jigsaw_mask = self.tan_h(jigsaw_mask)
                 jigsaw_mask = self.flatten(jigsaw_mask)
             else:
+                jigsaw_mask = self.conv_mask_cls(feat)
+                jigsaw_mask = self.relu(jigsaw_mask)
+                jigsaw_mask = self.avg_pool_1(jigsaw_mask)
                 jigsaw_mask = self.flatten(jigsaw_mask)
                 jigsaw_mask = self.jigsaw_cls_classifier(jigsaw_mask)
+
             return [cls_classifier, adv_classifier, jigsaw_mask]
         else:
             return cls_classifier

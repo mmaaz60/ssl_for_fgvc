@@ -19,8 +19,6 @@ class Trainer:
             self.trainer = self.__get_base_trainer(config.cfg, model, dataloader, val_dataloader, warm_up)
         elif config.cfg["train"]["name"] == "ssl_rot_trainer":
             self.trainer = self.__get_ssl_rot_trainer(config.cfg, model, dataloader, val_dataloader, warm_up)
-        elif config.cfg["train"]["name"] == "ssl_bt_trainer":
-            self.trainer = self.__get_ssl_bt_trainer(config.cfg, model, dataloader, val_dataloader, warm_up)
         else:
             logger.info(f"Please provide correct trainer to use in configuration. "
                         f"Available options are ['base_trainer', 'ssl_rot_trainer']")

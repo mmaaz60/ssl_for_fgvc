@@ -125,7 +125,7 @@ class Cub2002011Contrastive(Dataset):
                 t_1, t_2 = self.contrastive_transform(img)
                 # Return the original image tensor, transformed image tensors, and target/label corresponding to
                 # original image
-            return o, t_1, t_2, target
+            return o, t_1, t_2, target, idx
         else:
             # Return the original image and its corresponding labels
             return o, target

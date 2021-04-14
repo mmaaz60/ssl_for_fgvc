@@ -15,8 +15,6 @@ class Model:
             from model.torchvision_ssl_rotation import TorchvisionSSLRotation as Model
         elif config.cfg["model"]["name"] == "fgvc_ssl_rotation":
             from model.fgvc_ssl_rotation import FGVCSSLRotation as Model
-        elif config.cfg["model"]["name"] == "torchvision_ssl_barlow_twins":
-            from model.torchvision_ssl_barlow_twins import TorchvisionSSLBarlowTwins as Model
         else:
             print(f"Please provide correct model to use in configuration. "
                   f"Available options are ['torchvision', 'fgvc_resnet', "

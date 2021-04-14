@@ -46,6 +46,7 @@ class SSLPIRLTrainer:
             bsz, m, c, h, w = x_jig.shape
             x_jig = x_jig.view(bsz * m, c, h, w)
             labels = labels.to(self.device)
+            index = index.to(self.device)
             # Generate predictions
             classification_scores, representation, representation_jig = self.model(o, x_jig, train=True)
             pirl_output = self.memory(representation, index, representation_jig)

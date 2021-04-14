@@ -1,4 +1,6 @@
+import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from utils.util import get_object_from_path
 
 
@@ -6,6 +8,9 @@ class Normalize(nn.Module):
     def __init__(self, p=2):
         super(Normalize, self).__init__()
         self.p = p
+
+    def forward(self, x):
+        return F.normalize(x, p=self.p, dim=1)
 
 
 class JigsawHead(nn.Module):
@@ -37,8 +42,18 @@ class JigsawHead(nn.Module):
         x = self.l2norm(x)
         return x
 
+    def get_shuffle_ids(self, bsz):
+        n_img = int(bsz / self.k)
+        rnd_ids = [torch.randperm(self.k) for i in range(n_img)]
+        rnd_ids = torch.cat(rnd_ids, dim=0)
+        base_ids = torch.arange(bsz)
+        base_ids = torch.div(base_ids, self.k).long()
+        base_ids = base_ids * self.k
+        shuffle_ids = rnd_ids + base_ids
+        return shuffle_ids
 
-class TorchVisionPIRL(nn.Module):
+
+class TorchVisionSSLPIRL(nn.Module):
     """
     This class inherits from nn.Module class
     """
@@ -48,7 +63,7 @@ class TorchVisionPIRL(nn.Module):
         The function parse the config and initialize the layers of the corresponding model
         :param config: YML configuration file to parse the parameters from
         """
-        super(TorchVisionPIRL, self).__init__()  # Call the constructor of the parent class
+        super(TorchVisionSSLPIRL, self).__init__()  # Call the constructor of the parent class
         # Parse the configuration parameters
         self.model_function = get_object_from_path(config.cfg["model"]["model_function_path"])  # Model type
         self.pretrained = config.cfg["model"]["pretrained"]  # Either to load weights from pretrained model or not
@@ -67,12 +82,12 @@ class TorchVisionPIRL(nn.Module):
             nn.Linear(net.fc.in_features, net.fc.in_features),
             nn.ReLU(inplace=True),
             nn.Linear(net.fc.in_features, 128),
-            Normalize(2)
+            Normalize(2),
         )
         # MLP head for jigsaw image representation
         self.hed_jig = JigsawHead(dim_in=net.fc.in_features, dim_out=128)
 
-    def forward(self, x, x_jig, train=True):
+    def forward(self, x, x_jig=None, train=True):
         """
         The function implements the forward pass of the network/model
         :param train:

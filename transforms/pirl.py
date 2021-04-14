@@ -52,4 +52,4 @@ class JigsawTransform(object):
         )
 
     def __call__(self, img):
-        return self.transform(img)
+        return [], self.transform(img)

@@ -111,7 +111,7 @@ class Trainer:
         jigsaw_loss_func = get_object_from_path(config["train"]["jigsaw_loss_function_path"])
         use_adv = config["train"]["use_adv"]
         use_jigsaw = config["train"]["use_jigsaw"]
-        class_type = config.cfg["dataloader"]["class_type"]
+        class_type = config["dataloader"]["class_type"]
         optimizer_func = get_object_from_path(config["train"]["optimizer_path"])
         optimizer_param = config["train"]["optimizer_param"]
         epochs = config["train"]["epochs"]

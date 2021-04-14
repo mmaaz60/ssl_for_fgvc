@@ -50,6 +50,8 @@ class TorchVisionSSLDCL(nn.Module):
                 jigsaw_mask = self.avg_pool_1(jigsaw_mask)
                 jigsaw_mask = self.flatten(jigsaw_mask)
                 jigsaw_mask = self.jigsaw_cls_classifier(jigsaw_mask)
+                if self.class_type == "bce":
+                    jigsaw_mask = self.sigmoid(jigsaw_mask)
 
             return [cls_classifier, adv_classifier, jigsaw_mask]
         else:

@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger(f"train/ssl_pirl_trainer.py")
 
 
-class BaseTrainer:
+class SSLPIRLTrainer:
     def __init__(self, model, dataloader, loss_function, optimizer, epochs, memory,
                  lr_scheduler=None, val_dataloader=None, device="cuda", log_step=50, checkpoints_dir_path=None):
         self.model = model

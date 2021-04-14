@@ -72,7 +72,7 @@ class SSLPIRLTrainer:
                     f"Cls Loss: {total_loss_cls / batch_idx}, PIRL Loss: {total_loss_pirl / batch_idx}")
         self.metrics[epoch] = {}
         self.metrics[epoch]["train"] = {}
-        self.metrics[epoch]["train"]["loss"] = float(total_loss_cls + total_loss_pirl / batch_idx)
+        self.metrics[epoch]["train"]["loss"] = float((total_loss_cls + total_loss_pirl) / batch_idx)
         self.metrics[epoch]["train"]["accuracy"] = float(total_correct_predictions) / float(total_predictions)
         logger.info(f"Epoch {epoch} loss: {self.metrics[epoch]['train']['loss']}, accuracy:, "
                     f"{self.metrics[epoch]['train']['accuracy']}")

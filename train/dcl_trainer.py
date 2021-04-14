@@ -44,6 +44,8 @@ class DCLTrainer:
             adv_loss = self.adv_loss(adv_outputs, labels_jigsaw)
             if self.class_type == "reg":
                 jigsaw_loss = self.jigsaw_loss(jigsaw_mask_outputs, patch_labels)
+            elif self.class_type == "bce":
+                jigsaw_loss = self.jigsaw_loss(jigsaw_mask_outputs, patch_labels)
             else:
                 # if classification type learning in jigsaw reconstruct, then labels use MultiLabelMarginLoss
                 jigsaw_loss = self.jigsaw_loss(jigsaw_mask_outputs, patch_labels.long())

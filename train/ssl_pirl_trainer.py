@@ -43,6 +43,8 @@ class SSLPIRLTrainer:
             # Transfer the data to GPU
             o = o.to(self.device)
             x_jig = x_jig.to(self.device)
+            bsz, m, c, h, w = x_jig.shape
+            x_jig = x_jig.view(bsz * m, c, h, w)
             labels = labels.to(self.device)
             # Generate predictions
             classification_scores, representation, representation_jig = self.model(o, x_jig, train=True)

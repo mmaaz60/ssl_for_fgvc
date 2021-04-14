@@ -34,7 +34,8 @@ class SSLPIRLTrainer:
         return losses
 
     def train_epoch(self, epoch):
-        total_loss = 0
+        total_loss_cls = 0
+        total_loss_pirl = 0
         total_predictions = 0
         total_correct_predictions = 0
         self.model.train()
@@ -55,7 +56,8 @@ class SSLPIRLTrainer:
             pirl_losses = self._compute_pirl_loss(logits=pirl_output[:-1], target=pirl_output[-1], criterion=self.loss)
             pirl_loss = (1 - 0.5) * pirl_losses[0] + 0.5 * pirl_losses[1]
             loss = cls_loss + pirl_loss
-            total_loss += loss
+            total_loss_cls += cls_loss
+            total_loss_pirl += pirl_loss
             # Calculate matrix
             _, preds = torch.max(classification_scores, 1)
             total_predictions += len(preds)
@@ -66,10 +68,11 @@ class SSLPIRLTrainer:
             self.optimizer.step()
             if (batch_idx % self.log_step == 0) and (batch_idx != 0):
                 logger.info(
-                    f"Train Epoch: {epoch}, Step, {batch_idx}/{len(self.dataloader)}, Loss: {total_loss / batch_idx}")
+                    f"Train Epoch: {epoch}, Step, {batch_idx}/{len(self.dataloader)}, "
+                    f"Cls Loss: {total_loss_cls / batch_idx}, PIRL Loss: {total_loss_pirl / batch_idx}")
         self.metrics[epoch] = {}
         self.metrics[epoch]["train"] = {}
-        self.metrics[epoch]["train"]["loss"] = float(total_loss / batch_idx)
+        self.metrics[epoch]["train"]["loss"] = float(total_loss_cls + total_loss_pirl / batch_idx)
         self.metrics[epoch]["train"]["accuracy"] = float(total_correct_predictions) / float(total_predictions)
         logger.info(f"Epoch {epoch} loss: {self.metrics[epoch]['train']['loss']}, accuracy:, "
                     f"{self.metrics[epoch]['train']['accuracy']}")

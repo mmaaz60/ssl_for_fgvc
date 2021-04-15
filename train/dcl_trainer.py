@@ -3,7 +3,6 @@ from test.dcl_tester import DCLTester
 import logging
 from torch.autograd import Variable
 import numpy as np
-
 logger = logging.getLogger(f"train/dcl_trainer.py")
 
 

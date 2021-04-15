@@ -17,16 +17,15 @@ class TorchVisionSSLDCL(nn.Module):
         net_list = list(net.children())
         self.feature_extractor = nn.Sequential(*net_list[:-2])
         self.avg_pool = nn.AdaptiveAvgPool2d(output_size=1)
-        num_feat = 1024
-        self.cls_classifier = nn.Linear(in_features=num_feat, out_features=self.num_classes,
+        self.cls_classifier = nn.Linear(in_features=net.fc.in_features, out_features=self.num_classes,
                                         bias=(net.fc.bias is not None))
-        self.adv_classifier = nn.Linear(in_features=num_feat, out_features=2 * self.num_classes,
+        self.adv_classifier = nn.Linear(in_features=net.fc.in_features, out_features=2 * self.num_classes,
                                         bias=(net.fc.bias is not None))
-        self.conv_mask = nn.Conv2d(in_channels=num_feat, out_channels=1, kernel_size=1, stride=1,
+        self.conv_mask = nn.Conv2d(in_channels=net.fc.in_features, out_channels=1, kernel_size=1, stride=1,
                                    padding=0, bias=True)
         self.conv_mask_cls = nn.Conv2d(in_channels=net.fc.in_features, out_channels=self.jigsaw_class, kernel_size=1, stride=1,
                                    padding=0, bias=True)
-        self.avg_pool_1 = nn.AvgPool2d(4, stride=4)
+        self.avg_pool_1 = nn.AvgPool2d(2, stride=2)
         self.jigsaw_cls_classifier = nn.Linear(in_features=49*7*7, out_features=self.jigsaw_class, bias=True)
         self.flatten = nn.Flatten()
         self.tan_h = nn.Tanh()
@@ -34,7 +33,7 @@ class TorchVisionSSLDCL(nn.Module):
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x, train=True):
-        feat = self.feature_extractor[:-1](x)
+        feat = self.feature_extractor(x)
         classifier = self.avg_pool(feat)
         classifier = self.flatten(classifier)
         cls_classifier = self.cls_classifier(classifier)

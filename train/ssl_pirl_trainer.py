@@ -41,19 +41,20 @@ class SSLPIRLTrainer:
         self.model.train()
         for batch_idx, d in enumerate(self.dataloader):
             o, _, x_jig, labels_orig, index = d  # Parse the inputs
+            bsz, m, c, h, w = o.shape
+            o = o.view(bsz * m, c, h, w)
+            labels = labels_orig.repeat_interleave(m)
             # Transfer the data to GPU
             o = o.to(self.device)
             x_jig = x_jig.to(self.device)
             bsz, m, c, h, w = x_jig.shape
             x_jig = x_jig.view(bsz * m, c, h, w)
-            labels_jig = labels_orig.repeat_interleave(m)
-            labels = torch.cat([labels_orig, labels_jig])
             labels = labels.to(self.device)
             index = index.to(self.device)
             # Generate predictions
-            orig_classification_scores, jig_classification_scores, representation, representation_jig = \
-                self.model(o, x_jig, train=True)
-            classification_scores = torch.cat([orig_classification_scores, jig_classification_scores])
+            classification_scores, representation, representation_jig = self.model(o, x_jig, train=True)
+            representation = [representation[i] for i in range(0, len(representation), 2)]
+            representation = torch.stack(representation)
             pirl_output = self.memory(representation, index, representation_jig)
             # Compute loss
             cls_loss = self.loss(classification_scores, labels)

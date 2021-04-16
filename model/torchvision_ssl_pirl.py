@@ -98,9 +98,8 @@ class TorchVisionSSLPIRL(nn.Module):
         classification_scores = self.cls_classifier(feat)
         if train:
             feat_jig = self.flatten(self.feature_extractor(x_jig))
-            jig_classification_scores = self.cls_classifier(feat_jig)
             representation = self.head(feat)
             representation_jig = self.hed_jig(feat_jig)
-            return classification_scores, jig_classification_scores, representation, representation_jig
+            return classification_scores, representation, representation_jig
         else:
             return classification_scores

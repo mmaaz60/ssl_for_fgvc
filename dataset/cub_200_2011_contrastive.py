@@ -1,9 +1,12 @@
 import os
 import pandas as pd
+import torchvision.transforms
 from torchvision.datasets.folder import default_loader
 from utils.util import download_file_from_google_drive
 from torch.utils.data import Dataset
 import tarfile
+import torch
+import random
 
 
 class Cub2002011Contrastive(Dataset):
@@ -37,6 +40,7 @@ class Cub2002011Contrastive(Dataset):
         self.contrastive_transform = None
         if contrastive_transforms is not None:
             self.contrastive_transform = contrastive_transforms()
+        self.resize = torchvision.transforms.Resize(448)
 
     def __sample_data_train(self, group):
         return pd.DataFrame(group.sample(n=int(len(group)*self.train_data_fraction)))
@@ -125,6 +129,12 @@ class Cub2002011Contrastive(Dataset):
                 t_1, t_2 = self.contrastive_transform(img)
                 # Return the original image tensor, transformed image tensors, and target/label corresponding to
                 # original image
+                a = [a for a in t_2]
+                random.shuffle(a)
+                b, c = a[0:int(len(a)/2)], a[int(len(a)/2):len(a)]
+                b, c = torch.cat([b for b in b], 1), torch.cat([c for c in c], 1)
+                f = self.resize(torch.cat([b, c], 2))
+                o = torch.stack([o, f], 0)
             return o, t_1, t_2, target, idx
         else:
             # Return the original image and its corresponding labels

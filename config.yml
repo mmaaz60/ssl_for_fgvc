@@ -1,7 +1,7 @@
 # All general configurations will be under this header
 general:
   output_directory: results  # The output directory to save the training progress and results
-  experiment_id: ssl_pirl_5 # The experiment id
+  experiment_id: ssl_pirl_6 # The experiment id
   # The name of the model checkpoints directory to save the intermediate model checkpoints
   model_checkpoints_directory_name: checkpoints
 

@@ -16,7 +16,7 @@ class Normalize(nn.Module):
 class JigsawHead(nn.Module):
     """Jigswa + linear + l2norm"""
 
-    def __init__(self, dim_in, dim_out, k=9):
+    def __init__(self, dim_in, dim_out, k=4):
         super(JigsawHead, self).__init__()
 
         self.fc1 = nn.Sequential(

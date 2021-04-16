@@ -7,7 +7,7 @@ from torchvision import transforms
 class JigsawCrop(object):
     """Jigsaw style crop"""
 
-    def __init__(self, n_grid=3, img_size=255, crop_size=64):
+    def __init__(self, n_grid=2, img_size=512, crop_size=256):
         self.n_grid = n_grid
         self.img_size = img_size
         self.crop_size = crop_size
@@ -43,7 +43,8 @@ class StackTransform(object):
 class JigsawTransform(object):
     def __init__(self):
         self.transform = transforms.Compose(
-            [transforms.RandomResizedCrop(255, scale=(0.6, 1)),
+            [transforms.Resize(1024),
+             transforms.CenterCrop(512),
              transforms.RandomHorizontalFlip(),
              JigsawCrop(),
              StackTransform(transforms.Compose(

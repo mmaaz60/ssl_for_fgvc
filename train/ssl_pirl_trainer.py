@@ -40,10 +40,7 @@ class SSLPIRLTrainer:
         total_correct_predictions = 0
         self.model.train()
         for batch_idx, d in enumerate(self.dataloader):
-            o, _, x_jig, labels_orig, index = d  # Parse the inputs
-            bsz, m, c, h, w = o.shape
-            o = o.view(bsz * m, c, h, w)
-            labels = labels_orig.repeat_interleave(m)
+            o, _, x_jig, labels, index = d  # Parse the inputs
             # Transfer the data to GPU
             o = o.to(self.device)
             x_jig = x_jig.to(self.device)
@@ -53,14 +50,12 @@ class SSLPIRLTrainer:
             index = index.to(self.device)
             # Generate predictions
             classification_scores, representation, representation_jig = self.model(o, x_jig, train=True)
-            representation = [representation[i] for i in range(0, len(representation), 2)]
-            representation = torch.stack(representation)
             pirl_output = self.memory(representation, index, representation_jig)
             # Compute loss
             cls_loss = self.loss(classification_scores, labels)
             pirl_losses = self._compute_pirl_loss(logits=pirl_output[:-1], target=pirl_output[-1], criterion=self.loss)
             pirl_loss = (1 - 0.5) * pirl_losses[0] + 0.5 * pirl_losses[1]
-            loss = cls_loss + pirl_loss
+            loss = 0.5 * cls_loss + 0.5 * pirl_loss
             total_loss_cls += cls_loss
             total_loss_pirl += pirl_loss
             # Calculate matrix

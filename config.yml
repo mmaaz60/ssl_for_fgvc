@@ -79,7 +79,7 @@ model:
   pretrained: True  # Either to load weights from pretrained imagenet model
   classes_count: 200  # Number of classes
   # Path to load pre-trained weights from
-  checkpoints_path:
+  checkpoints_path: #results/exp_id/checkpoints/epoch_0.pth
 
 # Configuration related to the diversification block will be under this head
 diversification_block:

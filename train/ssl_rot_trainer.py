@@ -1,5 +1,5 @@
 import torch
-from test.ssl_rot_tester import SSLROTTester
+from test.base_tester import BaseTester
 import logging
 from utils.util import preprocess_input_data_rotation
 
@@ -21,7 +21,7 @@ class SSLROTTrainer:
         self.device = device
         self.log_step = log_step
         self.checkpoints_dir_path = checkpoints_dir_path
-        self.validator = SSLROTTester(val_dataloader, class_loss_function, rot_loss_function, model) \
+        self.validator = BaseTester(val_dataloader, class_loss_function) \
             if val_dataloader else None
         self.metrics = {}
 

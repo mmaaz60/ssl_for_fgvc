@@ -39,5 +39,8 @@ class TorchvisionSSLRotation(nn.Module):
         features = self.feature_extractor(x)
         features = self.flatten(features)
         y_classification = self.classification_head(features)
-        y_rotation = self.rotation_head(features)
-        return y_classification, y_rotation
+        if train:
+            y_rotation = self.rotation_head(features)
+            return y_classification, y_rotation
+        else:
+            return y_classification

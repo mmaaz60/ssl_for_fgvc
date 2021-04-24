@@ -109,6 +109,7 @@ class Trainer:
         else:
             loss_func = get_object_from_path(config["train"]["class_loss_function_path"])
         optimizer_func = get_object_from_path(config["train"]["optimizer_path"])
+        pirl_loss_weight = config["train"]["pirl_loss_weight"]
         optimizer_param = config["train"]["optimizer_param"]
         epochs = config["train"]["epochs"]
         output_directory = config["general"]["output_directory"]
@@ -125,10 +126,10 @@ class Trainer:
         # Create memory bank
         memory = RGBMem(n_dim=128, n_data=len(dataloader) * dataloader.batch_size, K=2048)
         # Create and return the trainer object
-        return Trainer(model=model, dataloader=dataloader, loss_function=loss_func, optimizer=optimizer,
-                       epochs=epochs, memory=memory, lr_scheduler=lr_scheduler, val_dataloader=val_dataloader,
-                       checkpoints_dir_path=f"{output_directory}/{experiment_id}/"
-                                            f"{model_checkpoints_directory_name}")
+        return Trainer(model=model, dataloader=dataloader, loss_function=loss_func, pirl_loss_weight=pirl_loss_weight,
+                       optimizer=optimizer, epochs=epochs, memory=memory, lr_scheduler=lr_scheduler,
+                       val_dataloader=val_dataloader, checkpoints_dir_path=f"{output_directory}/{experiment_id}/"
+                                                                           f"{model_checkpoints_directory_name}")
 
     def get_trainer(self):
         """

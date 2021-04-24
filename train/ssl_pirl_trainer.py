@@ -72,7 +72,7 @@ class SSLPIRLTrainer:
             if (batch_idx % self.log_step == 0) and (batch_idx != 0):
                 logger.info(
                     f"Train Epoch: {epoch}, Step, {batch_idx}/{len(self.dataloader)}, "
-                    f"Cls Loss: {total_loss_cls / batch_idx}, PIRL Loss: {total_loss_pirl / batch_idx}"
+                    f"Cls Loss: {total_loss_cls / batch_idx}, PIRL Loss: {total_loss_pirl / batch_idx}, "
                     f"Combined Loss: {total_loss / batch_idx}")
         self.metrics[epoch] = {}
         self.metrics[epoch]["train"] = {}

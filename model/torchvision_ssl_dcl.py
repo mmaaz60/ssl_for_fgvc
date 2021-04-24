@@ -1,5 +1,6 @@
 import torch.nn as nn
 from utils.util import get_object_from_path
+import torch
 
 
 class TorchVisionSSLDCL(nn.Module):
@@ -39,3 +40,13 @@ class TorchVisionSSLDCL(nn.Module):
             return [cls_classifier, adv_classifier, jigsaw_mask]
         else:
             return cls_classifier
+
+    def get_cam(self, x):
+        feature_map = self.feature_extractor(x)
+        b, c, h, w = feature_map.size()
+        feature_map = feature_map.view(b, c, h * w).transpose(1, 2)
+        cam = torch.bmm(feature_map,
+                        torch.repeat_interleave(self.cls_classifier.weight.t().unsqueeze(0), b, dim=0)).transpose(1, 2)
+        out = torch.reshape(cam, [b, self.num_classes, h, w])
+
+        return out

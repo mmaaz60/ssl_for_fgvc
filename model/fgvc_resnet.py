@@ -25,6 +25,11 @@ class FGVCResnet(nn.Module):
 
         return out
 
+    def get_cam(self, x):
+        out = self.cam(x)
+
+        return out
+
 
 class CAM(nn.Module):
     def __init__(self, model_function, num_classes, pretrained=True):

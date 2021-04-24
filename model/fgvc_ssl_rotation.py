@@ -47,3 +47,8 @@ class FGVCSSLRotation(nn.Module):
         out = self.flatten(out)
         y_rotation = self.rotation_head(out)
         return y_classification, y_rotation
+
+    def get_cam(self, x):
+        out = self.cam(x)
+
+        return out

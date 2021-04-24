@@ -1,4 +1,5 @@
 import torch.nn as nn
+import torch
 from utils.util import get_object_from_path
 
 
@@ -30,4 +31,16 @@ class TorchVision(nn.Module):
         :return: The model output (class logits)
         """
         out = self.model(x)
+        return out
+
+    def get_cam(self, x):
+        net_list = list(self.model.children())
+        feature_extractor = nn.Sequential(*net_list[:-2])
+        feature_map = feature_extractor(x)
+        b, c, h, w = feature_map.size()
+        feature_map = feature_map.view(b, c, h * w).transpose(1, 2)
+        cam = torch.bmm(feature_map,
+                        torch.repeat_interleave(self.model.fc.weight.t().unsqueeze(0), b, dim=0)).transpose(1, 2)
+        out = torch.reshape(cam, [b, self.num_classes, h, w])
+
         return out

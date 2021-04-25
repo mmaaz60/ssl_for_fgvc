@@ -18,7 +18,6 @@ dataloader:
   batch_size: 8  # Batch size for training and testing
   shuffle: True  # Either to shuffle the dataset for training or not
   num_workers: 16  # Number of parallel workers to load the dataset
-  class_type: reg  #class #bce # "reg" select original DCL labels for jigsaw, class selects integer classes for jigsaw labels
   # The train and test data transforms
   transforms:
     # Common transforms for dcl
@@ -78,8 +77,11 @@ model:
   model_function_path: torchvision.models.resnet50
   pretrained: True  # Either to load weights from pretrained imagenet model
   classes_count: 200  # Number of classes
+  # "regression" performs regression for jigsaw location, "class" selects integer classes for jigsaw labels locations
+  prediction_type: regression
   # Path to load pre-trained weights from
   checkpoints_path: #results/exp_id/checkpoints/epoch_0.pth
+
 
 # Configuration related to the diversification block will be under this head
 diversification_block:

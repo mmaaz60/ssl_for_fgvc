@@ -26,7 +26,7 @@ class TorchVisionSSLDCL(nn.Module):
         self.conv_mask_cls = nn.Conv2d(in_channels=net.fc.in_features, out_channels=self.jigsaw_class, kernel_size=1,
                                        stride=1, padding=0, bias=True)
         self.avg_pool_1 = nn.AvgPool2d(2, stride=2)
-        self.jigsaw_cls_classifier = nn.Linear(in_features=49*7*7, out_features=self.jigsaw_class, bias=True)
+        self.jigsaw_cls_classifier = nn.Linear(in_features=49, out_features=self.jigsaw_class, bias=True)
         self.flatten = nn.Flatten()
         self.tan_h = nn.Tanh()
         self.relu = nn.ReLU()

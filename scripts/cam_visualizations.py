@@ -1,4 +1,9 @@
 import argparse
+import torch
+from torch import nn
+import numpy as np
+from PIL import Image
+from matplotlib import cm
 
 
 class CAMVisualization:
@@ -6,14 +11,33 @@ class CAMVisualization:
         self.model = model
 
     def _get_cam(self, x):
-        return self.model.get_cam(x)
+        out, cam = self.model.get_cam(x)
+        return out, cam
 
-    def get_cam_image(self, dims):
+    def get_cam_image(self, cam, dim, h, w):
         """
         The function interpolates the class activation maps and return an image of required size
         """
+        topk = 1
+        min_val, min_args = torch.min(cam, dim=dim, keepdim=True)
+        cam -= min_val
+        max_val, max_args = torch.max(cam, dim=dim, keepdim=True)
+        cam /= max_val
+        topk_cam = cam.view(1, -1, h, w)[0, topk]
+        cams = nn.functional.interpolate(topk_cam.unsqueeze(0), (h, w), mode='bilinear', align_corners=True).squeeze(0)
+        topk_cam = torch.split(topk_cam, 1)
+        # cams = topk_cam[k].squeeze().cpu().data.numpy() if k top cams to identify
+        cam_ = topk_cam.squeeze().cpu().data.numpy()
+        cam_pil = array_to_cam(cam_)
+        # blended_cam = blend(img_pil, cam_pil)
         pass
 
+def array_to_cam(arr):
+    cam_pil = Image.fromarray(np.uint8(cm.gist_earth(arr) * 255)).convert("RGB")
+    return cam_pil
+
+def blend(image1, image2, alpha=0.75):
+    return Image.blend(image1, image2, alpha)
 
 def parse_arguments():
     """

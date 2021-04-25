@@ -49,4 +49,4 @@ class TorchVisionSSLDCL(nn.Module):
                         torch.repeat_interleave(self.cls_classifier.weight.t().unsqueeze(0), b, dim=0)).transpose(1, 2)
         out = torch.reshape(cam, [b, self.num_classes, h, w])
 
-        return out
+        return out, cam

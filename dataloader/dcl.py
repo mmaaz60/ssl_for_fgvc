@@ -97,12 +97,12 @@ class DCL:
         train_data_fraction = self.config.cfg["dataloader"]["train_data_fraction"]  # Fraction of dataset for training
         test_data_fraction = self.config.cfg["dataloader"]["test_data_fraction"]  # Fraction of dataset for testing
         crop_patch_size = self.config.cfg["dataloader"]["transforms"]["jigsaw"]["t_1"]["param"]["size"]
-        class_type = self.config.cfg["dataloader"]["class_type"]
+        prediction_type = self.config.cfg["model"]["prediction_type"]
         # Load the train dataset
         self.train_dataset = Dataset(root=data_root_directory, train=True, download=download,
                                      crop_patch_size=crop_patch_size, common_transform=self.common_transform,
                                      jigsaw_transform=self.jigsaw_transform, final_transform=self.final_transform_train,
-                                     train_data_fraction=train_data_fraction, class_type=class_type)
+                                     train_data_fraction=train_data_fraction, prediction_type=prediction_type)
         # Load the test dataset
         self.test_dataset = Dataset(root=data_root_directory, train=False, download=download,
                                     final_transform=self.final_transform_test, test_data_fraction=test_data_fraction)

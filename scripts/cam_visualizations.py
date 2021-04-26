@@ -46,7 +46,6 @@ def array_to_cam(arr):
     cam_pil = Image.fromarray(np.uint8(cm.gist_earth(arr) * 255)).convert("RGB")
     return cam_pil
 
-
 def blend(image1, image2, alpha=0.75):
     return Image.blend(image1, image2, alpha)
 
@@ -90,8 +89,8 @@ def main():
     model.load_state_dict(checkpoints["state_dict"], strict=True)
     # Create CAM visualizer object
     visualizer = CAMVisualization(model)
-    tensor_to_pil = transforms.ToPILImage()  # Create transform object to covert torch tensor to PIL image
     # Create transforms for performing inference
+    resize_dim = config.cfg["dataloader"]["transforms"]["test"]["t_1"]["param"]["size"]
     test_transforms = config.cfg["dataloader"]["transforms"]["test"]
     test_transform = transforms.Compose(
         [
@@ -105,10 +104,8 @@ def main():
         full_path = os.path.join(config.cfg["dataloader"]["root_directory_path"],
                                  "CUB_200_2011/images", image_path)
         input = Image.open(full_path).convert('RGB')
-        # width, height = im.size
+        input = input.resize((resize_dim, resize_dim), Image.ANTIALIAS)
         input_trans = test_transform(input)  # Transform the image
-        # input = tensor_to_pil(input_trans)
-        input = input.resize((448, 448), Image.ANTIALIAS)
         input_trans = torch.unsqueeze(input_trans, 0)
         input_trans = input_trans.to(args["device"])
         output_image = visualizer.get_cam_image(input_trans, input)  # Get the cam image

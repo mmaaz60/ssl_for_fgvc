@@ -45,15 +45,22 @@ class TorchvisionSSLRotation(nn.Module):
         y_rotation = self.rotation_head(features)
         return y_classification, y_rotation
 
-    def get_cam(self, x):
+    def get_cam(self, x, topk):
         net_list = list(self.feature_extractor.children())
         feature_extractor = nn.Sequential(*net_list[:-1])
-        feature_map = feature_extractor(x)
-        b, c, h, w = feature_map.size()
-        feature_map = feature_map.view(b, c, h * w).transpose(1, 2)
+        avg_pool = net_list[-1]
+        features = feature_extractor(x)
+        b, c, h, w = features.size()
+        feature_map = features.view(b, c, h * w).transpose(1, 2)
         cam = torch.bmm(feature_map,
                         torch.repeat_interleave(self.classification_head.weight.t().unsqueeze(0),
                                                 b, dim=0)).transpose(1, 2)
         out = torch.reshape(cam, [b, self.num_classes_classification, h, w])
+        # Get the predictions
+        predictions = avg_pool(features)
+        predictions = self.flatten(predictions)
+        predictions = self.classification_head(predictions)
+        _, preds = torch.sort(predictions, dim=1, descending=True)
+        topk_pred = preds.squeeze().tolist()[:topk]
 
-        return out
+        return out, topk_pred

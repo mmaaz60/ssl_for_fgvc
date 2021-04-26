@@ -41,12 +41,18 @@ class TorchVisionSSLDCL(nn.Module):
         else:
             return cls_classifier
 
-    def get_cam(self, x):
-        feature_map = self.feature_extractor(x)
-        b, c, h, w = feature_map.size()
-        feature_map = feature_map.view(b, c, h * w).transpose(1, 2)
+    def get_cam(self, x, topk):
+        features = self.feature_extractor(x)
+        b, c, h, w = features.size()
+        feature_map = features.view(b, c, h * w).transpose(1, 2)
         cam = torch.bmm(feature_map,
                         torch.repeat_interleave(self.cls_classifier.weight.t().unsqueeze(0), b, dim=0)).transpose(1, 2)
         out = torch.reshape(cam, [b, self.num_classes, h, w])
+        # Get the predictions
+        predictions = self.avg_pool(features)
+        predictions = self.flatten(predictions)
+        predictions = self.cls_classifier(predictions)
+        _, preds = torch.sort(predictions, dim=1, descending=True)
+        topk_pred = preds.squeeze().tolist()[:topk]
 
-        return out
+        return out, topk_pred

@@ -6,12 +6,11 @@ logger = logging.getLogger(f"train/ssl_pirl_trainer.py")
 
 
 class SSLPIRLTrainer:
-    def __init__(self, model, dataloader, loss_function, pirl_loss_weight, optimizer, epochs, memory,
+    def __init__(self, model, dataloader, loss_function, optimizer, epochs, memory,
                  lr_scheduler=None, val_dataloader=None, device="cuda", log_step=50, checkpoints_dir_path=None):
         self.model = model
         self.dataloader = dataloader
         self.loss = loss_function()
-        self.pirl_loss_weight = pirl_loss_weight
         self.optimizer = optimizer
         self.epochs = epochs
         self.lr_scheduler = lr_scheduler
@@ -57,7 +56,7 @@ class SSLPIRLTrainer:
             cls_loss = self.loss(classification_scores, labels)
             pirl_losses = self._compute_pirl_loss(logits=pirl_output[:-1], target=pirl_output[-1], criterion=self.loss)
             pirl_loss = (1 - 0.5) * pirl_losses[0] + 0.5 * pirl_losses[1]
-            loss = (1 - self.pirl_loss_weight) * cls_loss + self.pirl_loss_weight * pirl_loss
+            loss = cls_loss + pirl_loss
             total_loss_cls += cls_loss
             total_loss_pirl += pirl_loss
             total_loss += loss

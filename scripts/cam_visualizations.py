@@ -18,7 +18,7 @@ from utils.util import get_object_from_path
 
 class CAMVisualization:
     def __init__(self, model):
-        self.model = model
+        self.model = model.eval()
         self.cam = None
 
     def get_cam_image(self, x, x_orig, topk=1):

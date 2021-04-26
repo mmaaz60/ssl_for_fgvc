@@ -26,7 +26,7 @@ class CAMVisualization:
         The function interpolates the class activation maps and return an image of required size
         :param x: Batch of images (b, c, h, w)
         """
-        b, c, h, w = x.shape
+        h, w = x_orig.size
         cam, topk_pred = self.model.get_cam(x, topk)
         min_val, min_args = torch.min(cam, dim=2, keepdim=True)
         cam -= min_val
@@ -64,6 +64,8 @@ def parse_arguments():
                     help="The top k predictions to consider.")
     ap.add_argument("-save", "--output_directory", required=True,
                     help="The path to output directory to save the visualizations.")
+    ap.add_argument("-dim", "--output_dim", type=int, required=False, default=448,
+                    help="The output dimensions of the images overlayed with CAMs.")
     ap.add_argument("-d", "--device", required=False, default='cuda',
                     help="The computation device to perform operations ('cpu', 'cuda')")
 
@@ -99,7 +101,7 @@ def main():
     visualizer = CAMVisualization(model)
     # Create transforms for performing inference
     resize_dim = (config.cfg["dataloader"]["resize_width"], config.cfg["dataloader"]["resize_height"])
-    infer_dim = config.cfg["dataloader"]["transforms"]["test"]["t_1"]["param"]["size"]
+    infer_dim = args["output_dim"]
     test_transforms = config.cfg["dataloader"]["transforms"]["test"]
     test_transform = transforms.Compose(
         [

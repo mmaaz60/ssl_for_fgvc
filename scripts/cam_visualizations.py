@@ -33,18 +33,21 @@ class CAMVisualization:
         max_val, max_args = torch.max(cam, dim=2, keepdim=True)
         cam /= max_val
         topk_cam = cam[0][topk_pred[0]].unsqueeze(0)
-        topk_cams = nn.functional.interpolate(topk_cam.unsqueeze(0), (h, w), mode='bilinear', align_corners=True).squeeze(0)
+        topk_cams = nn.functional.interpolate(topk_cam.unsqueeze(0), (h, w), mode='bilinear',
+                                              align_corners=True).squeeze(0)
         topk_cams = torch.split(topk_cams, 1)
         # For loop here if many top cams required
         cam_ = topk_cams[0].squeeze().cpu().data.numpy()
         cam_pil = array_to_cam(cam_)
         blended_cam = blend(x_orig, cam_pil)
-        return blended_cam
+
+        return blended_cam, topk_pred[0]
 
 
 def array_to_cam(arr):
     cam_pil = Image.fromarray(np.uint8(cm.gist_earth(arr) * 255)).convert("RGB")
     return cam_pil
+
 
 def blend(image1, image2, alpha=0.75):
     return Image.blend(image1, image2, alpha)
@@ -77,9 +80,14 @@ def main():
     # Create the output directory if not exists
     if not os.path.exists(args["output_directory"]):
         os.makedirs(args["output_directory"])
+    if not os.path.exists(f"{args['output_directory']}/correct_predictions"):
+        os.mkdir(f"{args['output_directory']}/correct_predictions")
+    if not os.path.exists(f"{args['output_directory']}/wrong_predictions"):
+        os.mkdir(f"{args['output_directory']}/wrong_predictions")
     config.load_config(args["config_path"])  # Load configuration
     _, test_loader = Dataloader(config=config).get_loader()  # Create dataloader
     test_image_paths = test_loader.dataset.data.values[:, 1]
+    test_image_labels = test_loader.dataset.data.values[:, 2]
     # Create the model
     model = Model(config=config).get_model()
     model = model.to(args["device"])
@@ -90,7 +98,8 @@ def main():
     # Create CAM visualizer object
     visualizer = CAMVisualization(model)
     # Create transforms for performing inference
-    resize_dim = config.cfg["dataloader"]["transforms"]["test"]["t_1"]["param"]["size"]
+    resize_dim = (config.cfg["dataloader"]["resize_width"], config.cfg["dataloader"]["resize_height"])
+    infer_dim = config.cfg["dataloader"]["transforms"]["test"]["t_1"]["param"]["size"]
     test_transforms = config.cfg["dataloader"]["transforms"]["test"]
     test_transform = transforms.Compose(
         [
@@ -100,17 +109,22 @@ def main():
         ]
     )
     # Iterate over the dataset
-    for i, image_path in enumerate(test_image_paths):
+    for i, image_info in enumerate(zip(test_image_paths, test_image_labels)):
+        image_path, image_label = image_info
         full_path = os.path.join(config.cfg["dataloader"]["root_directory_path"],
                                  "CUB_200_2011/images", image_path)
         input = Image.open(full_path).convert('RGB')
-        input = input.resize((resize_dim, resize_dim), Image.ANTIALIAS)
+        input = input.resize(resize_dim, Image.ANTIALIAS)
         input_trans = test_transform(input)  # Transform the image
         input_trans = torch.unsqueeze(input_trans, 0)
         input_trans = input_trans.to(args["device"])
-        output_image = visualizer.get_cam_image(input_trans, input)  # Get the cam image
+        # Get the cam image
+        output_image, predicted_label = visualizer.get_cam_image(input_trans, input.resize((infer_dim, infer_dim), Image.ANTIALIAS))
         # Write the cam images to the disc
-        output_image.save(f"{args['output_directory']}/{i}.jpg")  # Save the PIL image
+        if predicted_label == image_label - 1:
+            output_image.save(f"{args['output_directory']}/correct_predictions/{i}.jpg")  # Save the PIL image
+        else:
+            output_image.save(f"{args['output_directory']}/wrong_predictions/{i}.jpg")  # Save the PIL image
 
 
 if __name__ == "__main__":

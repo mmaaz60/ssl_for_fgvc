@@ -21,29 +21,25 @@ class CAMVisualization:
         self.model = model
         self.cam = None
 
-    def get_cam_image(self, x, x_orig):
+    def get_cam_image(self, x, x_orig, topk=1):
         """
         The function interpolates the class activation maps and return an image of required size
         :param x: Batch of images (b, c, h, w)
         """
         b, c, h, w = x.shape
-        cam = self.model.get_cam(x)
-        print(cam.shape)
-        return x_orig
-
-        topk = 1
-        min_val, min_args = torch.min(cam, dim=dim, keepdim=True)
+        cam, topk_pred = self.model.get_cam(x, topk)
+        min_val, min_args = torch.min(cam, dim=2, keepdim=True)
         cam -= min_val
-        max_val, max_args = torch.max(cam, dim=dim, keepdim=True)
+        max_val, max_args = torch.max(cam, dim=2, keepdim=True)
         cam /= max_val
-        topk_cam = cam.view(1, -1, h, w)[0, topk]
-        cams = nn.functional.interpolate(topk_cam.unsqueeze(0), (h, w), mode='bilinear', align_corners=True).squeeze(0)
-        topk_cam = torch.split(topk_cam, 1)
-        # cams = topk_cam[k].squeeze().cpu().data.numpy() if k top cams to identify
-        cam_ = topk_cam.squeeze().cpu().data.numpy()
+        topk_cam = cam[0][topk_pred[0]].unsqueeze(0)
+        topk_cams = nn.functional.interpolate(topk_cam.unsqueeze(0), (h, w), mode='bilinear', align_corners=True).squeeze(0)
+        topk_cams = torch.split(topk_cams, 1)
+        # For loop here if many top cams required
+        cam_ = topk_cams[0].squeeze().cpu().data.numpy()
         cam_pil = array_to_cam(cam_)
-        # blended_cam = blend(img_pil, cam_pil)
-        return cam_pil
+        blended_cam = blend(x_orig, cam_pil)
+        return blended_cam
 
 
 def array_to_cam(arr):
@@ -62,6 +58,8 @@ def parse_arguments():
     ap = argparse.ArgumentParser()
     ap.add_argument("-config", "--config_path", required=True,
                     help="The path to the pipeline .yml configuration file.")
+    ap.add_argument("-topk", "--topk", required=False,
+                    help="The top k predictions to consider.")
     ap.add_argument("-save", "--output_directory", required=True,
                     help="The path to output directory to save the visualizations.")
     ap.add_argument("-d", "--device", required=False, default='cuda',
@@ -106,8 +104,11 @@ def main():
     for i, image_path in enumerate(test_image_paths):
         full_path = os.path.join(config.cfg["dataloader"]["root_directory_path"],
                                  "CUB_200_2011/images", image_path)
-        input = Image.open(full_path)  # Read the image
+        input = Image.open(full_path).convert('RGB')
+        # width, height = im.size
         input_trans = test_transform(input)  # Transform the image
+        # input = tensor_to_pil(input_trans)
+        input = input.resize((448, 448), Image.ANTIALIAS)
         input_trans = torch.unsqueeze(input_trans, 0)
         input_trans = input_trans.to(args["device"])
         output_image = visualizer.get_cam_image(input_trans, input)  # Get the cam image

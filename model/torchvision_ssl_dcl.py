@@ -1,6 +1,5 @@
 import torch.nn as nn
 from utils.util import get_object_from_path
-import torch
 
 
 class TorchVisionSSLDCL(nn.Module):
@@ -40,19 +39,3 @@ class TorchVisionSSLDCL(nn.Module):
             return [cls_classifier, adv_classifier, jigsaw_mask]
         else:
             return cls_classifier
-
-    def get_cam(self, x, topk):
-        features = self.feature_extractor(x)
-        b, c, h, w = features.size()
-        feature_map = features.view(b, c, h * w).transpose(1, 2)
-        cam = torch.bmm(feature_map,
-                        torch.repeat_interleave(self.cls_classifier.weight.t().unsqueeze(0), b, dim=0)).transpose(1, 2)
-        out = torch.reshape(cam, [b, self.num_classes, h, w])
-        # Get the predictions
-        predictions = self.avg_pool(features)
-        predictions = self.flatten(predictions)
-        predictions = self.cls_classifier(predictions)
-        _, preds = torch.sort(predictions, dim=1, descending=True)
-        topk_pred = preds.squeeze().tolist()[:topk]
-
-        return out, topk_pred

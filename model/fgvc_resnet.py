@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 from layers.diversification_block import DiversificationBlock
 from utils.util import get_object_from_path
@@ -25,15 +24,6 @@ class FGVCResnet(nn.Module):
         out = out.mean([2, 3])
 
         return out
-
-    def get_cam(self, x, topk):
-        out = self.cam(x)
-        # Get the predictions
-        predictions = out.mean([2, 3])
-        _, preds = torch.sort(predictions, dim=1, descending=True)
-        topk_pred = preds.squeeze().tolist()[:topk]
-
-        return out, topk_pred
 
 
 class CAM(nn.Module):

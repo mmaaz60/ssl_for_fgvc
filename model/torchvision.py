@@ -1,5 +1,4 @@
 import torch.nn as nn
-import torch
 from utils.util import get_object_from_path
 
 
@@ -32,23 +31,3 @@ class TorchVision(nn.Module):
         """
         out = self.model(x)
         return out
-
-    def get_cam(self, x, topk):
-        net_list = list(self.model.children())
-        feature_extractor = nn.Sequential(*net_list[:-2])
-        avg_pool = net_list[-2]
-        prediction_head = net_list[-1]
-        features = feature_extractor(x)
-        b, c, h, w = features.size()
-        feature_map = features.view(b, c, h * w).transpose(1, 2)
-        cam = torch.bmm(feature_map,
-                        torch.repeat_interleave(self.model.fc.weight.t().unsqueeze(0), b, dim=0)).transpose(1, 2)
-        out = torch.reshape(cam, [b, self.num_classes, h, w])
-
-        predictions = avg_pool(features)
-        predictions = torch.nn.Flatten()(predictions)
-        predictions = prediction_head(predictions)
-        _, preds = torch.sort(predictions, dim=1, descending=True)
-        topk_pred = preds.squeeze().tolist()[:topk]
-
-        return out, topk_pred

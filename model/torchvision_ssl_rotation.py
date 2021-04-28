@@ -1,5 +1,4 @@
 import torch.nn as nn
-import torch
 from utils.util import get_object_from_path
 
 
@@ -20,15 +19,13 @@ class TorchvisionSSLRotation(nn.Module):
         self.num_classes_classification = config.cfg["model"]["classes_count"]  # No. of classes for classification
         self.num_classes_rot = config.cfg["model"]["rotation_classes_count"]  # No. of classes for rotation head
         # Load the model
-        model = self.model_function(pretrained=self.pretrained)
-        net_list = list(model.children())
+        self.model = self.model_function(pretrained=self.pretrained)
+        net_list = list(self.model.children())
         self.feature_extractor = nn.Sequential(*net_list[:-1])
         self.flatten = nn.Flatten()
-        self.classification_head = nn.Linear(in_features=model.fc.in_features,
-                                             out_features=self.num_classes_classification,
-                                             bias=(model.fc.bias is not None))
-        self.rotation_head = nn.Linear(in_features=model.fc.in_features, out_features=self.num_classes_rot,
-                                       bias=(model.fc.bias is not None))
+        self.classification_head = net_list[-1]
+        self.rotation_head = nn.Linear(in_features=self.model.fc.in_features, out_features=self.num_classes_rot,
+                                       bias=(self.model.fc.bias is not None))
 
     def forward(self, x, train=True):
         """
@@ -44,23 +41,3 @@ class TorchvisionSSLRotation(nn.Module):
         y_classification = self.classification_head(features)
         y_rotation = self.rotation_head(features)
         return y_classification, y_rotation
-
-    def get_cam(self, x, topk):
-        net_list = list(self.feature_extractor.children())
-        feature_extractor = nn.Sequential(*net_list[:-1])
-        avg_pool = net_list[-1]
-        features = feature_extractor(x)
-        b, c, h, w = features.size()
-        feature_map = features.view(b, c, h * w).transpose(1, 2)
-        cam = torch.bmm(feature_map,
-                        torch.repeat_interleave(self.classification_head.weight.t().unsqueeze(0),
-                                                b, dim=0)).transpose(1, 2)
-        out = torch.reshape(cam, [b, self.num_classes_classification, h, w])
-        # Get the predictions
-        predictions = avg_pool(features)
-        predictions = self.flatten(predictions)
-        predictions = self.classification_head(predictions)
-        _, preds = torch.sort(predictions, dim=1, descending=True)
-        topk_pred = preds.squeeze().tolist()[:topk]
-
-        return out, topk_pred

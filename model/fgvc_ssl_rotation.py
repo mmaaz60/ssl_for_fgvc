@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 from utils.util import get_object_from_path
 from model.fgvc_resnet import CAM
@@ -48,12 +47,3 @@ class FGVCSSLRotation(nn.Module):
         out = self.flatten(out)
         y_rotation = self.rotation_head(out)
         return y_classification, y_rotation
-
-    def get_cam(self, x, topk):
-        out = self.cam(x)
-        # Get the predictions
-        predictions = out.mean([2, 3])
-        _, preds = torch.sort(predictions, dim=1, descending=True)
-        topk_pred = preds.squeeze().tolist()[:topk]
-
-        return out, topk_pred

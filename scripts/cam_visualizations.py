@@ -27,23 +27,26 @@ class CAMVisualization:
         self._set_cam()
 
     def _set_target_layer(self):
-        if self.model_name == "torchvision" or "torchvision_ssl_rotation":
+        if self.model_name == "torchvision" or self.model_name == "torchvision_ssl_rotation":
             self.target_layer = self.model.model.layer4[-1]
-        elif self.model_name == "pirl":
-            self.target_layer = self.model.model.layer4[-1]
+        elif self.model_name == "torchvision_ssl_pirl":
+            self.target_layer = self.model.feature_extractor[-2][-1]
         elif self.model_name == "dcl":
             self.target_layer = self.model.model.layer4[-1]
+        else:
+            print(f"Given model ({self.model_name}) is not supported. Exiting!")
+            sys.exit(1)
 
     def _set_cam(self):
         if self.cam_method == "GradCAM":
             self.cam = GradCAM(model=self.model, target_layer=self.target_layer, use_cuda=True)
         elif self.cam_method == "GradCAMPlusPlus":
             self.cam = GradCAMPlusPlus(model=self.model, target_layer=self.target_layer, use_cuda=True)
-        elif self.cam_method == "GradCAMPlusPlus":
+        elif self.cam_method == "ScoreCAM":
             self.cam = ScoreCAM(model=self.model, target_layer=self.target_layer, use_cuda=True)
-        elif self.cam_method == "GradCAMPlusPlus":
+        elif self.cam_method == "AblationCAM":
             self.cam = AblationCAM(model=self.model, target_layer=self.target_layer, use_cuda=True)
-        elif self.cam_method == "GradCAMPlusPlus":
+        elif self.cam_method == "XGradCAM":
             self.cam = XGradCAM(model=self.model, target_layer=self.target_layer, use_cuda=True)
         else:
             self.cam = GradCAM(model=self.model, target_layer=self.target_layer, use_cuda=True)

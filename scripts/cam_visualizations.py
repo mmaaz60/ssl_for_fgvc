@@ -123,10 +123,17 @@ def main():
         # Get the cam image
         output_image, predicted_label = visualizer.get_cam_image(input_trans, input.resize((infer_dim, infer_dim), Image.ANTIALIAS))
         # Write the cam images to the disc
-        if predicted_label == image_label - 1:
-            output_image.save(f"{args['output_directory']}/correct_predictions/{i}.jpg")  # Save the PIL image
+        predicted_label += 1
+        if predicted_label == image_label:
+            if not os.path.exists(f"{args['output_directory']}/correct_predictions/{image_label}_{predicted_label}"):
+                os.mkdir(f"{args['output_directory']}/correct_predictions/{image_label}_{predicted_label}")
+            output_image.save(f"{args['output_directory']}/correct_predictions/{image_label}_{predicted_label}/"
+                              f"{i}.jpg")  # Save the PIL image
         else:
-            output_image.save(f"{args['output_directory']}/wrong_predictions/{i}.jpg")  # Save the PIL image
+            if not os.path.exists(f"{args['output_directory']}/wrong_predictions/{image_label}_{predicted_label}"):
+                os.mkdir(f"{args['output_directory']}/wrong_predictions/{image_label}_{predicted_label}")
+            output_image.save(f"{args['output_directory']}/wrong_predictions/{image_label}_{predicted_label}/"
+                              f"{i}.jpg")  # Save the PIL image
 
 
 if __name__ == "__main__":

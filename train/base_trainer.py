@@ -29,7 +29,7 @@ class BaseTrainer:
             inputs, labels = d
             inputs = inputs.to(self.device)
             labels = labels.to(self.device)
-            outputs = self.model(inputs)
+            outputs = self.model(inputs, train=True)
             loss = self.loss(outputs, labels)
             total_loss += loss
             _, preds = torch.max(outputs, 1)

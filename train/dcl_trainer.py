@@ -38,7 +38,7 @@ class DCLTrainer:
             labels = Variable(torch.from_numpy(np.array(labels))).to(self.device)
             labels_jigsaw = Variable(torch.from_numpy(np.array(labels_jigsaw))).to(self.device)
             patch_labels = Variable(torch.from_numpy(np.array(patch_labels))).float().to(self.device)
-            cls_outputs, adv_outputs, jigsaw_mask_outputs = self.model(inputs)
+            cls_outputs, adv_outputs, jigsaw_mask_outputs = self.model(inputs, train=True)
             cls_loss = self.cls_loss(cls_outputs, labels)
             adv_loss = self.adv_loss(adv_outputs, labels_jigsaw)
             jigsaw_loss = self.jigsaw_loss(jigsaw_mask_outputs, patch_labels)

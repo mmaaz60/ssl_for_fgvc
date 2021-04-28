@@ -24,7 +24,7 @@ class TorchVisionSSLDCL(nn.Module):
         self.flatten = nn.Flatten()
         self.tan_h = nn.Tanh()
 
-    def forward(self, x, train=True):
+    def forward(self, x, train=False):
         feat = self.feature_extractor(x)
         classifier = self.avg_pool(feat)
         classifier = self.flatten(classifier)

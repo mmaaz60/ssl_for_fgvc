@@ -27,9 +27,7 @@ class CAMVisualization:
         self._set_cam()
 
     def _set_target_layer(self):
-        if self.model_name == "torchvision":
-            self.target_layer = self.model.model.layer4[-1]
-        elif self.model_name == "torchvision_ssl_rotation":
+        if self.model_name == "torchvision" or "torchvision_ssl_rotation":
             self.target_layer = self.model.model.layer4[-1]
         elif self.model_name == "pirl":
             self.target_layer = self.model.model.layer4[-1]

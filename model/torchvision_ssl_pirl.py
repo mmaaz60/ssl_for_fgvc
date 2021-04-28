@@ -87,7 +87,7 @@ class TorchVisionSSLPIRL(nn.Module):
         # MLP head for jigsaw image representation
         self.hed_jig = JigsawHead(dim_in=net.fc.in_features, dim_out=128)
 
-    def forward(self, x, x_jig=None, train=True):
+    def forward(self, x, x_jig=None, train=False):
         """
         The function implements the forward pass of the network/model
         :param train:

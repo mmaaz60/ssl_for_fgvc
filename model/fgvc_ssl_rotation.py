@@ -43,7 +43,10 @@ class FGVCSSLRotation(nn.Module):
         if train:
             out = self.diversification_block(out)
         y_classification = out.mean([2, 3])
-        out = self.adaptive_pooling(out)
-        out = self.flatten(out)
-        y_rotation = self.rotation_head(out)
-        return y_classification, y_rotation
+        if train:
+            out = self.adaptive_pooling(out)
+            out = self.flatten(out)
+            y_rotation = self.rotation_head(out)
+            return y_classification, y_rotation
+        else:
+            return y_classification

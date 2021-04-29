@@ -7,7 +7,8 @@ from PIL import ImageStat
 
 class DCL(Cub2002011):
     def __init__(self, root, train=True, download=True, crop_patch_size=(7, 7), num_classes=200, common_transform=None,
-                 jigsaw_transform=None, final_transform=None, train_data_fraction=1, test_data_fraction=1):
+                 jigsaw_transform=None, final_transform=None, train_data_fraction=1, test_data_fraction=1,
+                 prediction_type=None):
         """
         Initialize the class variables, download the dataset (if prompted to do so), verify the data presence,
         :param root: Dataset root path
@@ -21,6 +22,7 @@ class DCL(Cub2002011):
         self.common_transform = common_transform
         self.jigsaw_transform = jigsaw_transform
         self.final_transform = final_transform
+        self.prediction_type = prediction_type
 
     def __getitem__(self, idx):
         """
@@ -38,7 +40,9 @@ class DCL(Cub2002011):
             original_patch_range = self.crop_patch_size[0] * self.crop_patch_size[1]
             original_patch_labels = [(i - (original_patch_range // 2)) / original_patch_range
                                      for i in range(original_patch_range)]
-            img_jigsaw = self.jigsaw_transform(img) if self.jigsaw_transform is not None else img
+            # Creating patch labels in class form
+            original_patch_labels_cls = list(range(0, original_patch_range))
+            img_jigsaw, jigsaw_ind = self.jigsaw_transform(img) if self.jigsaw_transform is not None else img
             img_jigsaw_list = get_image_crops(img_jigsaw, self.crop_patch_size)
             original_stats = [sum(ImageStat.Stat(im).mean) for im in img_original_list]
             jigsaw_stats = [sum(ImageStat.Stat(im).mean) for im in img_jigsaw_list]
@@ -47,10 +51,19 @@ class DCL(Cub2002011):
                 distance = [abs(jigsaw_stat - original_stat) for original_stat in original_stats]
                 index = distance.index(min(distance))
                 jigsaw_patch_labels.append(original_patch_labels[index])
+            # Creating labels from tracked jigsaw_ind
+            jigsaw_patch_labels_ind = []
+            for i in range(original_patch_range):
+                jigsaw_patch_labels_ind.append(original_patch_labels[jigsaw_ind[i]])
             img_jigsaw = self.final_transform(img_jigsaw) if self.final_transform is not None else img_jigsaw
             target_jigsaw = target + self.num_classes
             img_original = self.final_transform(img_original) if self.final_transform is not None else img_original
-            return img_original, img_jigsaw, target, target_jigsaw, original_patch_labels, jigsaw_patch_labels
+            if self.prediction_type == "regression":
+                # Selects regression labels for jigsaw reconstruction
+                return img_original, img_jigsaw, target, target_jigsaw, original_patch_labels, jigsaw_patch_labels_ind
+            else:
+                # Selects classification labels for jigsaw reconstruction
+                return img_original, img_jigsaw, target, target_jigsaw, original_patch_labels_cls, jigsaw_ind
         else:
             # Apply the transforms if the transformations are specified
             if self.final_transform is not None:

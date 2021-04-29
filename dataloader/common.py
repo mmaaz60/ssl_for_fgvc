@@ -11,9 +11,11 @@ class Dataloader:
             from dataloader.cub_200_2011 import Cub2002011 as DataLoader
         elif config.cfg["dataloader"]["name"] == "cub_200_2011_contrastive":
             from dataloader.cub_200_2011_contrastive import Cub2002011Contrastive as DataLoader
+        elif config.cfg["dataloader"]["name"] == "dcl":
+            from dataloader.dcl import DCL as DataLoader
         else:
             print(f"Please provide correct dataloader to use in configuration. "
-                  f"Available options are ['cub_200_2011', 'cub_200_2011_contrastive']")
+                  f"Available options are ['cub_200_2011', 'cub_200_2011_contrastive', 'dcl']")
             sys.exit(1)
         # Initialize the selected DataLoader
         self.dataloader = DataLoader(config)

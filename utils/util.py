@@ -2,6 +2,7 @@ from importlib import import_module
 import requests
 from utils import rotation_utils as rot_utils
 import torch
+import random
 
 
 def get_object_from_path(path):
@@ -45,7 +46,7 @@ def save_response_content(response, destination):
                 f.write(chunk)
 
 
-def preprocess_input_data(images, labels, rotation=True):
+def preprocess_input_data_rotation(images, labels, rotation=True):
     """Preprocess a mini-batch of images."""
     if rotation:
         # Create the 4 rotated version of the images; this step increases
@@ -66,3 +67,32 @@ def load_vissl_weights(model, checkpoints_path):
     print(status)
 
     return model
+
+
+def random_sample(img_names, labels):
+    ann_dict = {}
+    img_list = []
+    ann_list = []
+    for img, ann in zip(img_names, labels):
+        if ann not in ann_dict:
+            ann_dict[ann] = [img]
+        else:
+            ann_dict[ann].append(img)
+    for ann in ann_dict.keys():
+        ann_len = len(ann_dict[ann])
+        fetch_keys = random.sample(list(range(ann_len)), ann_len // 10)
+        img_list.extend([ann_dict[ann][x] for x in fetch_keys])
+        ann_list.extend([ann for x in fetch_keys])
+
+    return img_list, ann_list
+
+
+def get_image_crops(image, crop_size):
+    width, high = image.size
+    crop_x = [int((width / crop_size[0]) * i) for i in range(crop_size[0] + 1)]
+    crop_y = [int((high / crop_size[1]) * i) for i in range(crop_size[1] + 1)]
+    im_list = []
+    for j in range(len(crop_y) - 1):
+        for i in range(len(crop_x) - 1):
+            im_list.append(image.crop((crop_x[i], crop_y[j], min(crop_x[i + 1], width), min(crop_y[j + 1], high))))
+    return im_list

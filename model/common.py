@@ -17,10 +17,12 @@ class Model:
             from model.fgvc_ssl_rotation import FGVCSSLRotation as Model
         elif config.cfg["model"]["name"] == "torchvision_ssl_pirl":
             from model.torchvision_ssl_pirl import TorchVisionSSLPIRL as Model
+        elif config.cfg["model"]["name"] == "dcl":
+            from model.torchvision_ssl_dcl import TorchVisionSSLDCL as Model
         else:
             print(f"Please provide correct model to use in configuration. "
                   f"Available options are ['torchvision', 'fgvc_resnet', "
-                  f"'torchvision_ssl_rotation', 'fgvc_ssl_rotation', 'torchvision_ssl_pirl']")
+                  f"'torchvision_ssl_rotation', 'fgvc_ssl_rotation', 'torchvision_ssl_pirl', 'dcl']")
             sys.exit(1)
         # Initialize the selected DataLoader
         self.model = Model(config)

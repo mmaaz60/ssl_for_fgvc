@@ -1,7 +1,7 @@
 import torch
-from test.ssl_rot_tester import SSLROTTester
+from test.base_tester import BaseTester
 import logging
-from utils.util import preprocess_input_data
+from utils.util import preprocess_input_data_rotation
 
 logger = logging.getLogger(f"train/ssl_rot_trainer.py")
 
@@ -21,11 +21,13 @@ class SSLROTTrainer:
         self.device = device
         self.log_step = log_step
         self.checkpoints_dir_path = checkpoints_dir_path
-        self.validator = SSLROTTester(val_dataloader, class_loss_function, rot_loss_function, model) \
+        self.validator = BaseTester(val_dataloader, class_loss_function) \
             if val_dataloader else None
         self.metrics = {}
 
     def train_epoch(self, epoch):
+        total_cls_loss = 0
+        total_rot_loss = 0
         total_loss = 0
         # allocating metric for classification
         total_predictions_head1 = 0
@@ -38,13 +40,15 @@ class SSLROTTrainer:
             inputs, labels = d
             inputs = inputs.to(self.device)
             labels = labels.to(self.device)
-            augmented_inputs, augmented_labels, rot_labels = preprocess_input_data(
+            augmented_inputs, augmented_labels, rot_labels = preprocess_input_data_rotation(
                 inputs, labels, rotation=True)
             class_outputs, rot_outputs = self.model(augmented_inputs)
 
             # computing total loss from loss for classification head and rotation head
             classification_loss = self.class_loss(class_outputs, augmented_labels)
+            total_cls_loss += classification_loss
             rot_loss = self.rot_loss(rot_outputs, rot_labels)
+            total_rot_loss += rot_loss
             loss = (1 - self.rotation_loss_weight) * classification_loss + self.rotation_loss_weight * rot_loss
             total_loss += loss
 
@@ -63,16 +67,22 @@ class SSLROTTrainer:
             self.optimizer.step()
             if (batch_idx % self.log_step == 0) and (batch_idx != 0):
                 logger.info(
-                    f"Train Epoch: {epoch}, Step, {batch_idx}/{len(self.dataloader)}, Loss: {total_loss / batch_idx}")
+                    f"Train Epoch: {epoch}, Step, {batch_idx}/{len(self.dataloader)}, "
+                    f"Cls Loss: {total_cls_loss / batch_idx}, Rot Loss: {total_rot_loss / batch_idx} "
+                    f"Total Loss: {total_loss / batch_idx}")
         self.metrics[epoch] = {}
         self.metrics[epoch]["train"] = {}
         self.metrics[epoch]["train"]["loss"] = float(total_loss / batch_idx)
+        self.metrics[epoch]["train"]["cls_loss"] = float(total_cls_loss / batch_idx)
+        self.metrics[epoch]["train"]["rot_loss"] = float(total_rot_loss / batch_idx)
         self.metrics[epoch]["train"]["class_accuracy"] = float(
             total_correct_predictions_head1) / float(total_predictions_head1)
         self.metrics[epoch]["train"]["rot_accuracy"] = float(
             total_correct_predictions_head2) / float(total_predictions_head2)
-        logger.info(f"Epoch {epoch} loss: {self.metrics[epoch]['train']['loss']}, class_accuracy:"
-                    f"{self.metrics[epoch]['train']['class_accuracy']} "
+        logger.info(f"Epoch {epoch} cls loss: {self.metrics[epoch]['train']['cls_loss']}, "
+                    f"Epoch {epoch} rot loss: {self.metrics[epoch]['train']['rot_loss']}, "
+                    f"Epoch {epoch} loss: {self.metrics[epoch]['train']['loss']}, "
+                    f"class_accuracy:{self.metrics[epoch]['train']['class_accuracy']} "
                     f"rot_accuracy:{self.metrics[epoch]['train']['rot_accuracy']}")
 
     def train_and_validate(self, start_epoch, end_epoch=None):

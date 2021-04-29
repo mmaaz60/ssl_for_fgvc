@@ -23,7 +23,9 @@ class TorchvisionSSLRotation(nn.Module):
         net_list = list(self.model.children())
         self.feature_extractor = nn.Sequential(*net_list[:-1])
         self.flatten = nn.Flatten()
-        self.classification_head = net_list[-1]
+        self.classification_head = nn.Linear(in_features=self.model.fc.in_features,
+                                             out_features=self.num_classes_classification,
+                                             bias=(self.model.fc.bias is not None))
         self.rotation_head = nn.Linear(in_features=self.model.fc.in_features, out_features=self.num_classes_rot,
                                        bias=(self.model.fc.bias is not None))
 
@@ -39,5 +41,8 @@ class TorchvisionSSLRotation(nn.Module):
         features = self.feature_extractor(x)
         features = self.flatten(features)
         y_classification = self.classification_head(features)
-        y_rotation = self.rotation_head(features)
-        return y_classification, y_rotation
+        if train:
+            y_rotation = self.rotation_head(features)
+            return y_classification, y_rotation
+        else:
+            return y_classification

@@ -32,7 +32,7 @@ class CAMVisualization:
         elif self.model_name == "torchvision_ssl_pirl":
             self.target_layer = self.model.feature_extractor[-2][-1]
         elif self.model_name == "dcl":
-            self.target_layer = self.model.model.layer4[-1]
+            self.target_layer = self.model.feature_extractor[-1][-1]
         else:
             print(f"Given model ({self.model_name}) is not supported. Exiting!")
             sys.exit(1)

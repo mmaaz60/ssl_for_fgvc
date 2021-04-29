@@ -41,12 +41,8 @@ class DCLTrainer:
             cls_outputs, adv_outputs, jigsaw_mask_outputs = self.model(inputs)
             cls_loss = self.cls_loss(cls_outputs, labels)
             adv_loss = self.adv_loss(adv_outputs, labels_jigsaw)
-            if self.prediction_type == "regression":
-                # jigsaw reconstruct uses regression type with l1  or mse loss
-                jigsaw_loss = self.jigsaw_loss(jigsaw_mask_outputs, patch_labels)
-            else:
-                # jigsaw reconstruct uses classification type with bce loss
-                jigsaw_loss = self.jigsaw_loss(jigsaw_mask_outputs, patch_labels)
+            # jigsaw reconstruct uses regression type with l1  or mse loss or class with bce loss
+            jigsaw_loss = self.jigsaw_loss(jigsaw_mask_outputs, patch_labels)
             loss = cls_loss
             if self.use_adv:
                 loss += adv_loss

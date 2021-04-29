@@ -8,7 +8,7 @@ import tarfile
 
 class Cub2002011(Dataset):
     base_folder = 'CUB_200_2011/images'  # Base dataset path
-    google_drive_id = '1NFDfwf7oLrVCBCCD3jxDRKyl17K1j6Ya'  # Google drive ID to download the dataset
+    google_drive_id = '1ZzCyTEYBOGDlHzcKCJqKzHX4SlJFUVEz'  # Google drive ID to download the dataset
     # original dataset: 1ZzCyTEYBOGDlHzcKCJqKzHX4SlJFUVEz
     # stylized dataset: 1NFDfwf7oLrVCBCCD3jxDRKyl17K1j6Ya
     filename = 'CUB_200_2011.tgz'  # Dataset TGZ file name

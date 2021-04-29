@@ -140,9 +140,9 @@ class Trainer:
         # Create and return the trainer object
         return Trainer(model=model, dataloader=dataloader, cls_loss_function=cls_loss_func,
                        adv_loss_function=adv_loss_func, jigsaw_loss_function=jigsaw_loss_func, use_adv=use_adv,
-                       use_jigsaw=use_jigsaw, prediction_type=prediction_type, optimizer=optimizer, epochs=epochs,
-                       lr_scheduler=lr_scheduler, test_dataloader=val_dataloader,
-                       checkpoints_dir_path=f"{output_directory}/{experiment_id}/{model_checkpoints_directory_name}")
+                       use_jigsaw=use_jigsaw, optimizer=optimizer, epochs=epochs, lr_scheduler=lr_scheduler,
+                       test_dataloader=val_dataloader, checkpoints_dir_path=f"{output_directory}/{experiment_id}/"
+                                                                            f"{model_checkpoints_directory_name}")
 
     def get_trainer(self):
         """

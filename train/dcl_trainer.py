@@ -8,7 +8,7 @@ logger = logging.getLogger(f"train/dcl_trainer.py")
 
 class DCLTrainer:
     def __init__(self, model, dataloader, cls_loss_function, adv_loss_function, jigsaw_loss_function, use_adv,
-                 use_jigsaw, prediction_type, optimizer, epochs, lr_scheduler=None, test_dataloader=None, device="cuda", log_step=50,
+                 use_jigsaw, optimizer, epochs, lr_scheduler=None, test_dataloader=None, device="cuda", log_step=50,
                  checkpoints_dir_path=None):
         self.model = model
         self.dataloader = dataloader
@@ -17,7 +17,6 @@ class DCLTrainer:
         self.jigsaw_loss = jigsaw_loss_function()
         self.use_adv = use_adv
         self.use_jigsaw = use_jigsaw
-        self.prediction_type = prediction_type
         self.optimizer = optimizer
         self.epochs = epochs
         self.lr_scheduler = lr_scheduler

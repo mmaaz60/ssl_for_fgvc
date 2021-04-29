@@ -102,8 +102,11 @@ def main():
         os.mkdir(f"{args['output_directory']}/wrong_predictions")
     config.load_config(args["config_path"])  # Load configuration
     _, test_loader = Dataloader(config=config).get_loader()  # Create dataloader
-    test_image_paths = test_loader.dataset.data.values[:, 1]
-    test_image_labels = test_loader.dataset.data.values[:, 2]
+    data = test_loader.dataset.data.values
+    data = data[np.argsort(data[:, 0])]
+    image_ids = data[:, 0]
+    test_image_paths = data[:, 1]
+    test_image_labels = data[:, 2]
     # Create the model
     model = Model(config=config).get_model()
     model = model.to(args["device"])
@@ -125,8 +128,8 @@ def main():
         ]
     )
     # Iterate over the dataset
-    for i, image_info in enumerate(zip(test_image_paths, test_image_labels)):
-        image_path, image_label = image_info
+    for image_info in zip(image_ids, test_image_paths, test_image_labels):
+        image_id, image_path, image_label = image_info
         full_path = os.path.join(config.cfg["dataloader"]["root_directory_path"],
                                  "CUB_200_2011/images", image_path)
         input = Image.open(full_path).convert('RGB')
@@ -141,10 +144,12 @@ def main():
         predicted_label += 1
         if predicted_label == image_label:
             # Save the PIL image
-            output_image.save(f"{args['output_directory']}/correct_predictions/{i}_{image_label}_{predicted_label}.jpg")
+            output_image.save(f"{args['output_directory']}/correct_predictions/"
+                              f"{image_id}_{image_label}_{predicted_label}.jpg")
         else:
             # Save the PIL image
-            output_image.save(f"{args['output_directory']}/wrong_predictions/{i}_{image_label}_{predicted_label}.jpg")
+            output_image.save(f"{args['output_directory']}/wrong_predictions/"
+                              f"{image_id}_{image_label}_{predicted_label}.jpg")
 
 
 if __name__ == "__main__":

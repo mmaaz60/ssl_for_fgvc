@@ -3,7 +3,6 @@ from test.dcl_tester import DCLTester
 import logging
 from torch.autograd import Variable
 import numpy as np
-
 logger = logging.getLogger(f"train/dcl_trainer.py")
 
 
@@ -41,6 +40,7 @@ class DCLTrainer:
             cls_outputs, adv_outputs, jigsaw_mask_outputs = self.model(inputs, train=True)
             cls_loss = self.cls_loss(cls_outputs, labels)
             adv_loss = self.adv_loss(adv_outputs, labels_jigsaw)
+            # jigsaw reconstruct uses regression type with l1  or mse loss or class with bce loss
             jigsaw_loss = self.jigsaw_loss(jigsaw_mask_outputs, patch_labels)
             loss = cls_loss
             if self.use_adv:

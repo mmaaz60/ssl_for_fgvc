@@ -7,7 +7,7 @@ general:
 
 # All configurations related to dataloader will be under this header
 dataloader:
-  name: dcl  # Name of the dataloader to be used
+  name: cub_200_2011_contrastive  # Name of the dataloader to be used
   # Fraction of training data to be used for current training, it may by 0.1 or 0.2 for semi-supervised fine tuning
   train_data_fraction: 1.0
   test_data_fraction: 1.0 # Fraction of test data to be used during current training
@@ -20,48 +20,14 @@ dataloader:
   num_workers: 16  # Number of parallel workers to load the dataset
   # The train and test data transforms
   transforms:
-    # Common transforms for dcl
-    common:
-      t1:
-        path: torchvision.transforms.Resize
-        param:
-          size: [600, 600]
-      t_2:
+    # Train transforms used during training
+    train:
+      t_1:
         path: torchvision.transforms.RandomCrop
         param:
-          size: [448, 448]
-      t_3:
+          size: 448
+      t_2:
         path: torchvision.transforms.RandomHorizontalFlip
-    # Jigsaw transform for dcl
-    jigsaw:
-      t_1:
-        path: transforms.dcl.RandomSwap
-        param:
-          size: [7, 7]
-          swap_range: 2
-    # Final transformations for dcl training
-    final_train:
-      t_1:
-        path: torchvision.transforms.Resize
-        param:
-          size: [448, 448]
-      t_2:
-        path: torchvision.transforms.ToTensor
-      t_3:
-        path: torchvision.transforms.Normalize
-        param:
-          mean: [0.485, 0.456, 0.406]
-          std: [0.229, 0.224, 0.225]
-    # Final transformations for dcl testing
-    final_test:
-      t_1:
-        path: torchvision.transforms.Resize
-        param:
-          size: [600, 600]
-      t_2:
-        path: torchvision.transforms.CenterCrop
-        param:
-          size: [448, 448]
       t_3:
         path: torchvision.transforms.ToTensor
       t_4:
@@ -69,34 +35,50 @@ dataloader:
         param:
           mean: [0.485, 0.456, 0.406]
           std: [0.229, 0.224, 0.225]
+    # Test transforms used during testing
+    test:
+      t_1:
+        path: torchvision.transforms.CenterCrop
+        param:
+          size: 448
+      t_2:
+        path: torchvision.transforms.ToTensor
+      t_3:
+        path: torchvision.transforms.Normalize
+        param:
+          mean: [0.485, 0.456, 0.406]
+          std: [0.229, 0.224, 0.225]
+    contrastive: transforms.pirl.JigsawTransform
 
 # All configurations related to model will be under this header
 model:
-  name: dcl  # Name/source of the model
+  name: torchvision_ssl_pirl  # Name/source of the model
   # Complete model class path (i.e. torchvision.models.resnet50, torchvision.models.alexnet, etc.)
   model_function_path: torchvision.models.resnet50
   pretrained: True  # Either to load weights from pretrained imagenet model
   classes_count: 200  # Number of classes
+  rotation_classes_count: 4  # Number of rotation classes
   # "regression" performs regression for jigsaw location, "class" selects integer classes for jigsaw labels locations
   prediction_type: regression
   # Path to load pre-trained weights from
   checkpoints_path: #results/exp_id/checkpoints/epoch_0.pth
 
-
 # Configuration related to the diversification block will be under this head
 diversification_block:
-  p_peak: 0.5  # Probability for peak selection
-  p_patch: 0.5  # Probability for patch selection
+  p_peak: 0.5
+  p_patch: 0.5
   patch_size: 3  # Patch size to be suppressed
   alpha: 0.1  # Suppression factor
-  use_during_test: False  # Whether to use diversification block during test or not
 
 # All configurations related to training will be under this header
 train:
-  name: dcl_trainer  # Name of the trainer to use
+  name: ssl_pirl_trainer  # Name of the trainer to use
   epochs: 110  # Number of epochs
   warm_up_epochs: 0  # Number of warm up epochs
   warm_up_loss_function_path: torch.nn.CrossEntropyLoss  # Standard cross entropy loss
+  class_loss_function_path: torch.nn.CrossEntropyLoss  # Loss function
+  rotation_loss_function_path: torch.nn.CrossEntropyLoss  # Standard cross entropy loss for rotation prediction
+  rotation_loss_weight: 0.2
   class_loss_function_path: torch.nn.CrossEntropyLoss  # Class Loss function
   adv_loss_function_path: torch.nn.CrossEntropyLoss  # Adversarial Loss function
   # Loss functions for regression: 'torch.nn.MSELoss', 'torch.nn.L1Loss' ; Loss func for class: torch.nn.BCELoss

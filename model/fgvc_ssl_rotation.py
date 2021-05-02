@@ -31,7 +31,7 @@ class FGVCSSLRotation(nn.Module):
         self.rotation_head = nn.Linear(self.num_classes_classification * 3 * 3, self.num_classes_rot)
         self.diversification_block = DiversificationBlock(self.kernel_size, self.alpha, self.p_peak, self.p_patch)
 
-    def forward(self, x, train=True):
+    def forward(self, x, train=False):
         """
         The function implements the forward pass of the network/model
         :param train:

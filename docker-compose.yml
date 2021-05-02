@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   ssl_for_fgvc:
-    image: hanoona/ssl_for_fgvc:dcl_class_v1.7
+    image: mmaaz60/ssl_for_fgvc:v1.08
     volumes:
       - ./data:/workspace/data
       - ./config.yml:/workspace/config.yml

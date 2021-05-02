@@ -17,7 +17,7 @@ class FGVCResnet(nn.Module):
         self.cam = CAM(self.model_function, self.num_classes, self.pretrained)
         self.diversification_block = DiversificationBlock(self.kernel_size, self.alpha, self.p_peak, self.p_patch)
 
-    def forward(self, x, train=True):
+    def forward(self, x, train=False):
         out = self.cam(x)
         if train:
             out = self.diversification_block(out)

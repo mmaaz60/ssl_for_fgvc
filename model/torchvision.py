@@ -22,7 +22,7 @@ class TorchVision(nn.Module):
         self.model.fc = nn.Linear(in_features=self.model.fc.in_features, out_features=self.num_classes,
                                   bias=(self.model.fc.bias is not None))
 
-    def forward(self, x, train=True):
+    def forward(self, x, train=False):
         """
         The function implements the forward pass of the network/model
         :param train:

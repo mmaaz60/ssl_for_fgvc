@@ -42,7 +42,7 @@ class SSLROTTrainer:
             labels = labels.to(self.device)
             augmented_inputs, augmented_labels, rot_labels = preprocess_input_data_rotation(
                 inputs, labels, rotation=True)
-            class_outputs, rot_outputs = self.model(augmented_inputs)
+            class_outputs, rot_outputs = self.model(augmented_inputs, train=True)
 
             # computing total loss from loss for classification head and rotation head
             classification_loss = self.class_loss(class_outputs, augmented_labels)

@@ -32,7 +32,7 @@ class TorchVisionSSLDCL(nn.Module):
         self.relu = nn.ReLU()
         self.sigmoid = nn.Sigmoid()
 
-    def forward(self, x, train=True):
+    def forward(self, x, train=False):
         feat = self.feature_extractor(x)
         classifier = self.avg_pool(feat)
         classifier = self.flatten(classifier)

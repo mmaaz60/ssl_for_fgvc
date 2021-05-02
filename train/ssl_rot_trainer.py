@@ -9,8 +9,7 @@ logger = logging.getLogger(f"train/ssl_rot_trainer.py")
 
 class SSLROTTrainer:
     def __init__(self, model, dataloader, class_loss_function, rot_loss_function, rotation_loss_weight, optimizer,
-                 epochs, lr_scheduler=None, val_dataloader=None, device="cuda", log_step=50, checkpoints_dir_path=None,
-                 diversification_test_flag=False):
+                 epochs, lr_scheduler=None, val_dataloader=None, device="cuda", log_step=50, checkpoints_dir_path=None):
         self.model = model
         self.dataloader = dataloader
         self.class_loss = class_loss_function()

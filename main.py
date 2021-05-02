@@ -61,4 +61,4 @@ if __name__ == "__main__":
     logging.info(f"Staring main training loop using {config.cfg['train']['class_loss_function_path'].split('.')[-1]} "
                  f"for {config.cfg['train']['epochs'] - warm_up_epochs} epochs.")
     trainer = Trainer(config=config, model=model, dataloader=train_loader, val_dataloader=test_loader).get_trainer()
-    trainer.train_and_validate(start_epoch=warm_up_epochs)
+    trainer.train_and_validate(start_epoch=warm_up_epochs + 1)

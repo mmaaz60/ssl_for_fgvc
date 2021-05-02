@@ -3,6 +3,9 @@ import requests
 from utils import rotation_utils as rot_utils
 import torch
 import random
+import logging
+
+logger = logging.getLogger(f"utils/util.py")
 
 
 def get_object_from_path(path):
@@ -64,7 +67,7 @@ def load_vissl_weights(model, checkpoints_path):
     for key in checkpoint:
         updated_checkpoints_dict[f"model.{key}"] = checkpoint[key]
     status = model.load_state_dict(updated_checkpoints_dict, strict=False)
-    print(status)
+    logger.info(status)
 
     return model
 
@@ -96,3 +99,29 @@ def get_image_crops(image, crop_size):
         for i in range(len(crop_x) - 1):
             im_list.append(image.crop((crop_x[i], crop_y[j], min(crop_x[i + 1], width), min(crop_y[j + 1], high))))
     return im_list
+
+
+def save_model_checkpoints(checkpoints_dir_path, epoch, state_dict, metrics, last_best_accuracy):
+    current_best_accuracy = last_best_accuracy  # Variable to keep track of the current best accuracy
+    # Save the model checkpoints
+    model_to_save = {
+        "epoch": epoch,
+        "metrics": metrics,
+        'state_dict': state_dict,
+    }
+    torch.save(model_to_save,
+               f"{checkpoints_dir_path}/epoch_{epoch}.pth")
+    # Update the best checkpoints based on the accuracy
+    if metrics["val"]["accuracy_top_1"] > last_best_accuracy:
+        current_best_accuracy = metrics["val"]["accuracy_top_1"]  # Update the current best accuracy
+        logger.info(f"New best model at epoch {epoch}.")  # New best model
+        if checkpoints_dir_path:
+            model_to_save = {
+                "epoch": epoch,
+                "metrics": metrics,
+                'state_dict': state_dict,
+            }
+            torch.save(model_to_save,
+                       f"{checkpoints_dir_path}/best_checkpoints.pth")
+
+    return current_best_accuracy

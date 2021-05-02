@@ -7,8 +7,9 @@ from utils.util import get_object_from_path
 class Cub2002011Contrastive:
     def __init__(self, config):
         """
-        The function parse the configuration parameters and load the CUB_200_2011 dataset
-        :param config: YML configuration object
+        Constructor, The function parse the configuration parameters and load the CUB_200_2011 dataset.
+
+        :param config: Configuration class object
         """
         self.config = config
         self.train_transform = None  # Train transform
@@ -20,8 +21,12 @@ class Cub2002011Contrastive:
         self.load_dataset()  # Load the train and test datasets
 
     def get_transforms(self):
-        train_transforms = self.config.cfg["dataloader"]["transforms"]["train"]
-        test_transforms = self.config.cfg["dataloader"]["transforms"]["test"]
+        """
+            The function reads the train and test transformations specified in the configuration (.yml) file.
+        """
+        train_transforms = self.config.cfg["dataloader"]["transforms"]["train"]  # Key to the train transforms in config
+        test_transforms = self.config.cfg["dataloader"]["transforms"]["test"]  # Key to the test transforms in config
+        # Iterate over the train transformations in order and load them as torchvision Compose transform
         self.train_transform = transforms.Compose(
             [
                 get_object_from_path(train_transforms[i]['path'])(**train_transforms[i]['param'])
@@ -29,6 +34,7 @@ class Cub2002011Contrastive:
                 else get_object_from_path(train_transforms[i]['path'])() for i in train_transforms.keys()
             ]
         )
+        # Iterate over the test transformations in order and load them as torchvision Compose transform
         self.test_transform = transforms.Compose(
             [
                 get_object_from_path(test_transforms[i]['path'])(**test_transforms[i]['param'])
@@ -36,11 +42,12 @@ class Cub2002011Contrastive:
                 else get_object_from_path(test_transforms[i]['path'])() for i in test_transforms.keys()
             ]
         )
+        # Load the transformations for contrastive self-supervised learning
         self.contrastive_transforms = get_object_from_path(self.config.cfg["dataloader"]["transforms"]["contrastive"])
 
     def load_dataset(self):
         """
-        Load the train and test datasets
+        The function loads the train and test datasets.
         """
         # Parse configuration
         data_root_directory = self.config.cfg["dataloader"]["root_directory_path"]  # Dataset root directory path
@@ -60,7 +67,8 @@ class Cub2002011Contrastive:
 
     def get_dataloader(self):
         """
-        Create and return train and test dataloaders
+        The function creates and returns the train and test dataloaders.
+
         :return: train_dataloader, test_dataloader
         """
         # Parse configuration

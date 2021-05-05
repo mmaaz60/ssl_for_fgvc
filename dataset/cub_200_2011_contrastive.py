@@ -7,6 +7,9 @@ import tarfile
 
 
 class Cub2002011Contrastive(Dataset):
+    """
+    The class implements the routines to load the CUB-200-2011 dataset for contrastive SSL training.
+    """
     base_folder = 'CUB_200_2011/images'  # Base dataset path
     google_drive_id = '1ZzCyTEYBOGDlHzcKCJqKzHX4SlJFUVEz'  # Google drive ID to download the dataset
     filename = 'CUB_200_2011.tgz'  # Dataset TGZ file name
@@ -14,7 +17,8 @@ class Cub2002011Contrastive(Dataset):
     def __init__(self, root, train=True, download=True, loader=default_loader, resize_dims=None, transform=None,
                  contrastive_transforms=None, train_data_fraction=1, test_data_fraction=1):
         """
-        The class implements the routines to load the CUB-200-2011 dataset for contrastive SSL training.
+        Constructor, the function initializes the class variables, downloads the dataset (if prompted to do so) and
+        verifies the data presence/status.
 
         :param root: Dataset root path
         :param train: Train dataloader flag (True: Train Dataloader, False: Test Dataloader)

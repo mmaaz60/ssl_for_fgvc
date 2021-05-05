@@ -5,9 +5,12 @@ from utils.util import get_object_from_path
 
 
 class Cub2002011:
+    """
+    The class defines the flow of loading the dataloaders for CUB-200-2011 dataset.
+    """
     def __init__(self, config):
         """
-        The class defines the flow of loading the dataloaders for CUB-200-2011 dataset.
+        Constructor, the function parse the configuration parameters and load the CUB_200_2011 dataset.
 
         :param config: Configuration class object
         """

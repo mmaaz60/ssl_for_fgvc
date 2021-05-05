@@ -55,7 +55,7 @@ def collate_test(batch):
 class DCL:
     def __init__(self, config):
         """
-        The function parses the configuration parameters and load the CUB_200_2011 dataset.
+        The class defines the flow of loading the dataloaders for CUB-200-2011 dataset for DCL SSL training.
 
         :param config: Configuration class object
         """

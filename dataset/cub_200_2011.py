@@ -25,8 +25,7 @@ class Cub2002011(Dataset):
     def __init__(self, root, train=True, download=True, loader=default_loader, resize_dims=None, transform=None,
                  train_data_fraction=1, test_data_fraction=1):
         """
-        Constructor, The function initializes the class variables, downloads the dataset (if prompted to do so) and
-        verifies the data presence/status.
+        The class implements the routines to load the CUB-200-2011 dataset for standard training.
 
         :param root: Dataset root path
         :param train: Train dataloader flag (True: Train Dataloader, False: Test Dataloader)

@@ -90,7 +90,6 @@ train:
   adv_loss_function_path: torch.nn.CrossEntropyLoss  # Adversarial Loss function
   # Loss functions for regression 'torch.nn.MSELoss', 'torch.nn.L1Loss' ; Loss func for class "torch.nn.BCELoss"
   jigsaw_loss_function_path: torch.nn.MSELoss
-  rotation_loss_function_path: torch.nn.CrossEntropyLoss  # Only valid for rotation trainer
   use_adv: True # Decides if adversarial of dcl must be used
   use_jigsaw: True # Decides if reconstruction of dcl must be used
   # Optimizer related configurations

@@ -50,7 +50,8 @@ if __name__ == "__main__":
     # Load pre-trained VISSL weights if prompted
     try:
         vissl_checkpoints_path = config.cfg["model"]["vissl_weights_path"]
-        model = load_vissl_weights(model, vissl_checkpoints_path)
+        if not len(vissl_checkpoints_path) == 0:
+            model = load_vissl_weights(model, vissl_checkpoints_path)
     except KeyError:
         pass
     # Create the trainer and run training

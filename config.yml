@@ -7,9 +7,10 @@ general:
 
 # All configurations related to dataloader will be under this header
 dataloader:
-  name: dcl  # Name of the dataloader to be used
+  # Name of the dataloader to be used, possible choices are ['cub_200_2011', 'cub_200_2011_contrastive', 'dcl']
+  name: dcl
   # Fraction of training data to be used for current training, it may by 0.1 or 0.2 for semi-supervised fine tuning
-  train_data_fraction: 1.0
+  train_data_fraction: 1.0  # Fraction of train data to be used during current training
   test_data_fraction: 1.0  # Fraction of test data to be used during current training
   download: True  # Flag in order to decide if to download the dataset or not
   root_directory_path: ./data/CUB_200_2011  # The root directory path of the dataset
@@ -40,7 +41,7 @@ dataloader:
           size: [7, 7]
           swap_range: 2
     # Final transformations for dcl training
-    final_train:
+    train:
       t_1:
         path: torchvision.transforms.Resize
         param:
@@ -53,7 +54,7 @@ dataloader:
           mean: [0.485, 0.456, 0.406]
           std: [0.229, 0.224, 0.225]
     # Final transformations for dcl testing
-    final_test:
+    test:
       t_1:
         path: torchvision.transforms.Resize
         param:
@@ -72,17 +73,19 @@ dataloader:
 
 # All configurations related to model will be under this header
 model:
-  name: dcl  # Name/source of the model
+  # Name/source of the model, possible choices are ['torchvision', 'fgvc_resnet', torchvision_ssl_rotation', 'fgvc_ssl_rotation', 'torchvision_ssl_pirl', 'dcl']
+  name: dcl
   # Complete model class path (i.e. torchvision.models.resnet50, torchvision.models.alexnet, etc.)
   model_function_path: torchvision.models.resnet50
   pretrained: True  # Either to load weights from pretrained imagenet model
   classes_count: 200  # Number of classes
-  # "regression" performs regression for jigsaw location, "class" selects integer classes for jigsaw labels locations
+  # "regression" performs regression for jigsaw location, "class" selects integer classes for jigsaw labels locations. Only valid for dcl model
   prediction_type: regression
-  # Path to load pre-trained weights from
-  checkpoints_path:
+  rotation_classes_count: 4  # Number of rotation classes, only valid for rotation model
+  # Path to load the VISSL pretrained weights. Leave it empty or remove it if not intended to use. Ambiguous errors may occur otherwise as this option is not vigorously tested.
+  vissl_weights_path:
 
-# Configuration related to the diversification block will be under this head
+# Configuration related to the diversification block will be under this head, only valid for FGVC models
 diversification_block:
   p_peak: 0.5  # Probability for peak selection
   p_patch: 0.5  # Probability for patch selection
@@ -92,18 +95,18 @@ diversification_block:
 
 # All configurations related to training will be under this header
 train:
-  name: dcl_trainer  # Name of the trainer to use
+  name: dcl_trainer  # Name of the trainer to use, possible choices are ['base_trainer', 'ssl_rot_trainer', 'ssl_pirl_trainer', 'dcl_trainer']
   epochs: 110  # Number of epochs
   warm_up_epochs: 0  # Number of warm up epochs
-  warm_up_loss_function_path: torch.nn.CrossEntropyLoss  # Standard cross entropy loss
-  class_loss_function_path: torch.nn.CrossEntropyLoss  # Class Loss function
-  adv_loss_function_path: torch.nn.CrossEntropyLoss  # Adversarial Loss function
-  # Loss functions for regression: 'torch.nn.MSELoss', 'torch.nn.L1Loss' ; Loss func for class: torch.nn.BCELoss
-  jigsaw_loss_function_path: torch.nn.L1Loss
-  rotation_loss_function_path: torch.nn.CrossEntropyLoss  # Only valid for rotation trainer
-  use_adv: True # Decides if adversarial of dcl must be used
-  use_jigsaw: True # Decides if reconstruction of dcl must be used
-  rotation_loss_weight: 0.2  # Only valid for rotation trainer
+  warm_up_loss_function_path: torch.nn.CrossEntropyLoss  # Loss to be used during warm-up epochs
+  class_loss_function_path: torch.nn.CrossEntropyLoss  # Class Loss function to be used after warm-up epochs
+  adv_loss_function_path: torch.nn.CrossEntropyLoss  # Adversarial Loss function, only valid for dcl model
+  # Loss functions for regression 'torch.nn.MSELoss', 'torch.nn.L1Loss' ; Loss func for class "torch.nn.BCELoss", only valid for dcl
+  jigsaw_loss_function_path: torch.nn.MSELoss
+  rotation_loss_function_path: torch.nn.CrossEntropyLoss  # Rotation loss function, only valid for rotation trainer
+  rotation_loss_weight: 0.1  # Rotation loss weight (lambda), only valid for rotation trainer
+  use_adv: True # Decides if adversarial loss of dcl must be used, only valid for dcl
+  use_jigsaw: True # Decides if reconstruction of dcl must be used, only valid for dcl
   # Optimizer related configurations
   optimizer_path: torch.optim.SGD  # Complete optimizer class path
   optimizer_param:

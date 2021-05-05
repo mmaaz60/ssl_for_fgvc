@@ -1,3 +1,5 @@
+# Configuration
+
 The table below list the details of the configurable parameters in [config.yml](config.yml).
 
 | Name| Parameter      | Description | Expected Value    |
@@ -49,4 +51,4 @@ The table below list the details of the configurable parameters in [config.yml](
 | |optimizer_param: momentum|Momentum for optimizer(if SGD)|float: Any float value eg. 0.9
 | |optimizer_param: weight_decay|Weight decay in optimizer|float: Any float value eg. 0.0001|
 | |lr_scheduler: step_size|Step size of learning rate scheduler|int: any integer value. eg. 10, 30, 50|
-| |r_scheduler: gamma|Decay factor of learning rate scheduler|float: Any float value eg. 0.0001
+| |lr_scheduler: gamma|Decay factor of learning rate scheduler|float: Any float value eg. 0.0001

@@ -1,3 +1,7 @@
+"""
+Credits: The code has been taken from https://github.com/HobbitLong/PyContrast/tree/master/pycontrast1
+"""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

@@ -94,6 +94,8 @@ def parse_arguments():
     ap.add_argument("-cam", "--cam_method", required=False, default='GradCAM',
                     help="Cam method to use. Possible options are "
                          "[GradCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM]")
+    ap.add_argument("-checkpoints", "--model_checkpoints", required=True,
+                    help="The path to model checkpoints.")
     ap.add_argument("-save", "--output_directory", required=True,
                     help="The path to output directory to save the visualizations.")
     ap.add_argument("-dim", "--output_dim", type=int, required=False, default=448,
@@ -130,7 +132,7 @@ def main():
     model = Model(config=config).get_model()
     model = model.to(args["device"])
     # Load pretrained weights
-    checkpoints_path = config.cfg["model"]["checkpoints_path"]
+    checkpoints_path = args["model_checkpoints"]
     checkpoints = torch.load(checkpoints_path)
     model.load_state_dict(checkpoints["state_dict"], strict=True)
     # Create CAM visualizer object

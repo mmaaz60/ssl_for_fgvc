@@ -4,13 +4,14 @@ from utils.util import get_object_from_path
 
 class TorchvisionSSLRotation(nn.Module):
     """
-    This class inherits from nn.Module class
+    The class adds rotation as an auxiliary task to the standard torchvision network.
     """
 
     def __init__(self, config):
         """
-        The function parse the config and initialize the layers of the corresponding model
-        :param config: YML configuration file to parse the parameters from
+        Constructor, the function parse the config and initialize the layers of the corresponding model.
+
+        :param config: Configuration class object
         """
         super(TorchvisionSSLRotation, self).__init__()  # Call the constructor of the parent class
         # Parse the configuration parameters
@@ -21,27 +22,28 @@ class TorchvisionSSLRotation(nn.Module):
         # Load the model
         self.model = self.model_function(pretrained=self.pretrained)
         net_list = list(self.model.children())
-        self.feature_extractor = nn.Sequential(*net_list[:-1])
-        self.flatten = nn.Flatten()
+        self.feature_extractor = nn.Sequential(*net_list[:-1])  # Feature extractor
+        self.flatten = nn.Flatten()  # Flatten layer
+        # CUB classification head
         self.classification_head = nn.Linear(in_features=self.model.fc.in_features,
                                              out_features=self.num_classes_classification,
                                              bias=(self.model.fc.bias is not None))
+        # Rotation classification head
         self.rotation_head = nn.Linear(in_features=self.model.fc.in_features, out_features=self.num_classes_rot,
                                        bias=(self.model.fc.bias is not None))
 
     def forward(self, x, train=False):
         """
-        The function implements the forward pass of the network/model
-        :param train:
-        :param x: Batch of inputs (images)
-        :return:
-        """
+        The function implements the forward pass of the model.
 
-        # Model without diverse block
-        features = self.feature_extractor(x)
-        features = self.flatten(features)
-        y_classification = self.classification_head(features)
+        :param x: Input image tensor
+        :param train: Flag to specify either train or test mode
+        """
+        features = self.feature_extractor(x)  # Feature extraction
+        features = self.flatten(features)  # Flatten the features
+        y_classification = self.classification_head(features)  # CUB Classification
         if train:
+            # Rotation classification if train
             y_rotation = self.rotation_head(features)
             return y_classification, y_rotation
         else:

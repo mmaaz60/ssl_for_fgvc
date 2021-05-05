@@ -6,13 +6,15 @@ from layers.diversification_block import DiversificationBlock
 
 class FGVCSSLRotation(nn.Module):
     """
-    This class inherits from nn.Module class
+    The class adds the rotation as an auxiliary task to the FGVC model from
+    (http://arxiv.org/abs/1912.06842).
     """
 
     def __init__(self, config):
         """
-        The function parse the config and initialize the layers of the corresponding model
-        :param config: YML configuration file to parse the parameters from
+        Constructor, The function parse the config and initialize the layers of the corresponding model.
+
+        :param config: Configuration class object
         """
         super(FGVCSSLRotation, self).__init__()  # Call the constructor of the parent class
         # Parse the configuration parameters
@@ -33,17 +35,18 @@ class FGVCSSLRotation(nn.Module):
 
     def forward(self, x, train=False):
         """
-        The function implements the forward pass of the network/model
-        :param train:
-        :param db_flag:
-        :param x: Batch of inputs (images)
-        :return:
+        The function implements the forward pass of the model.
+
+        :param x: Input image tensor
+        :param train: Flag to specify either train or test mode
         """
-        out = self.cam(x)
+        out = self.cam(x)  # Calculate the CAMs
         if train:
+            # Diversification block is only used during training
             out = self.diversification_block(out)
-        y_classification = out.mean([2, 3])
+        y_classification = out.mean([2, 3])  # Get the classification scores
         if train:
+            # SSL rotation prediction part, only during training
             out = self.adaptive_pooling(out)
             out = self.flatten(out)
             y_rotation = self.rotation_head(out)

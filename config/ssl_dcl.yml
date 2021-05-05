@@ -1,0 +1,105 @@
+# All general configurations will be under this header
+general:
+  output_directory: results  # The output directory to save the training progress and results
+  experiment_id: ssl_dcl # The experiment id
+  # The name of the model checkpoints directory to save the intermediate model checkpoints
+  model_checkpoints_directory_name: checkpoints
+
+# All configurations related to dataloader will be under this header
+dataloader:
+  name: dcl  # Name of the dataloader to be used
+  # Fraction of training data to be used for current training, it may by 0.1 or 0.2 for semi-supervised fine tuning
+  train_data_fraction: 1  # Fraction of train data to be used during current training
+  test_data_fraction: 1  # Fraction of test data to be used during current training
+  download: True  # Flag in order to decide if to download the dataset or not
+  root_directory_path: ./data/CUB_200_2011  # The root directory path of the dataset
+  resize_width: 600  # Image resize width
+  resize_height: 600  # Image resize height
+  batch_size: 8  # Batch size for training and testing
+  shuffle: True  # Either to shuffle the dataset for training or not
+  num_workers: 16  # Number of parallel workers to load the dataset
+  # The train and test data transforms
+  transforms:
+    # Common transforms for dcl
+    common:
+      t1:
+        path: torchvision.transforms.Resize
+        param:
+          size: [600, 600]
+      t_2:
+        path: torchvision.transforms.RandomCrop
+        param:
+          size: [448, 448]
+      t_3:
+        path: torchvision.transforms.RandomHorizontalFlip
+    # Jigsaw transform for dcl
+    jigsaw:
+      t_1:
+        path: transforms.dcl.RandomSwap
+        param:
+          size: [7, 7]
+          swap_range: 2
+    # Final transformations for dcl training
+    train:
+      t_1:
+        path: torchvision.transforms.Resize
+        param:
+          size: [448, 448]
+      t_2:
+        path: torchvision.transforms.ToTensor
+      t_3:
+        path: torchvision.transforms.Normalize
+        param:
+          mean: [0.485, 0.456, 0.406]
+          std: [0.229, 0.224, 0.225]
+    # Final transformations for dcl testing
+    test:
+      t_1:
+        path: torchvision.transforms.Resize
+        param:
+          size: [600, 600]
+      t_2:
+        path: torchvision.transforms.CenterCrop
+        param:
+          size: [448, 448]
+      t_3:
+        path: torchvision.transforms.ToTensor
+      t_4:
+        path: torchvision.transforms.Normalize
+        param:
+          mean: [0.485, 0.456, 0.406]
+          std: [0.229, 0.224, 0.225]
+
+# All configurations related to model will be under this header
+model:
+  name: dcl  # Name/source of the model
+  # Complete model class path (i.e. torchvision.models.resnet50, torchvision.models.alexnet, etc.)
+  model_function_path: torchvision.models.resnet50
+  pretrained: True  # Either to load weights from pretrained imagenet model
+  classes_count: 200  # Number of classes
+  # "regression" performs regression for jigsaw location, "class" selects integer classes for jigsaw labels locations
+  prediction_type: regression
+
+# All configurations related to training will be under this header
+train:
+  name: dcl_trainer  # Name of the trainer to use
+  epochs: 110  # Number of epochs
+  warm_up_epochs: 0  # Number of warm up epochs
+  warm_up_loss_function_path: torch.nn.CrossEntropyLoss  # Standard cross entropy loss
+  class_loss_function_path: torch.nn.CrossEntropyLoss  # Class Loss function
+  adv_loss_function_path: torch.nn.CrossEntropyLoss  # Adversarial Loss function
+  # Loss functions for regression 'torch.nn.MSELoss', 'torch.nn.L1Loss' ; Loss func for class "torch.nn.BCELoss"
+  jigsaw_loss_function_path: torch.nn.MSELoss
+  rotation_loss_function_path: torch.nn.CrossEntropyLoss  # Only valid for rotation trainer
+  use_adv: True # Decides if adversarial of dcl must be used
+  use_jigsaw: True # Decides if reconstruction of dcl must be used
+  # Optimizer related configurations
+  optimizer_path: torch.optim.SGD  # Complete optimizer class path
+  optimizer_param:
+    lr: 0.001  # Learning rate
+    momentum: 0.9  # Momentum
+    weight_decay: 0.0001  # Weight Decay
+  # Learning rate scheduler configurations
+  lr_scheduler:
+    step_size: 50  # Step size
+    gamma: 0.1  # Decay factor

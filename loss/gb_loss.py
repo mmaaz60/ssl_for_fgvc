@@ -1,3 +1,7 @@
+"""
+Credits: Dr. Salman @ salman.khan@mbzuai.ac.ae
+"""
+
 import torch
 import torch.nn as nn
 

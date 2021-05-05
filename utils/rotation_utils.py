@@ -1,3 +1,7 @@
+"""
+Credits: https://github.com/valeoai/BF3S
+"""
+
 import torch
 
 

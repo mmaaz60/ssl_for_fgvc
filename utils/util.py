@@ -9,6 +9,12 @@ logger = logging.getLogger(f"utils/util.py")
 
 
 def get_object_from_path(path):
+    """
+    The function returns the callable function from the path.
+
+    :param path: Path to the function (string)
+    :return: Callable instance corresponding to the path
+    """
     assert type(path) is str
     mod_path = '.'.join(path.split('.')[:-1])
     object_name = path.split('.')[-1]
@@ -18,6 +24,12 @@ def get_object_from_path(path):
 
 
 def download_file_from_google_drive(id, destination):
+    """
+    The function downloads the specified file from the google drive.
+
+    :param id: Unique google drive token for the file to download
+    :param destination: Destination path
+    """
     URL = "https://docs.google.com/uc?export=download"
 
     session = requests.Session()
@@ -33,6 +45,9 @@ def download_file_from_google_drive(id, destination):
 
 
 def get_confirm_token(response):
+    """
+    The helper function for download_file_from_google_drive()
+    """
     for key, value in response.cookies.items():
         if key.startswith('download_warning'):
             return value
@@ -41,6 +56,9 @@ def get_confirm_token(response):
 
 
 def save_response_content(response, destination):
+    """
+    The helper function for download_file_from_google_drive()
+    """
     CHUNK_SIZE = 32768
 
     with open(destination, "wb") as f:
@@ -50,7 +68,14 @@ def save_response_content(response, destination):
 
 
 def preprocess_input_data_rotation(images, labels, rotation=True):
-    """Preprocess a mini-batch of images."""
+    """
+    The function preprocess a mini-batch of images and creates four rotated images along with the rotation labels.
+
+    :param images: Batch of images
+    :param labels: Original labels
+    :param rotation: Flag to indicate if to apply the rotation or not.
+    :return: Rotated images, original labels, rotation labels
+    """
     if rotation:
         # Create the 4 rotated version of the images; this step increases
         # the batch size by a multiple of 4.
@@ -62,6 +87,9 @@ def preprocess_input_data_rotation(images, labels, rotation=True):
 
 
 def load_vissl_weights(model, checkpoints_path):
+    """
+    The function loads the VISSL (https://github.com/facebookresearch/vissl) weights.
+    """
     checkpoint = torch.load(checkpoints_path)
     updated_checkpoints_dict = {}
     for key in checkpoint:
@@ -73,6 +101,13 @@ def load_vissl_weights(model, checkpoints_path):
 
 
 def random_sample(img_names, labels):
+    """
+    The function randomly samples the images and corresponding labels.
+
+    :param img_names: Images names
+    :param labels: Corresponding labels
+    :return: Randomly sampled image names and corresponding labels
+    """
     ann_dict = {}
     img_list = []
     ann_list = []
@@ -91,6 +126,13 @@ def random_sample(img_names, labels):
 
 
 def get_image_crops(image, crop_size):
+    """
+    The function create crops of provided image of size specified by crop_size.
+
+    :param image: Input image
+    :param crop_size: Required crop size
+    :return: List of image crops (each crop is of size 'crop_size')
+    """
     width, high = image.size
     crop_x = [int((width / crop_size[0]) * i) for i in range(crop_size[0] + 1)]
     crop_y = [int((high / crop_size[1]) * i) for i in range(crop_size[1] + 1)]
@@ -102,6 +144,16 @@ def get_image_crops(image, crop_size):
 
 
 def save_model_checkpoints(checkpoints_dir_path, epoch, state_dict, metrics, last_best_accuracy):
+    """
+    The function saves the training checkpoints (both current and best).
+
+    :param checkpoints_dir_path: Checkpoints directory path
+    :param epoch: Current epoch
+    :param state_dict: Model's state dict of parameters
+    :param metrics: The metrics of the epoch
+    :param last_best_accuracy: Last best accuracy
+    :return: Current best accuracy
+    """
     current_best_accuracy = last_best_accuracy  # Variable to keep track of the current best accuracy
     # Save the model checkpoints
     model_to_save = {

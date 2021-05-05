@@ -9,6 +9,9 @@ from train.common import Trainer
 from utils.util import load_vissl_weights
 
 if __name__ == "__main__":
+    """
+    This script implements the main flow of the training pipeline.
+    """
     # Config path
     config_path = "config.yml"
     # Load the configuration file

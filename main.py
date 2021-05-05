@@ -47,10 +47,10 @@ if __name__ == "__main__":
     train_loader, test_loader = dataloader.get_loader()
     # Create the model
     model = Model(config=config).get_model()
-    # Load pre-trained weights if required
+    # Load pre-trained VISSL weights if prompted
     try:
-        checkpoints_path = config.cfg["model"]["checkpoints_path"]
-        model = load_vissl_weights(model, checkpoints_path)
+        vissl_checkpoints_path = config.cfg["model"]["vissl_weights_path"]
+        model = load_vissl_weights(model, vissl_checkpoints_path)
     except KeyError:
         pass
     # Create the trainer and run training

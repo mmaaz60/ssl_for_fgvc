@@ -68,7 +68,7 @@ def main():
         vissl_checkpoints_path = config.cfg["model"]["vissl_weights_path"]
         if not len(vissl_checkpoints_path) == 0:
             model = load_vissl_weights(model, vissl_checkpoints_path)
-    except KeyError:
+    except Exception:
         pass
     # Create the trainer and run training
     warm_up_epochs = config.cfg["train"]["warm_up_epochs"]

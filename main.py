@@ -7,13 +7,29 @@ from dataloader.common import Dataloader
 from model.common import Model
 from train.common import Trainer
 from utils.util import load_vissl_weights
+import argparse
 
-if __name__ == "__main__":
+
+def parse_arguments():
     """
-    This script implements the main flow of the training pipeline.
+    Parse the command line arguments
     """
-    # Config path
-    config_path = "config.yml"
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-config", "--config_path", required=False, default="config.yml",
+                    help="The path to the pipeline .yml configuration file.")
+
+    args = vars(ap.parse_args())
+
+    return args
+
+
+def main():
+    """
+    This method implements the main flow of the training pipeline.
+    """
+    # Parse the arguments
+    args = parse_arguments()
+    config_path = args["config_path"]  # Config path
     # Load the configuration file
     config.load_config(config_path)
     # Read the general configuration parameters
@@ -66,3 +82,10 @@ if __name__ == "__main__":
                  f"for {config.cfg['train']['epochs'] - warm_up_epochs} epochs.")
     trainer = Trainer(config=config, model=model, dataloader=train_loader, val_dataloader=test_loader).get_trainer()
     trainer.train_and_validate(start_epoch=warm_up_epochs + 1)
+
+
+if __name__ == "__main__":
+    """
+    This script calls the main() which implements the main flow of the training pipeline.
+    """
+    main()

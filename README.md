@@ -4,8 +4,20 @@ The repository contains the implementation of adding self-supervision as an auxi
 Specifically, it provides the implementation for rotation, pretext invariant representation learning (PIRL) and destruction and construction learning (DCL) 
 as auxiliary tasks for the baseline model.
 
+![CAM Visualization](images/CAM.jpg)
+
 ## Available Models
 The list of implemented model architectures can be found at [here](model/README.md).
+
+## Pipeline Configuration
+All the functionalities of this repository can be accessed using a `.yml` configuration file. 
+The details related to the configuration parameters can be found at [here]().
+
+We also provide sample configuration files at `./config/*` for each implemented method as listed below.
+1. [Baseline Config](config/baseline.yml)
+1. [SSL Rotation Config](config/ssl_rotation.yml)
+1. [SSL PIRL Config](config/ssl_pirl.yml)
+1. [SSL DCL Config](config/ssl_dcl.yml)
 
 ## Dependencies
 * Ubuntu based machine with NVIDIA GPU is required to run the training and evaluation. The code has been developed on a machine having Ubuntu 18.04 LTS distribution with one 24GB Quadro RTX 6000 GPU. 
@@ -24,8 +36,9 @@ $ conda activate ssl_for_fgvc
 $ pip install -r requirements.txt
 ```
 
-## Evaluation of Pretrained Models
-All the pretrained models can be found at [here](). In order to evaluate a model, download the model 
+## Evaluating Pretrained Models
+All the pretrained models can be found at [click_me](https://mbzuaiac-my.sharepoint.com/:f:/g/personal/20020063_mbzuai_ac_ae/EtMbK1h75NhPmvr4L_xANoABklXEyadRsBPHSfI8I9jhlA?e=JEuXy3). 
+In order to evaluate a model, download the model 
 checkpoints from the link and use `scripts/evaluate.py` script for evaluating the model on the test set.
 
 ```bash
@@ -34,10 +47,48 @@ $ python evaluate.py --config_path=<path to the corresponding configuration '.ym
 --model_checkpoints=<path to the downloaded model checkpoints> \
 --root_dataset_path=<path to the dataset root directory>
 ```
-If the `--root_dataset_path` command line parameter has not been provided to `evaluate.py` script, it download the dataset 
-and perform the testing. The downloading of data may take some time based on the network stability and speed.
+If the `--root_dataset_path` command line parameter has not been provided to `evaluate.py` script, it will download the dataset 
+and perform the testing. The downloading of data may take some time based on the network stability and speed. For more information run,
+```bash
+$ python evaluate.py --help
+```
 
+### Sample Input and Expected Output
+For example, in order to evaluate the DCL model, download the corresponding checkpoints 
+(let's say in the `scripts` directory as `ssl_dcl/best_checkpoints.pth`) 
+and run the following commands.
 
+```bash
+$ cd scripts
+$ python evaluate.py --config_path=../config/ssl_dcl.yml --model_checkpoints=./ssl_dcl/best_checkpoints.pth
+```
+The expected outputs after running the command are given below.
+
+![Evaluation Outputs for DCL Model](images/evaluation_dcl_sample_output.png)
+
+## Training Models from Scratch
+The end-to-end training functionality can be accessed using the [`main.py`](main.py) script. 
+The script takes pipeline config (`.yml`) file as command line parameter and initiates the corresponding training. 
+
+```bash
+$ python main.py --config_path=<path to the corresponding configuration '.yml' file.>
+```
+For more information run,
+```bash
+$ python main.py --help
+```
+### Sample Input and Expected Output
+For example, to train a DCL model run,
+```
+$ python main.py --config_path=./config/ssl_dcl.yml
+```
+The expected outputs after running the command are given below.
+
+![Training Outputs for DCL Model](images/evaluation_dcl_sample_output.png)
+
+## CAM Visualization
+
+## Docker
 Follow the following commands to run the training,
 
 1. Install docker dependencies using [install_docker_dependencies.sh](scripts/install_docker_dependencies.sh).

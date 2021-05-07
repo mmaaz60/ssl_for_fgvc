@@ -79,9 +79,9 @@ def main():
             batch_corrects_2 = torch.sum((top_2_pos[:, 1] == labels)).data.item()
             total_correct_predictions_top_2 += (batch_corrects_2 + batch_corrects_1)
             if batch_idx % 50 == 0:
-                metrics['loss'] = float(total_loss) / len(test_loader)
-                metrics['accuracy_top_1'] = float(total_correct_predictions_top_1) / total_predictions
-                metrics['accuracy_top_2'] = float(total_correct_predictions_top_2) / total_predictions
+                metrics['loss'] = round(float(total_loss) / len(test_loader), 4)
+                metrics['accuracy_top_1'] = round(float(total_correct_predictions_top_1) / total_predictions, 4)
+                metrics['accuracy_top_2'] = round(float(total_correct_predictions_top_2) / total_predictions, 4)
                 print(f"Step {batch_idx}/{len(test_loader)}, Test loss: {metrics['loss']}, "
                       f"Top-1 Test accuracy: {metrics['accuracy_top_1']}"
                       f", Top-2 Test accuracy: {metrics['accuracy_top_2']}")

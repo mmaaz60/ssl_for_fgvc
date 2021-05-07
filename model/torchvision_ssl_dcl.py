@@ -41,7 +41,7 @@ class TorchVisionSSLDCL(nn.Module):
         self.conv_mask_cls = nn.Conv2d(in_channels=net.fc.in_features, out_channels=self.jigsaw_class, kernel_size=1,
                                        stride=1, padding=0, bias=True)
         self.avg_pool_1 = nn.AvgPool2d(2, stride=2)
-        # Jigsaw permutation prediction head
+        # Jigsaw permutation prediction head for 7*7 patches
         self.jigsaw_cls_classifier = nn.Linear(in_features=49, out_features=self.jigsaw_class, bias=True)
         self.flatten = nn.Flatten()  # Flatten layer
         self.tan_h = nn.Tanh()  # Tanh activation
@@ -58,16 +58,19 @@ class TorchVisionSSLDCL(nn.Module):
         feat = self.feature_extractor(x)  # Feature extraction
         classifier = self.avg_pool(feat)  # Adaptive average pooling
         classifier = self.flatten(classifier)  # Flatten the features
-        cls_classifier = self.cls_classifier(classifier)  # Cls classifier
+        cls_classifier = self.cls_classifier(classifier)  # Classification head predicts N classes
         if train:
             # Calculate Adv classifier and jigsaw permutation head outputs if train
-            adv_classifier = self.adv_classifier(classifier)
+            adv_classifier = self.adv_classifier(classifier)  # Adversarial head predicts 2N classes
             jigsaw_mask = self.conv_mask(feat)
+            # Chooses a regression or classification type prediction for jigsaw reconstruction
             if self.prediction_type == "regression":
+                # Regresses the jigsaw reconstructed locations
                 jigsaw_mask = self.avg_pool_1(jigsaw_mask)
                 jigsaw_mask = self.tan_h(jigsaw_mask)
                 jigsaw_mask = self.flatten(jigsaw_mask)
             else:
+                # Classification type of prediction for reconstruction
                 jigsaw_mask = self.relu(jigsaw_mask)
                 jigsaw_mask = self.avg_pool_1(jigsaw_mask)
                 jigsaw_mask = self.flatten(jigsaw_mask)
@@ -76,4 +79,5 @@ class TorchVisionSSLDCL(nn.Module):
 
             return [cls_classifier, adv_classifier, jigsaw_mask]
         else:
+            # Calculates only classification during testing
             return cls_classifier

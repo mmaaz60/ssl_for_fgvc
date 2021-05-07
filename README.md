@@ -28,7 +28,7 @@ We also provide sample configuration files at `./config/*` for each implemented 
 It is recommended to create a new conda environment for this project. The installation steps are as follows:
 1. Create new conda environment and activate it.
 ```bash
-$ conda create env --name=ssl_for_fgvc python=3.8
+$ conda create --name=ssl_for_fgvc python=3.8
 $ conda activate ssl_for_fgvc
 ```
 2. Install requirements as,
@@ -84,7 +84,7 @@ $ python main.py --config_path=./config/ssl_dcl.yml
 ```
 The expected outputs after running the command are given below.
 
-![Training Outputs for DCL Model](images/evaluation_dcl_sample_output.png)
+![Training Outputs for DCL Model](images/training_dcl.png)
 
 ## CAM Visualization
 The repository also provides the functionality to generate class activation maps (CAMs) 

@@ -1,7 +1,7 @@
 # Self-Supervised Learning for Fine Grained Image Categorization
 
-The repository contains the implementation of adding self-supervision as an auxiliary task to the baseline model for  fine-grained visual categorization (FGVC) task. 
-Specifically, it provides the implementation for rotation, pretext invariant representation learning (PIRL) and destruction and construction learning (DCL) 
+The repository contains the implementation of the project "Self Supervised Learning for Fine-grained Classification". The projects examines the effectiveness of various SSL for a FGVC problem. The repository implements self-supervision as an auxiliary task to a baseline model for fine-grained visual categorization (FGVC) task. 
+Specifically, it provides the implementation for rotation [1], pretext invariant representation learning (PIRL) [2] and destruction and construction learning (DCL) [3] 
 as auxiliary tasks for the baseline model.
 
 ![CAM Visualization](images/CAM.jpg)
@@ -127,3 +127,9 @@ $ docker-compose up -d
 ```
 $ docker-compose logs -f ssl_for_fgvc
 ```
+
+## Reference
+[1] Gidaris, Spyros, et al. "Boosting few-shot visual learning with self-supervision."\
+[2] Misra, Ishan, and Laurens van der Maaten. "Self-supervised learning of pretext-invariant representations."\
+[3] Chen, Yue, et al. "Destruction and construction learning for fine-grained image recognition." \
+[4] Sun, Guolei, et al. "Fine-grained recognition: Accounting for subtle differences between similar classes."

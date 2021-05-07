@@ -2,14 +2,14 @@ import torch
 from test.base_tester import BaseTester
 import logging
 from utils.util import preprocess_input_data_rotation
+from utils.util import save_model_checkpoints
 
 logger = logging.getLogger(f"train/ssl_rot_trainer.py")
 
 
 class SSLROTTrainer:
     def __init__(self, model, dataloader, class_loss_function, rot_loss_function, rotation_loss_weight, optimizer,
-                 epochs, lr_scheduler=None, val_dataloader=None, device="cuda", log_step=50, checkpoints_dir_path=None,
-                 diversification_test_flag=False):
+                 epochs, lr_scheduler=None, val_dataloader=None, device="cuda", log_step=50, checkpoints_dir_path=None):
         self.model = model
         self.dataloader = dataloader
         self.class_loss = class_loss_function()
@@ -87,20 +87,15 @@ class SSLROTTrainer:
 
     def train_and_validate(self, start_epoch, end_epoch=None):
         self.model = self.model.to(self.device)
+        best_accuracy = 0  # Variable to keep track of the best test accuracy to save the best model
         for i in range(start_epoch, end_epoch + 1 if end_epoch else self.epochs + 1):
             self.train_epoch(i)
             if self.validator:
                 val_metrics = self.validator.test(self.model)
                 self.metrics[i]["val"] = {}
                 self.metrics[i]["val"] = val_metrics
+                # Save the checkpoints
+                best_accuracy = save_model_checkpoints(self.checkpoints_dir_path, i, self.model.state_dict(),
+                                                       self.metrics[i], best_accuracy)
             if self.lr_scheduler:
                 self.lr_scheduler.step()
-            # Save the checkpoints
-            if self.checkpoints_dir_path:
-                model_to_save = {
-                    "epoch": i,
-                    "metrics": self.metrics[i],
-                    'state_dict': self.model.state_dict(),
-                }
-                torch.save(model_to_save,
-                           f"{self.checkpoints_dir_path}/epoch_{i}.pth")

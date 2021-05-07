@@ -28,8 +28,9 @@ class FGVCSSLRotation(nn.Module):
         self.p_patch = config.cfg["diversification_block"]["p_patch"]  # Probability for peak selection
         # Load the model
         self.cam = CAM(self.model_function, self.num_classes_classification, self.pretrained)
-        self.adaptive_pooling = nn.AdaptiveAvgPool2d(3)
-        self.flatten = nn.Flatten()
+        self.adaptive_pooling = nn.AdaptiveAvgPool2d(3)  # Adaptive average pooling for classification prediction
+        self.flatten = nn.Flatten()  # Flatten the features
+        # Adds a classification head for rotation prediction
         self.rotation_head = nn.Linear(self.num_classes_classification * 3 * 3, self.num_classes_rot)
         self.diversification_block = DiversificationBlock(self.kernel_size, self.alpha, self.p_peak, self.p_patch)
 
@@ -49,7 +50,7 @@ class FGVCSSLRotation(nn.Module):
             # SSL rotation prediction part, only during training
             out = self.adaptive_pooling(out)
             out = self.flatten(out)
-            y_rotation = self.rotation_head(out)
+            y_rotation = self.rotation_head(out)  # Classification head predicts rotation augmentation applied
             return y_classification, y_rotation
         else:
             return y_classification

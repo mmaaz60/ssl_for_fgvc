@@ -30,7 +30,7 @@ class SSLROTTrainer:
         self.dataloader = dataloader
         self.class_loss = class_loss_function()
         self.rot_loss = rot_loss_function()
-        self.rotation_loss_weight = rotation_loss_weight
+        self.rotation_loss_weight = rotation_loss_weight  # Decides contribution of rotation loss to total loss
         self.optimizer = optimizer
         self.epochs = epochs
         self.lr_scheduler = lr_scheduler
@@ -59,15 +59,18 @@ class SSLROTTrainer:
             inputs, labels = d
             inputs = inputs.to(self.device)
             labels = labels.to(self.device)
+            # Generates rotation augmented images and corresponding labels
+            # Augmented labels: Repeats of original class labels for each rotation of image
             augmented_inputs, augmented_labels, rot_labels = preprocess_input_data_rotation(
                 inputs, labels, rotation=True)
             class_outputs, rot_outputs = self.model(augmented_inputs, train=True)
 
-            # computing total loss from loss for classification head and rotation head
+            # Computing total loss from loss for classification head and rotation head
             classification_loss = self.class_loss(class_outputs, augmented_labels)
             total_cls_loss += classification_loss
             rot_loss = self.rot_loss(rot_outputs, rot_labels)
             total_rot_loss += rot_loss
+            # Limits contribution of rotation loss by rotation_loss_weight
             loss = (1 - self.rotation_loss_weight) * classification_loss + self.rotation_loss_weight * rot_loss
             total_loss += loss
 

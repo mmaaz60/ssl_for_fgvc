@@ -52,8 +52,9 @@ class DiversificationBlock(nn.Module):
         # Bernoulli prob for p_patch
         p_patch = torch.bernoulli(torch.mul(torch.ones(patches.size()[:-2],
                                                        device=self.device), torch.tensor(self.p_patch)))
-        bc_dd = torch.zeros_like(patches)  # Mask for peaks for each class
-        bc_dd[p_patch == 1] = 1
+        bc_dd = torch.zeros_like(patches)  # Mask initialization for peaks for each patch
+        bc_dd[p_patch == 1] = 1  # Sets value 1 to suppress at random peak locations
+        # Combines mask patches to single mask
         bc_dd = (bc_dd.reshape(b, c, l, k, self.kernel_size * self.kernel_size)).permute(0, 1, 4, 2, 3)
         bc_dd = bc_dd.reshape(b, c, self.kernel_size * self.kernel_size, -1)
         bc_dd_batch = torch.zeros_like(activation)

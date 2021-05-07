@@ -60,15 +60,18 @@ class DCLTrainer:
             labels = Variable(torch.from_numpy(np.array(labels))).to(self.device)
             labels_jigsaw = Variable(torch.from_numpy(np.array(labels_jigsaw))).to(self.device)
             patch_labels = Variable(torch.from_numpy(np.array(patch_labels))).float().to(self.device)
+            # Predicts CUB classes(N), Adversarial classes(2N) and jigsaw reconstructed locations(49)
             cls_outputs, adv_outputs, jigsaw_mask_outputs = self.model(inputs, train=True)
             cls_loss = self.cls_loss(cls_outputs, labels)
             adv_loss = self.adv_loss(adv_outputs, labels_jigsaw)
             # jigsaw reconstruct uses regression type with l1  or mse loss or class with bce loss
             jigsaw_loss = self.jigsaw_loss(jigsaw_mask_outputs, patch_labels)
-            loss = cls_loss
+            loss = cls_loss  # # Adds CUB classification loss to total loss
             if self.use_adv:
+                # Adds adversarial loss to total loss
                 loss += adv_loss
             if self.use_jigsaw:
+                # Adds reconstruction loss to total loss
                 loss += jigsaw_loss
             total_loss += loss
             _, preds = torch.max(cls_outputs, 1)

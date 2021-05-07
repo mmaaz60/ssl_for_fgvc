@@ -1,5 +1,6 @@
 import torch
 from test.base_tester import BaseTester
+from utils.util import save_model_checkpoints
 import logging
 
 logger = logging.getLogger(f"train/ssl_pirl_trainer.py")
@@ -8,6 +9,21 @@ logger = logging.getLogger(f"train/ssl_pirl_trainer.py")
 class SSLPIRLTrainer:
     def __init__(self, model, dataloader, loss_function, optimizer, epochs, memory,
                  lr_scheduler=None, val_dataloader=None, device="cuda", log_step=50, checkpoints_dir_path=None):
+        """
+        Constructor, the function initializes the training related parameters.
+
+        :param model: The model to train
+        :param dataloader: The dataloader to get training samples from
+        :param loss_function:  The loss function
+        :param optimizer: The optimizer to be used for training
+        :param epochs: Number of epochs
+        :param memory: The instance of memory bank to be used for PIRL
+        :param lr_scheduler:  Learning rate scheduler
+        :param val_dataloader: Validation dataloader to get the validation samples
+        :param device:  The execution device
+        :param log_step:  # Logging step, after each log_step batches a log will be recorded
+        :param checkpoints_dir_path:  # Checkpoints directory to save the model training progress and checkpoints
+        """
         self.model = model
         self.dataloader = dataloader
         self.loss = loss_function()
@@ -24,16 +40,20 @@ class SSLPIRLTrainer:
     @staticmethod
     def _compute_pirl_loss(logits, target, criterion):
         """
-        Args:
-          logits: a list of logits, each with a contrastive task
-          target: contrastive learning target
-          criterion: typically nn.CrossEntropyLoss
+        The function computes the PIRL losses. The implementation is based on https://github.com/HobbitLong/PyContrast
+
+        :param logits: a list of logits, each with a contrastive task
+        :param target: contrastive learning target
+        :param criterion: typically nn.CrossEntropyLoss
         """
         losses = [criterion(logit, target) for logit in logits]
 
         return losses
 
     def train_epoch(self, epoch):
+        """
+        The function trains the model for one epoch.
+        """
         total_loss_cls = 0
         total_loss_pirl = 0
         total_loss = 0
@@ -81,21 +101,23 @@ class SSLPIRLTrainer:
                     f"{self.metrics[epoch]['train']['accuracy']}")
 
     def train_and_validate(self, start_epoch, end_epoch=None):
-        self.model = self.model.to(self.device)
+        """
+        The function implements the overall training pipeline.
+
+        :param start_epoch: Start epoch number
+        :param end_epoch: End epoch number
+        """
+        self.model = self.model.to(self.device)  # Transfer the model to the execution device
+        best_accuracy = 0  # Variable to keep track of the best test accuracy to save the best model
+        # Train and validate the model for (end_epoch - start_epoch)
         for i in range(start_epoch, end_epoch + 1 if end_epoch else self.epochs + 1):
             self.train_epoch(i)
             if self.validator:
                 val_metrics = self.validator.test(self.model)
                 self.metrics[i]["val"] = {}
                 self.metrics[i]["val"] = val_metrics
+                # Save the checkpoints
+                best_accuracy = save_model_checkpoints(self.checkpoints_dir_path, i, self.model.state_dict(),
+                                                       self.metrics[i], best_accuracy)
             if self.lr_scheduler:
                 self.lr_scheduler.step()
-            # Save the checkpoints
-            if self.checkpoints_dir_path:
-                model_to_save = {
-                    "epoch": i,
-                    "metrics": self.metrics[i],
-                    'state_dict': self.model.state_dict(),
-                }
-                torch.save(model_to_save,
-                           f"{self.checkpoints_dir_path}/epoch_{i}.pth")

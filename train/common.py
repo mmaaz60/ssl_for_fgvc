@@ -9,10 +9,19 @@ logger = logging.getLogger(f"train/common.py")
 
 class Trainer:
     """
-    This class initiates the specified trainer object
+    This class initiates the specified trainer instance.
     """
 
     def __init__(self, config, model, dataloader, val_dataloader=None, warm_up=False):
+        """
+        Constructor, the function initializes the class parameters.
+
+        :param config: Configuration class object
+        :param model: The model to train
+        :param dataloader: The train dataloader
+        :param val_dataloader: The validation/test dataloader
+        :param warm_up:  # Flag to decide either to run warm-up training loop or not
+        """
         # Initialize the selected trainer
         self.trainer = None
         # Select the correct model
@@ -32,7 +41,13 @@ class Trainer:
     @staticmethod
     def __get_base_trainer(config, model, dataloader, val_dataloader=None, warm_up=False):
         """
-        Create and return the base trainer object
+        The function creates and returns the base trainer object.
+
+        :param config: Configuration class object
+        :param model: The model to train
+        :param dataloader: The train dataloader
+        :param val_dataloader: The validation/test dataloader
+        :param warm_up:  # Flag to decide either to run warm-up training loop or not
         """
         # Import the trainer
         from train.base_trainer import BaseTrainer as Trainer
@@ -65,7 +80,13 @@ class Trainer:
     @staticmethod
     def __get_ssl_rot_trainer(config, model, dataloader, val_dataloader=None, warm_up=False):
         """
-        Create and return the ssl rotation trainer object
+        The function creates and returns the base trainer object.
+
+        :param config: Configuration class object
+        :param model: The model to train
+        :param dataloader: The train dataloader
+        :param val_dataloader: The validation/test dataloader
+        :param warm_up:  # Flag to decide either to run warm-up training loop or not
         """
         # Import the trainer class
         from train.ssl_rot_trainer import SSLROTTrainer as Trainer
@@ -100,7 +121,13 @@ class Trainer:
     @staticmethod
     def __get_ssl_pirl_trainer(config, model, dataloader, val_dataloader=None, warm_up=False):
         """
-        Create and return the base trainer object
+        The function creates and returns the base trainer object.
+
+        :param config: Configuration class object
+        :param model: The model to train
+        :param dataloader: The train dataloader
+        :param val_dataloader: The validation/test dataloader
+        :param warm_up:  # Flag to decide either to run warm-up training loop or not
         """
         # Import the trainer
         from train.ssl_pirl_trainer import SSLPIRLTrainer as Trainer
@@ -135,7 +162,13 @@ class Trainer:
     @staticmethod
     def __get_ssl_dcl_trainer(config, model, dataloader, val_dataloader=None, warm_up=False):
         """
-        Create and return the ssl rotation trainer object
+        The function creates and returns the base trainer object.
+
+        :param config: Configuration class object
+        :param model: The model to train
+        :param dataloader: The train dataloader
+        :param val_dataloader: The validation/test dataloader
+        :param warm_up:  # Flag to decide either to run warm-up training loop or not
         """
         # Import the trainer class
         from train.dcl_trainer import DCLTrainer as Trainer
@@ -183,6 +216,6 @@ class Trainer:
 
     def get_trainer(self):
         """
-        This function returns the selected trainer
+        The function returns the selected trainer.
         """
         return self.trainer

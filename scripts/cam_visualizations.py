@@ -17,16 +17,30 @@ from utils.util import get_object_from_path
 
 
 class CAMVisualization:
+    """
+    The class implements the process of getting a cam visualization of an image for a specified model.
+    """
     def __init__(self, model, model_name, cam_method='GradCAM'):
-        self.model = model.eval()
-        self.model_name = model_name
-        self.cam_method = cam_method
-        self.target_layer = None
-        self.cam = None
-        self._set_target_layer()
-        self._set_cam()
+        """
+        Constructor, the function initializes the class variables.
+
+        :param model: Model to be used for the CAM visualization
+        :param model_name: Model name (as per config.yml)
+        :param cam_method: The method to be used for CAM calculation. Available options are
+        "GradCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM"
+        """
+        self.model = model.eval()  # Put the model in the evaluation mode
+        self.model_name = model_name  # The model name (as per the config.yml)
+        self.cam_method = cam_method  # The cam method
+        self.target_layer = None  # The target layer used to calculate the CAM
+        self.cam = None  # The calculated CAM
+        self._set_target_layer()  # Set the target layer as per the specified model name
+        self._set_cam()  # Set cam as per the specified cam method
 
     def _set_target_layer(self):
+        """
+        The function selects the target layer as per the specified model name.
+        """
         if self.model_name == "torchvision" or self.model_name == "torchvision_ssl_rotation":
             self.target_layer = self.model.model.layer4[-1]
         elif self.model_name == "torchvision_ssl_pirl":
@@ -38,6 +52,9 @@ class CAMVisualization:
             sys.exit(1)
 
     def _set_cam(self):
+        """
+        The function selects the cam visualization method specified by cam_method
+        """
         if self.cam_method == "GradCAM":
             self.cam = GradCAM(model=self.model, target_layer=self.target_layer, use_cuda=True)
         elif self.cam_method == "GradCAMPlusPlus":
@@ -54,6 +71,7 @@ class CAMVisualization:
     def get_cam_image(self, x, x_orig):
         """
         The function interpolates the class activation maps and return an image of required size
+
         :param x: Batch of images (b, c, h, w)
         """
         grayscale_cam = self.cam(input_tensor=x, target_category=1)
@@ -76,6 +94,11 @@ def parse_arguments():
     ap.add_argument("-cam", "--cam_method", required=False, default='GradCAM',
                     help="Cam method to use. Possible options are "
                          "[GradCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM]")
+    ap.add_argument("-checkpoints", "--model_checkpoints", required=True,
+                    help="The path to model checkpoints.")
+    ap.add_argument("-dataset", "--root_dataset_path", required=False, default="./data/CUB_200_2011",
+                    help="The path to the dataset root directory. "
+                         "The program will download the dataset if not present locally.")
     ap.add_argument("-save", "--output_directory", required=True,
                     help="The path to output directory to save the visualizations.")
     ap.add_argument("-dim", "--output_dim", type=int, required=False, default=448,
@@ -101,7 +124,9 @@ def main():
     if not os.path.exists(f"{args['output_directory']}/wrong_predictions"):
         os.mkdir(f"{args['output_directory']}/wrong_predictions")
     config.load_config(args["config_path"])  # Load configuration
+    config.cfg["dataloader"]["root_directory_path"] = args["root_dataset_path"]  # Set the dataset path
     _, test_loader = Dataloader(config=config).get_loader()  # Create dataloader
+    # Get the required attributes from the dataset
     data = test_loader.dataset.data.values
     data = data[np.argsort(data[:, 0])]
     image_ids = data[:, 0]
@@ -111,7 +136,7 @@ def main():
     model = Model(config=config).get_model()
     model = model.to(args["device"])
     # Load pretrained weights
-    checkpoints_path = config.cfg["model"]["checkpoints_path"]
+    checkpoints_path = args["model_checkpoints"]
     checkpoints = torch.load(checkpoints_path)
     model.load_state_dict(checkpoints["state_dict"], strict=True)
     # Create CAM visualizer object

@@ -7,10 +7,29 @@ from dataloader.common import Dataloader
 from model.common import Model
 from train.common import Trainer
 from utils.util import load_vissl_weights
+import argparse
 
-if __name__ == "__main__":
-    # Config path
-    config_path = "config.yml"
+
+def parse_arguments():
+    """
+    Parse the command line arguments
+    """
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-config", "--config_path", required=False, default="config.yml",
+                    help="The path to the pipeline .yml configuration file.")
+
+    args = vars(ap.parse_args())
+
+    return args
+
+
+def main():
+    """
+    This method implements the main flow of the training pipeline.
+    """
+    # Parse the arguments
+    args = parse_arguments()
+    config_path = args["config_path"]  # Config path
     # Load the configuration file
     config.load_config(config_path)
     # Read the general configuration parameters
@@ -44,11 +63,12 @@ if __name__ == "__main__":
     train_loader, test_loader = dataloader.get_loader()
     # Create the model
     model = Model(config=config).get_model()
-    # Load pre-trained weights if required
+    # Load pre-trained VISSL weights if prompted
     try:
-        checkpoints_path = config.cfg["model"]["checkpoints_path"]
-        model = load_vissl_weights(model, checkpoints_path)
-    except KeyError:
+        vissl_checkpoints_path = config.cfg["model"]["vissl_weights_path"]
+        if not len(vissl_checkpoints_path) == 0:
+            model = load_vissl_weights(model, vissl_checkpoints_path)
+    except Exception:
         pass
     # Create the trainer and run training
     warm_up_epochs = config.cfg["train"]["warm_up_epochs"]
@@ -61,4 +81,11 @@ if __name__ == "__main__":
     logging.info(f"Staring main training loop using {config.cfg['train']['class_loss_function_path'].split('.')[-1]} "
                  f"for {config.cfg['train']['epochs'] - warm_up_epochs} epochs.")
     trainer = Trainer(config=config, model=model, dataloader=train_loader, val_dataloader=test_loader).get_trainer()
-    trainer.train_and_validate(start_epoch=warm_up_epochs)
+    trainer.train_and_validate(start_epoch=warm_up_epochs + 1)
+
+
+if __name__ == "__main__":
+    """
+    This script calls the main() which implements the main flow of the training pipeline.
+    """
+    main()

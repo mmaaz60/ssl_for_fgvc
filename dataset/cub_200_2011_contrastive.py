@@ -7,6 +7,9 @@ import tarfile
 
 
 class Cub2002011Contrastive(Dataset):
+    """
+    The class implements the routines to load the CUB-200-2011 dataset for contrastive SSL training.
+    """
     base_folder = 'CUB_200_2011/images'  # Base dataset path
     google_drive_id = '1ZzCyTEYBOGDlHzcKCJqKzHX4SlJFUVEz'  # Google drive ID to download the dataset
     filename = 'CUB_200_2011.tgz'  # Dataset TGZ file name
@@ -14,39 +17,48 @@ class Cub2002011Contrastive(Dataset):
     def __init__(self, root, train=True, download=True, loader=default_loader, resize_dims=None, transform=None,
                  contrastive_transforms=None, train_data_fraction=1, test_data_fraction=1):
         """
-        Initialize the class variables, download the dataset (if prompted to do so), verify the data presence,
+        Constructor, the function initializes the class variables, downloads the dataset (if prompted to do so) and
+        verifies the data presence/status.
+
         :param root: Dataset root path
         :param train: Train dataloader flag (True: Train Dataloader, False: Test Dataloader)
         :param download: Flag set to download the dataset
         :param loader: The data point loader function (By default a PyTorch default_loader(PIL loader) is used)
         :param resize_dims: Image resize dimensions
         """
-        self.root = os.path.expanduser(root)
-        self.train = train
-        self.loader = loader
-        self.resize_dims = resize_dims
-        self.train_data_fraction = train_data_fraction
-        self.test_data_fraction = test_data_fraction
+        self.root = os.path.expanduser(root)  # Dataset root path
+        self.train = train  # Flag to decide if to load training or testing dataset
+        self.loader = loader  # The dataset image loader
+        self.resize_dims = resize_dims  # Image resize dims
+        self.train_data_fraction = train_data_fraction  # Training data fraction. Useful in semi-supervised learning
+        self.test_data_fraction = test_data_fraction  # Testing data fraction. Useful in quick testing the of code flow
+        # Download the dataset if prompted to do so.
         if download:
             self._download()
-
+        # Verify if the data is present and not corrupted
         if not self._check_integrity():
             raise RuntimeError('Dataset not found or corrupted.' +
                                ' You can use download=True to download it')
-        self.transform = transform
-        self.contrastive_transform = None
+        self.transform = transform  # Data transforms
+        self.contrastive_transform = None  # Contrastive transforms
         if contrastive_transforms is not None:
             self.contrastive_transform = contrastive_transforms()
 
     def __sample_data_train(self, group):
+        """
+        Sample the training data as specified by train_data_fraction.
+        """
         return pd.DataFrame(group.sample(n=int(len(group)*self.train_data_fraction)))
 
     def __sample_data_test(self, group):
+        """
+        Sample the testing data as specified by test_data_fraction.
+        """
         return pd.DataFrame(group.sample(n=int(len(group)*self.test_data_fraction)))
 
     def _load_metadata(self):
         """
-        Load the metadata (image list, class list and train/test split) of the CUB_200_2011 dataset
+        The function loads the metadata (image list, class list and train/test split) of the CUB_200_2011 dataset.
         """
         images = pd.read_csv(os.path.join(self.root, 'CUB_200_2011', 'images.txt'), sep=' ',
                              names=['img_id', 'filepath'])
@@ -66,13 +78,13 @@ class Cub2002011Contrastive(Dataset):
 
     def _check_integrity(self):
         """
-        Verify if the dataset is present and loads accurately
+        The function verifies if the dataset is present and loads accurately or not.
         """
         try:
-            self._load_metadata()
+            self._load_metadata()  # Load the data metadata
         except Exception:
             return False
-
+        # Ensure that the required files are present at the desired location
         for index, row in self.data.iterrows():
             filepath = os.path.join(self.root, self.base_folder, row.filepath)
             if not os.path.isfile(filepath):
@@ -82,7 +94,7 @@ class Cub2002011Contrastive(Dataset):
 
     def _download(self):
         """
-        Download the CUB_200_2011 dataset if not downloaded already
+        The function download the CUB_200_2011 dataset if not downloaded already.
         """
         # Check if the files are already downloaded
         if self._check_integrity():
@@ -98,19 +110,21 @@ class Cub2002011Contrastive(Dataset):
 
     def __len__(self):
         """
-        The function overrides the __len__ method of Dataset class
+        The function overrides the __len__ method of Dataset class.
+
         :return: Length of the CUB dataset (train/test)
         """
         return len(self.data)
 
     def __getitem__(self, idx):
         """
-        The function overrides the __getitem__ method of the Dataset class
+        The function overrides the __getitem__ method of the Dataset class.
+
         :param idx: The index to fetch the data entry/sample
         :return: The image tensor and corresponding label
         """
-        sample = self.data.iloc[idx]
-        path = os.path.join(self.root, self.base_folder, sample.filepath)
+        sample = self.data.iloc[idx]  # Get the idx data sample
+        path = os.path.join(self.root, self.base_folder, sample.filepath)  # Path of the image
         target = sample.target - 1  # Targets start at 1 by default, so shift to 0
         img = self.loader(path)  # Call the loader function to load the image
         # Resize the image if the resize dims are specified

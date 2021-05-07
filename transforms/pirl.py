@@ -5,9 +5,19 @@ from torchvision import transforms
 
 
 class JigsawCrop(object):
-    """Jigsaw style crop"""
+    """
+    The class implements the process of generating jigsaw crops for PIRL. The implementation is based on
+    https://github.com/HobbitLong/PyContrast
+    """
 
     def __init__(self, n_grid=2, img_size=512, crop_size=256):
+        """
+        Constructor, the function initializes the paramters.
+
+        :param n_grid: Grid size to divide the original image
+        :param img_size: Original image size
+        :param crop_size: Jigsaw crop size
+        """
         self.n_grid = n_grid
         self.img_size = img_size
         self.crop_size = crop_size
@@ -19,6 +29,12 @@ class JigsawCrop(object):
         self.xx = np.reshape(xx * self.grid_size, (n_grid * n_grid,))
 
     def __call__(self, img):
+        """
+        The function generates the jigsaw crops of a provided original image.
+
+        :param img: Original image
+        :return: Jigsaw crops
+        """
         r_x = np.random.randint(0, self.side + 1, self.n_grid * self.n_grid)
         r_y = np.random.randint(0, self.side + 1, self.n_grid * self.n_grid)
         img = np.asarray(img, np.uint8)
@@ -31,7 +47,9 @@ class JigsawCrop(object):
 
 
 class StackTransform(object):
-    """transform a group of images independently"""
+    """
+    The transform to group images independently.
+    """
 
     def __init__(self, transform):
         self.transform = transform
@@ -41,6 +59,9 @@ class StackTransform(object):
 
 
 class JigsawTransform(object):
+    """
+    The implementation of generating jigsaw crops and torchvision transformation.
+    """
     def __init__(self):
         self.transform = transforms.Compose(
             [transforms.Resize(1024),

@@ -87,26 +87,43 @@ The expected outputs after running the command are given below.
 ![Training Outputs for DCL Model](images/evaluation_dcl_sample_output.png)
 
 ## CAM Visualization
+The repository also provides the functionality to generate class activation maps (CAMs) 
+for the trained model on the whole test dataset. The script [`scripts/cam_visualizations.py`](scripts/cam_visualizations.py) 
+exposes this functionality. Run the following commands to generate CAMs for the trained model.
+```bash
+$ cd scripts
+$ python cam_visualizations.py --config_path=<path to the corresponding configuration '.yml' file.> \
+--model_checkpoints=<path to the downloaded model checkpoints> \
+--root_dataset_path=<path to the dataset root directory> \
+--output_directory=<path to ouput directory to save the visualizations>
+```
+If the parameter `--root_dataset_path` is not provided, the program will automatically download the dataset 
+and generate the visualizations. For more information run,
+```bash
+$ python cam_visualizations.py --help
+```
 
 ## Docker
-Follow the following commands to run the training,
+We also provide [`Dockerfile`](Dockerfile) for containerization and [`docker-compose.yml`](docker-compose.yml) file for running the training as service.
+
+Follow the below steps to run the training as a service,
 
 1. Install docker dependencies using [install_docker_dependencies.sh](scripts/install_docker_dependencies.sh).
-```bazaar
-bash install_docker_dependencies.sh
+```bash
+$ cd scripts
+$ bash install_docker_dependencies.sh
 ```
-2. Login to docker.
-```bazaar
-docker login --username=USERNAME
+2. Create docker image by running the following command from the root repository directory,
+```bash
+$ docker build -t ssl_for_fgvc:v1.0
 ```
-3. Update the configuration [config.yml](config.yml).
-4. Update the [docker-compose.yml](docker-compose.yml) if needed.
-5. Run the following command,
-```bazaar
-docker-compose up -d
-```
+Where `ssl_for_fgvc:v1.0` is the docker image name.
 
-In order to build and push the docker image on docker hub, run the script [build_and_push_docker_image.sh](scripts/build_and_push_docker_image.sh).
-```bazaar
-bash scripts/build_and_push_docker_image.sh IMAGE_TAG
+3. Run the training as docker-compose service by running,
+```bash
+$ docker-compose up -d
+```
+4. View the training logs by running,
+```
+$ docker-compose logs -f ssl_for_fgvc
 ```

@@ -3,9 +3,14 @@ import sys
 
 class Model:
     """
-    This class initiates the specified model
+    This class initiates the specified model.
     """
     def __init__(self, config):
+        """
+        Constructor, select the model specified in the configuration file
+
+        :param config: Configuration class object
+        """
         # Select the correct model
         if config.cfg["model"]["name"] == "torchvision":
             from model.torchvision import TorchVision as Model

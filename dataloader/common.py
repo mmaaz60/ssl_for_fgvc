@@ -3,9 +3,14 @@ import sys
 
 class Dataloader:
     """
-    This class initiates the specified dataloader
+    This class initiates the dataloader specified in the configuration file.
     """
     def __init__(self, config):
+        """
+        Constructor, initialize the dataloader.
+
+        :param config: Configuration class object
+        """
         # Select the correct model
         if config.cfg["dataloader"]["name"] == "cub_200_2011":
             from dataloader.cub_200_2011 import Cub2002011 as DataLoader
@@ -22,6 +27,6 @@ class Dataloader:
 
     def get_loader(self):
         """
-        This function returns the selected dataloader
+        This function returns the selected dataloader.
         """
         return self.dataloader.get_dataloader()

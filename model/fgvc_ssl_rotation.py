@@ -6,13 +6,15 @@ from layers.diversification_block import DiversificationBlock
 
 class FGVCSSLRotation(nn.Module):
     """
-    This class inherits from nn.Module class
+    The class adds the rotation as an auxiliary task to the FGVC model from
+    (http://arxiv.org/abs/1912.06842).
     """
 
     def __init__(self, config):
         """
-        The function parse the config and initialize the layers of the corresponding model
-        :param config: YML configuration file to parse the parameters from
+        Constructor, The function parse the config and initialize the layers of the corresponding model.
+
+        :param config: Configuration class object
         """
         super(FGVCSSLRotation, self).__init__()  # Call the constructor of the parent class
         # Parse the configuration parameters
@@ -26,27 +28,29 @@ class FGVCSSLRotation(nn.Module):
         self.p_patch = config.cfg["diversification_block"]["p_patch"]  # Probability for peak selection
         # Load the model
         self.cam = CAM(self.model_function, self.num_classes_classification, self.pretrained)
-        self.adaptive_pooling = nn.AdaptiveAvgPool2d(3)
-        self.flatten = nn.Flatten()
+        self.adaptive_pooling = nn.AdaptiveAvgPool2d(3)  # Adaptive average pooling for classification prediction
+        self.flatten = nn.Flatten()  # Flatten the features
+        # Adds a classification head for rotation prediction
         self.rotation_head = nn.Linear(self.num_classes_classification * 3 * 3, self.num_classes_rot)
         self.diversification_block = DiversificationBlock(self.kernel_size, self.alpha, self.p_peak, self.p_patch)
 
     def forward(self, x, train=False):
         """
-        The function implements the forward pass of the network/model
-        :param train:
-        :param db_flag:
-        :param x: Batch of inputs (images)
-        :return:
+        The function implements the forward pass of the model.
+
+        :param x: Input image tensor
+        :param train: Flag to specify either train or test mode
         """
-        out = self.cam(x)
+        out = self.cam(x)  # Calculate the CAMs
         if train:
+            # Diversification block is only used during training
             out = self.diversification_block(out)
-        y_classification = out.mean([2, 3])
+        y_classification = out.mean([2, 3])  # Get the classification scores
         if train:
+            # SSL rotation prediction part, only during training
             out = self.adaptive_pooling(out)
             out = self.flatten(out)
-            y_rotation = self.rotation_head(out)
+            y_rotation = self.rotation_head(out)  # Classification head predicts rotation augmentation applied
             return y_classification, y_rotation
         else:
             return y_classification

@@ -128,6 +128,16 @@ $ docker-compose up -d
 $ docker-compose logs -f ssl_for_fgvc
 ```
 
+## Acknowledgements
+1. Dataloader: https://github.com/TDeVries/cub2011_dataset
+1. Rotation Based SSL Task: https://github.com/valeoai/BF3S   
+1. PyContrast for basic PIRL Implementation: https://github.com/HobbitLong/PyContrast
+1. VISSL for Pretrained Contrastive SSL Models: https://github.com/facebookresearch/vissl   
+1. Official Barlow Twins Implementation https://github.com/IgorSusmelj/barlowtwins
+1. DCL Official Implementation: https://github.com/JDAI-CV/DCL
+1. Grad-CAM Visualizations: https://github.com/jacobgil/pytorch-grad-cam
+
+
 ## Reference
 [1] Gidaris, Spyros, et al. "Boosting few-shot visual learning with self-supervision."\
 [2] Misra, Ishan, and Laurens van der Maaten. "Self-supervised learning of pretext-invariant representations."\

@@ -66,7 +66,7 @@ class DCLTrainer:
             adv_loss = self.adv_loss(adv_outputs, labels_jigsaw)
             # jigsaw reconstruct uses regression type with l1  or mse loss or class with bce loss
             jigsaw_loss = self.jigsaw_loss(jigsaw_mask_outputs, patch_labels)
-            loss = cls_loss  # # Adds CUB classification loss to total loss
+            loss = cls_loss  # Adds CUB classification loss to total loss
             if self.use_adv:
                 # Adds adversarial loss to total loss
                 loss += adv_loss

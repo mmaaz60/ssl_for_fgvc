@@ -45,7 +45,7 @@ class DCL(Cub2002011):
             # Deconstructs image into patches
             img_jigsaw, jigsaw_ind = self.jigsaw_transform(img) if self.jigsaw_transform is not None else img
             img_jigsaw_list = get_image_crops(img_jigsaw, self.crop_patch_size)
-            # Creates patch labels in regression form from mean of patches
+            # Creates patch labels in regression from mean of patches
             original_stats = [sum(ImageStat.Stat(im).mean) for im in img_original_list]
             jigsaw_stats = [sum(ImageStat.Stat(im).mean) for im in img_jigsaw_list]
             jigsaw_patch_labels = []

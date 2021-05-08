@@ -11,7 +11,7 @@ The list of implemented model architectures can be found at [here](model/README.
 
 ## Pipeline Configuration
 All the functionalities of this repository can be accessed using a `.yml` configuration file. 
-The details related to the configuration parameters can be found at [here]().
+The details related to the configuration parameters can be found at [here](config/README.md).
 
 We also provide sample configuration files at `./config/*` for each implemented method as listed below.
 1. [Baseline Config](config/baseline.yml)

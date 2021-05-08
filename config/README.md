@@ -1,6 +1,6 @@
 # Configuration
 
-The table below list the details of the configurable parameters in [config.yml](config.yml).
+The table below lists the details of the various configurable parameters in [config.yml](../config.yml).
 
 | Name| Parameter      | Description | Expected Value    |
 | :---        |:---  | :--- | :--- |

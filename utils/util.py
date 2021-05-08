@@ -30,6 +30,8 @@ def download_file_from_google_drive(id, destination):
     :param id: Unique google drive token for the file to download
     :param destination: Destination path
     """
+    print(f"Downloading CUB-200-2011 dataset. It may take a while. Thank you for your patience.")
+
     URL = "https://docs.google.com/uc?export=download"
 
     session = requests.Session()

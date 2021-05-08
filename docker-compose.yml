@@ -2,10 +2,10 @@ version: '3.7'
 
 services:
   ssl_for_fgvc:
-    image: mmaaz60/ssl_for_fgvc:v1.08
+    image: ssl_for_fgvc:v1.0
     volumes:
       - ./data:/workspace/data
-      - ./config.yml:/workspace/config.yml
+      - ./config/ssl_dcl.yml:/workspace/config.yml
       - ./results:/workspace/results
     container_name: ssl_fgvc
     command: /bin/bash -c "python main.py"

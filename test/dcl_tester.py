@@ -34,12 +34,14 @@ class DCLTester:
             total_loss = 0  # Variable to store the running loss
             total_correct_predictions_top_1 = 0  # Variable to store the total top-1 correction predictions
             total_correct_predictions_top_2 = 0  # Variable to store the total top-1 correction predictions
+            total_predictions = 0  # Variable to store the total predictions
             # Iterate over the dataset
             for batch_idx, d in enumerate(self.dataloader):
                 inputs, labels = d  # Extract inputs and labels
                 # Move the data on the specified device
                 inputs = inputs.to(self.device)
                 labels = Variable(torch.from_numpy(np.array(labels))).long().to(self.device)
+                total_predictions += len(labels)  # Increment total predictions
                 outputs = model(inputs, train=False)  # Perform batch inference
                 loss = self.loss(outputs, labels)  # Calculate the loss
                 total_loss += loss  # Total loss till now
@@ -50,10 +52,8 @@ class DCLTester:
                 batch_corrects_2 = torch.sum((top_2_pos[:, 1] == labels)).data.item()
                 total_correct_predictions_top_2 += (batch_corrects_2 + batch_corrects_1)
             metrics['loss'] = float(total_loss) / len(self.dataloader)
-            metrics['accuracy_top_1'] = float(total_correct_predictions_top_1) / (
-                                        len(self.dataloader) * self.dataloader.batch_size)
-            metrics['accuracy_top_2'] = float(total_correct_predictions_top_2) / (
-                                        len(self.dataloader) * self.dataloader.batch_size)
+            metrics['accuracy_top_1'] = float(total_correct_predictions_top_1) / total_predictions
+            metrics['accuracy_top_2'] = float(total_correct_predictions_top_2) / total_predictions
             logger.info(f"Validation loss: {metrics['loss']}, Top-1 Validation accuracy: {metrics['accuracy_top_1']}"
                         f", Top-2 Validation accuracy: {metrics['accuracy_top_2']}")
         return metrics

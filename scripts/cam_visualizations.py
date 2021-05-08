@@ -94,6 +94,11 @@ def parse_arguments():
     ap.add_argument("-cam", "--cam_method", required=False, default='GradCAM',
                     help="Cam method to use. Possible options are "
                          "[GradCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM]")
+    ap.add_argument("-checkpoints", "--model_checkpoints", required=True,
+                    help="The path to model checkpoints.")
+    ap.add_argument("-dataset", "--root_dataset_path", required=False, default="./data/CUB_200_2011",
+                    help="The path to the dataset root directory. "
+                         "The program will download the dataset if not present locally.")
     ap.add_argument("-save", "--output_directory", required=True,
                     help="The path to output directory to save the visualizations.")
     ap.add_argument("-dim", "--output_dim", type=int, required=False, default=448,
@@ -119,6 +124,7 @@ def main():
     if not os.path.exists(f"{args['output_directory']}/wrong_predictions"):
         os.mkdir(f"{args['output_directory']}/wrong_predictions")
     config.load_config(args["config_path"])  # Load configuration
+    config.cfg["dataloader"]["root_directory_path"] = args["root_dataset_path"]  # Set the dataset path
     _, test_loader = Dataloader(config=config).get_loader()  # Create dataloader
     # Get the required attributes from the dataset
     data = test_loader.dataset.data.values
@@ -130,7 +136,7 @@ def main():
     model = Model(config=config).get_model()
     model = model.to(args["device"])
     # Load pretrained weights
-    checkpoints_path = config.cfg["model"]["checkpoints_path"]
+    checkpoints_path = args["model_checkpoints"]
     checkpoints = torch.load(checkpoints_path)
     model.load_state_dict(checkpoints["state_dict"], strict=True)
     # Create CAM visualizer object

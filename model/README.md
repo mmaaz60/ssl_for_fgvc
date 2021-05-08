@@ -52,4 +52,4 @@ of all three loss, and uses the defined [dcl trainer](../train/dcl_trainer.py) w
 [1] Gidaris, Spyros, et al. "Boosting few-shot visual learning with self-supervision."\
 [2] Misra, Ishan, and Laurens van der Maaten. "Self-supervised learning of pretext-invariant representations."\
 [3] Sun, Guolei, et al. "Fine-grained recognition: Accounting for subtle differences between similar classes."\
-[4] Chen, Yue, et al. "Destruction and construction learning for fine-grained image recognition." \
+[4] Chen, Yue, et al. "Destruction and construction learning for fine-grained image recognition."

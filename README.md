@@ -1,6 +1,6 @@
 # Self-Supervised Learning for Fine Grained Image Categorization
 
-The repository contains the implementation of the project "Self Supervised Learning for Fine-grained Classification". The projects examines the effectiveness of various SSL for a FGVC problem. The repository implements self-supervision as an auxiliary task to a baseline model for fine-grained visual categorization (FGVC) task. 
+The repository contains the implementation of the project "Self Supervised Learning for Fine-grained Categorization". The project examines the effectiveness of various SSL methods for a FGVC problem. The repository implements self-supervision as an auxiliary task to a baseline model for fine-grained visual categorization (FGVC) task. 
 Specifically, it provides the implementation for rotation [1], pretext invariant representation learning (PIRL) [2] and destruction and construction learning (DCL) [3] 
 as auxiliary tasks for the baseline model.
 

@@ -4,4 +4,7 @@ pyyaml~=5.4.1
 pandas~=1.2.2
 requests~=2.25.1
 # Only required for CAM visualizations
-grad-cam
+grad-cam==1.2.6
+opencv-python~=4.5.1
+ttach~=0.0.3
+tqdm~=4.60.0

@@ -15,7 +15,7 @@ dataloader:
   root_directory_path: ./data/CUB_200_2011  # The root directory path of the dataset
   resize_width: 600  # Image resize width
   resize_height: 600  # Image resize height
-  batch_size: 8  # Batch size for training and testing
+  batch_size: 2  # Batch size for training and testing
   shuffle: True  # Either to shuffle the dataset for training or not
   num_workers: 16  # Number of parallel workers to load the dataset
   # The train and test data transforms
@@ -72,7 +72,7 @@ dataloader:
 
 # All configurations related to model will be under this header
 model:
-  name: dcl  # Name/source of the model
+  name: dcl_attention  # Name/source of the model
   # Complete model class path (i.e. torchvision.models.resnet50, torchvision.models.alexnet, etc.)
   model_function_path: torchvision.models.resnet50
   pretrained: True  # Either to load weights from pretrained imagenet model

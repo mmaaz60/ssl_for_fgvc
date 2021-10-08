@@ -4,6 +4,9 @@ Credits: This implementation is inspired from https://github.com/JDAI-CV/DCL
 
 import torch.nn as nn
 from utils.util import get_object_from_path
+import matplotlib.pyplot as plt
+import torch
+import torch.nn.functional as F
 
 
 class TorchVisionSSLDCL(nn.Module):
@@ -47,6 +50,11 @@ class TorchVisionSSLDCL(nn.Module):
         self.tan_h = nn.Tanh()  # Tanh activation
         self.relu = nn.ReLU()  # ReLU activation
         self.sigmoid = nn.Sigmoid()  # Sigmoid activation
+        # Attention from bbox supervision
+        attention_model, _ = torch.hub.load('ashkamath/mdetr:main', 'mdetr_efficientnetB5', pretrained=True,
+                                            return_postprocessor=True)
+        self.attention_model = attention_model.cuda().eval()
+        self.img_size = 448
 
     def forward(self, x, train=False):
         """
@@ -55,7 +63,8 @@ class TorchVisionSSLDCL(nn.Module):
         :param x: Input image tensor
         :param train: Flag to specify either train or test mode
         """
-        feat = self.feature_extractor(x)  # Feature extraction
+        x_aug = self.attention(x)
+        feat = self.feature_extractor(x_aug)  # Feature extraction
         classifier = self.avg_pool(feat)  # Adaptive average pooling
         classifier = self.flatten(classifier)  # Flatten the features
         cls_classifier = self.cls_classifier(classifier)  # Classification head predicts N classes
@@ -81,3 +90,33 @@ class TorchVisionSSLDCL(nn.Module):
         else:
             # Calculates only classification during testing
             return cls_classifier
+
+    def attention(self, x):
+        caption = "all bird"
+        bs = x.shape[0]
+        captions = [caption]*bs
+        memory_cache = self.attention_model(x, captions, encode_and_save=True)
+        outputs = self.attention_model(x, captions, encode_and_save=False, memory_cache=memory_cache)
+        # keep only top-1 prediction
+        probas = 1 - outputs['pred_logits'].softmax(-1)[:, :, -1].cpu()
+        _, keep = torch.max(probas, dim=1)
+        x_aug = torch.zeros_like(x)
+        for b in range(bs):
+            bboxes_scaled = self.rescale_bboxes((outputs['pred_boxes'].cpu()[b, keep[b]]).unsqueeze(0),
+                                                (self.img_size, self.img_size))
+            bboxes_scaled = torch.nn.functional.relu(bboxes_scaled)
+            [x1, y1, x2, y2] = [int(box.item()) for box in bboxes_scaled[0]]
+            x_aug[b, :] = F.interpolate(x[b, None, :, y1:y2, x1:x2], size=(self.img_size, self.img_size))
+        return x_aug
+
+    def box_cxcywh_to_xyxy(self, x):
+        x_c, y_c, w, h = x.unbind(1)
+        b = [(x_c - 0.5 * w), (y_c - 0.5 * h),
+             (x_c + 0.5 * w), (y_c + 0.5 * h)]
+        return torch.stack(b, dim=1)
+
+    def rescale_bboxes(self, out_bbox, size):
+        img_w, img_h = size
+        b = self.box_cxcywh_to_xyxy(out_bbox)
+        b = b * torch.tensor([img_w, img_h, img_w, img_h], dtype=torch.float32)
+        return b

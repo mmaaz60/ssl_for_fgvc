@@ -28,6 +28,8 @@ class Model:
             from model.fgvc_bb_supervision import AttentionResnet as Model
         elif config.cfg["model"]["name"] == "fgvc_bb_supervision_concat":
             from model.fgvc_bb_supervision_concat import AttentionResnet as Model
+        elif config.cfg["model"]["name"] == "fgvc_bb_supervision_mask":
+            from model.fgvc_bb_supervision_mask import AttentionResnet as Model
         elif config.cfg["model"]["name"] == "dcl_attention":
             from model.torchvision_ssl_dcl_attention import TorchVisionSSLDCL as Model
         else:

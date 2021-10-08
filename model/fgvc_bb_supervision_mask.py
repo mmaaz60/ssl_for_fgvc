@@ -46,8 +46,9 @@ class AttentionResnet(nn.Module):
         """
         # get features of orig image
         feat_x = self.feature_extractor(x)  # Feature extraction
-        feat_aug = self.attention(x, feat_x)
-        feat = self.avg_pool(feat_aug)  # Adaptive average pooling
+        if train:  # Add attention from bbox supervision during training
+            feat_x = self.attention(x, feat_x)
+        feat = self.avg_pool(feat_x)  # Adaptive average pooling
         feat = self.flatten(feat)  # Flatten the features
         # concat features
         out = self.cls_classifier(feat)
@@ -70,10 +71,8 @@ class AttentionResnet(nn.Module):
             [x1, y1, x2, y2] = [int(box.item()) for box in bboxes_scaled[0]]
             mask = torch.ones((h, w), dtype=torch.bool)
             mask[y1:y2, x1:x2] = False
-            # attention_fm[b][mask.repeat(c, 1, 1)] = attention_fm[b][mask.repeat(c, 1, 1)]*self.alpha
             attention_fm[b][mask.repeat(c, 1, 1)] *= self.alpha
         return attention_fm
-
 
     def box_cxcywh_to_xyxy(self, x):
         x_c, y_c, w, h = x.unbind(1)

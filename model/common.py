@@ -26,6 +26,8 @@ class Model:
             from model.torchvision_ssl_dcl import TorchVisionSSLDCL as Model
         elif config.cfg["model"]["name"] == "fgvc_bb_supervision":
             from model.fgvc_bb_supervision import AttentionResnet as Model
+        elif config.cfg["model"]["name"] == "fgvc_bb_supervision_concat":
+            from model.fgvc_bb_supervision_concat import AttentionResnet as Model
         else:
             print(f"Please provide correct model to use in configuration. "
                   f"Available options are ['torchvision', 'fgvc_resnet', "

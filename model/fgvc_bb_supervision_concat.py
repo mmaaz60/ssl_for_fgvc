@@ -22,15 +22,19 @@ class AttentionResnet(nn.Module):
         self.pretrained = config.cfg["model"]["pretrained"]  # Either to load weights from pretrained model or not
         self.num_classes = config.cfg["model"]["classes_count"]  # Number of classes
         # Load the model
-        self.model = self.model_function(pretrained=self.pretrained)
-        # Alter the classification layer as per the specified number of classes
-        self.model.fc = nn.Linear(in_features=self.model.fc.in_features, out_features=self.num_classes,
-                                  bias=(self.model.fc.bias is not None))
+        net = self.model_function(pretrained=self.pretrained)
+        net_list = list(net.children())
+        self.feature_extractor = nn.Sequential(*net_list[:-2])  # Feature extractor
+        self.avg_pool = nn.AdaptiveAvgPool2d(output_size=1)  # Adaptive average pooling
+        self.concat_net = nn.Linear(in_features=net.fc.in_features * 2, out_features=net.fc.in_features)
+        self.cls_classifier = nn.Linear(in_features=net.fc.in_features, out_features=self.num_classes,
+                                        bias=(net.fc.bias is not None))
+        self.flatten = nn.Flatten()  # Flatten layer
+        # Load the model for bbox supervision
         attention_model, _ = torch.hub.load('ashkamath/mdetr:main', 'mdetr_efficientnetB5', pretrained=True,
                                               return_postprocessor=True)
         self.attention_model = attention_model.cuda().eval()
         self.img_size = config.cfg["attention"]["augment_size"]
-        self.concat_orig_img = config.cfg["attention"]["concat_orig"]
 
 
     def forward(self, x, train=False):
@@ -40,8 +44,19 @@ class AttentionResnet(nn.Module):
         :param x: Input image tensor
         :param train: Flag to specify either train or test mode
         """
+        # get features of orig image
+        feat_x = self.feature_extractor(x)  # Feature extraction
+        feat_x = self.avg_pool(feat_x)  # Adaptive average pooling
+        feat_x = self.flatten(feat_x)  # Flatten the features
+        # get features of attention part
         x_aug = self.attention(x)
-        out = self.model(x_aug)
+        feat_xaug = self.feature_extractor(x_aug)
+        feat_xaug = self.avg_pool(feat_xaug)
+        feat_xaug = self.flatten(feat_xaug)
+        # concat features
+        feat_concat = torch.cat([feat_x, feat_xaug], 1)
+        features = self.concat_net(feat_concat)
+        out = self.cls_classifier(features)
         return out
 
     def attention(self, x):
@@ -60,8 +75,6 @@ class AttentionResnet(nn.Module):
             bboxes_scaled = torch.nn.functional.relu(bboxes_scaled)
             [x1, y1, x2, y2] = [int(box.item()) for box in bboxes_scaled[0]]
             x_aug[b, :] = F.interpolate(x[b, None, :, y1:y2, x1:x2], size=(self.img_size, self.img_size))
-        if self.concat_orig_img:  # Concatenate original image along with crop image
-            x_aug = torch.cat([x, x_aug], 0)
         return x_aug
 
     def box_cxcywh_to_xyxy(self, x):

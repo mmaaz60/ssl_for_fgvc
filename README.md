@@ -37,7 +37,7 @@ $ pip install -r requirements.txt
 ```
 
 ## Evaluating Pretrained Models
-All the pretrained models can be found at [click_me](https://mbzuaiac-my.sharepoint.com/:f:/g/personal/20020063_mbzuai_ac_ae/EtMbK1h75NhPmvr4L_xANoABklXEyadRsBPHSfI8I9jhlA?e=JEuXy3). 
+All the pretrained models can be found at [click_me](https://mbzuaiac-my.sharepoint.com/:f:/g/personal/muhammad_maaz_mbzuai_ac_ae/EtMbK1h75NhPmvr4L_xANoABIZFyg9j62sEboxNQh9i8rg?e=PNncf2). 
 In order to evaluate a model, download the model 
 checkpoints from the link and use `scripts/evaluate.py` script for evaluating the model on the test set.
 
